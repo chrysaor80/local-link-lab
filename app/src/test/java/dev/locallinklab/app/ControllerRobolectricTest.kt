@@ -44,7 +44,8 @@ class ControllerRobolectricTest {
         controller = LinkController(Repository(db))
         controller.onStart(owner)
         val sequence = controller.connect("127.0.0.1", posPort)
-        assertTrue("initial probe completed", waitFor(10_000) { controller.probeResult.value?.sequence == sequence && controller.settings.value != null && !controller.busy.value })
+        // Harness readiness includes Robolectric/Room cold start; product deadlines stay unchanged.
+        assertTrue("initial probe completed", waitFor(30_000) { controller.probeResult.value?.sequence == sequence && controller.settings.value != null && !controller.busy.value })
         assertEquals(true, controller.probeResult.value?.succeeded)
         assertNotNull("harness: POS on $posPort must answer hello (${controller.runtime.value})", controller.settings.value)
     }

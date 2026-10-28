@@ -27,10 +27,25 @@ class CandidateGateTest(unittest.TestCase):
             path.write_text(f'<testsuite tests="{minimum}" failures="0" errors="0" skipped="0">{cases}</testsuite>')
         self.normal = self.root / "artifacts/m2-normal/summary.json"
         self.mutants = self.root / "artifacts/m2-mutations/summary.json"
-        self.write(self.normal, {"source_commit": SOURCE, "required": list(CASES), "verdict": "PASS",
+        self.write(self.normal, {**self.identity(), "required": list(CASES), "verdict": "PASS",
                                  "results": [{"scenario_id": case, "verdict": "PASS", "violations": []} for case in CASES]})
+        for case in CASES:
+            paused = {"phase": "accepted_paused", "paused_check": True, "submit_count": 0, "pos_rows": [],
+                      "local": {"user_paused": True, "runtime": "사용자가 전송을 일시 중지함",
+                                "rows": [{"status": "PENDING", "receipt_id": None}]}}
+            observations = [paused]
+            if case in ("S03_am_kill", "S03_force_stop"):
+                observations.append({**paused, "phase": "restored_pending"})
+            if case == "S03_after_pos_commit":
+                for name in ("committed_ack_held", "restored_ack_held"):
+                    observations.append({**paused, "phase": name, "commit_window": True, "released_acks": 0,
+                                         "pos_rows": [{"request_id": "x", "receipt_id": "r"}]})
+            self.write(self.normal.parent / case / "result.json", {"source_commit": SOURCE, "scenario_id": case,
+                       "harness_version": 2, "verdict": "PASS", "violations": [],
+                       "observations": observations, "original_receipts": {"x": "r"}})
         self.write(self.mutants, {"source_commit": SOURCE, "verdict": "PASS", "results": [
             {"mutation": name, "base_commit": SOURCE, "scenario": scenario, "expected_violation": violation,
+             "apk_sha256": "b" * 64, "execution_identity": {**self.identity("b" * 64), "verdict": "FAIL"},
              "violations": [violation], "verdict": "KILLED", "build_exit": 0, "install_exit": 0, "scenario_exit": 1}
             for name, (scenario, violation) in MUTANTS.items()]})
         # Minimal bundle inputs. This fixture tests the gate, not APK or Android behaviour.
@@ -42,6 +57,12 @@ class CandidateGateTest(unittest.TestCase):
     def write(self, path, value):
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(json.dumps(value), encoding="utf-8")
+
+    def identity(self, digest=None):
+        digest = digest or sha256(self.root / APK)
+        identity = {"package_path": "/data/app/fixture/base.apk", "installed_sha256": digest, "build_sha256": digest}
+        return {"source_commit": SOURCE, "source_clean": True, "harness_version": 2,
+                "apk_identity": identity, "final_apk_identity": identity}
 
     def blocked(self, jobs=JOBS, source=SOURCE):
         with self.assertRaises((ValueError, KeyError, FileNotFoundError)):
@@ -116,6 +137,40 @@ class CandidateGateTest(unittest.TestCase):
     def test_empty_or_inconsistent_junit_cannot_look_successful(self):
         path = self.root / REPORTS["core_jvm"][0] / "TEST-fixture.xml"
         path.write_text('<testsuite tests="19" failures="0" errors="0" skipped="0"/>')
+        self.blocked()
+
+    def test_legacy_harness_dirty_source_or_different_installed_apk_blocks(self):
+        original = json.loads(self.normal.read_text())
+        for change in ({"harness_version": 1}, {"source_clean": False}, {"final_apk_identity": {}},
+                       {"apk_identity": {"build_sha256": sha256(self.root / APK), "installed_sha256": "b" * 64}}):
+            self.write(self.normal, {**original, **change})
+            self.blocked()
+
+    def test_missing_or_false_fault_window_blocks_despite_pass_summary(self):
+        path = self.normal.parent / "S03_after_pos_commit/result.json"
+        original = json.loads(path.read_text())
+        for mode in ("missing", "already_acked", "ack_released"):
+            record = copy.deepcopy(original)
+            if mode == "missing":
+                record["observations"].pop()
+            elif mode == "already_acked":
+                record["observations"][-1]["local"]["rows"][0]["status"] = "ACKNOWLEDGED"
+            else:
+                record["observations"][-1]["released_acks"] = 1
+            self.write(path, record)
+            self.blocked()
+
+    def test_pause_ignored_or_missing_third_mutant_blocks(self):
+        path = self.normal.parent / "S03_am_kill/result.json"
+        original = json.loads(path.read_text())
+        altered = copy.deepcopy(original)
+        altered["observations"][-1]["submit_count"] = 1
+        self.write(path, altered)
+        self.blocked()
+        self.write(path, original)
+        mutants = json.loads(self.mutants.read_text())
+        mutants["results"] = [r for r in mutants["results"] if r["mutation"] != "MUT03"]
+        self.write(self.mutants, mutants)
         self.blocked()
 
 

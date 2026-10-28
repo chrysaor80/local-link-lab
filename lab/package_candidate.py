@@ -12,12 +12,15 @@ import subprocess
 import tempfile
 import xml.etree.ElementTree as ET
 
+from .phases import paused_violations, commit_window
+
 APK = Path("app/build/outputs/apk/debug/app-debug.apk")
 CASES = ("S01", "S02", "S03_am_kill", "S03_force_stop", "S03_after_pos_commit", "C07_resume")
-MUTANTS = {"MUT01": ("S02", "POS_EXTRA_ID"), "MUT02": ("S01", "ACK_WITHOUT_POS")}
+MUTANTS = {"MUT01": ("S02", "POS_EXTRA_ID"), "MUT02": ("S01", "ACK_WITHOUT_POS"),
+           "MUT03": ("S03_am_kill", "SENT_WHILE_PAUSED")}
 REPORTS = {
     "core_jvm": ("core/build/test-results/test", 19, "callerDeadlineStillCancelsAndClosesSocket"),
-    "controller_jvm": ("app/build/test-results/testDebugUnitTest", 6, "failedProbePreservesUserPause"),
+    "controller_jvm": ("app/build/test-results/testDebugUnitTest", 7, "backgroundDuringProbePublishesNothingAndDoesNotDeliver"),
     "android_normal": ("artifacts/m1-android-tests", 4, "uiToRoomToTcpToPosAndBack"),
     "android_recovery": ("app/build/outputs/androidTest-results", 2, "probeDeadlineIsReportedNotLeftAsChecking"),
 }
@@ -70,6 +73,38 @@ def junit_counts(directory, minimum, required_name):
     return len(seen)
 
 
+def verify_identity(run, source, digest, verdict):
+    require(run["source_commit"] == source and run["source_clean"] is True and run["harness_version"] == 2,
+            "Execution must use a clean source and the reviewed v2 harness")
+    require(run["verdict"] == verdict and re.fullmatch(r"[0-9a-f]{64}", digest) is not None,
+            "Unexpected execution verdict or APK hash")
+    for key in ("apk_identity", "final_apk_identity"):
+        identity = run[key]
+        require(identity["installed_sha256"] == digest == identity["build_sha256"], "Installed APK identity differs")
+        require(identity["package_path"].startswith("/"), "Missing installed APK path")
+
+
+def verify_phases(record):
+    def phase(name):
+        found = [o for o in record["observations"] if o["phase"] == name]
+        require(found, f"Required fault checkpoint missing: {name}")
+        return found[-1]
+
+    required = ["accepted_paused"]
+    if record["scenario_id"] in ("S03_am_kill", "S03_force_stop"):
+        required.append("restored_pending")
+    for name in required:
+        o = phase(name)
+        require(o["paused_check"] is True and not paused_violations(o["local"], o["pos_rows"], o["submit_count"]),
+                "Pause preconditions were not established")
+        require(o["local"]["runtime"] == "사용자가 전송을 일시 중지함", "Paused worker checkpoint missing")
+    if record["scenario_id"] == "S03_after_pos_commit":
+        for name in ("committed_ack_held", "restored_ack_held"):
+            o = phase(name)
+            require(o["commit_window"] is True and commit_window(o["local"], o["pos_rows"],
+                    record["original_receipts"], o["released_acks"]), "Process-death ACK window was not established")
+
+
 def validate(root, source, jobs):
     require(re.fullmatch(r"[0-9a-f]{40}", source) is not None, "Full source SHA is required")
     for name in ("spec", "pos", "android"):
@@ -81,11 +116,17 @@ def validate(root, source, jobs):
               for name, (folder, minimum, required) in REPORTS.items()}
 
     normal = read_json(root / "artifacts/m2-normal/summary.json")
+    verify_identity(normal, source, before["apk_sha256"], "PASS")
     require(normal["source_commit"] == source and normal["verdict"] == "PASS", "Normal run did not pass this source")
     require(len(normal["required"]) == len(CASES) and set(normal["required"]) == set(CASES), "Normal scenario contract differs")
     results = normal["results"]
     require(len(results) == len(CASES) and {r["scenario_id"] for r in results} == set(CASES), "Missing/duplicate normal case")
     require(all(r["verdict"] == "PASS" and r["violations"] == [] for r in results), "Non-passing normal case")
+    for case in CASES:
+        record = read_json(root / "artifacts/m2-normal" / case / "result.json")
+        require(record["source_commit"] == source and record["scenario_id"] == case and record["harness_version"] == 2
+                and record["verdict"] == "PASS" and record["violations"] == [], "Scenario detail differs from summary")
+        verify_phases(record)
 
     mutants = read_json(root / "artifacts/m2-mutations/summary.json")
     require(mutants["source_commit"] == source and mutants["verdict"] == "PASS", "Mutation run did not pass this source")
@@ -97,6 +138,7 @@ def validate(root, source, jobs):
         require(result["verdict"] == "KILLED" and result["build_exit"] == 0 and result["install_exit"] == 0
                 and result["scenario_exit"] == 1, "Mutation failed for a non-verification reason")
         require(result["expected_violation"] == violation and violation in result["violations"], "Wrong mutation violation")
+        verify_identity(result["execution_identity"], source, result["apk_sha256"], "FAIL")
     return {"junit_pass_counts": counts, "normal_scenarios": len(CASES), "mutations_killed": len(MUTANTS),
             "apk_sha256": before["apk_sha256"]}
 

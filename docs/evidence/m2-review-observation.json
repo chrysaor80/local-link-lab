@@ -481,7 +481,23 @@
         ],
         "rechecked_violations": [
           "POS_EXTRA_ID"
-        ]
+        ],
+        "baseline": [
+          {
+            "request_id": "e3f74571-f1ab-494b-b542-69b6eb0d5d32",
+            "pos_db_id": "fc0977d2-0c28-4933-971c-3a9fa2e56cf4",
+            "item_code": "DEMO_COFFEE",
+            "quantity": 1,
+            "unit_price_krw": 3000
+          }
+        ],
+        "pos_db_id": "fc0977d2-0c28-4933-971c-3a9fa2e56cf4",
+        "final": false,
+        "original_receipts": {
+          "e3f74571-f1ab-494b-b542-69b6eb0d5d32": "50472972-9aec-43d6-aed6-7cd647cb487d",
+          "1d3822bc-4468-4fe0-8336-6ab91bb72350": "fadc47a4-4423-4e96-b85e-9cfa0c67b997"
+        },
+        "recheck_scope": "Interim data-only recheck (final=False); run violations also include final=True checks. Phase preconditions were absent in harness v1."
       }
     },
     {
@@ -514,9 +530,25 @@
         "pos_rows": [],
         "rechecked_violations": [
           "ACK_WITHOUT_POS"
-        ]
+        ],
+        "baseline": [
+          {
+            "request_id": "f9f79ec2-cd68-44fa-a6b3-384025424867",
+            "pos_db_id": "226cb701-bb52-4eeb-a059-0fc32696c5e6",
+            "item_code": "DEMO_COFFEE",
+            "quantity": 1,
+            "unit_price_krw": 3000
+          }
+        ],
+        "pos_db_id": "226cb701-bb52-4eeb-a059-0fc32696c5e6",
+        "final": false,
+        "original_receipts": {},
+        "recheck_scope": "Interim data-only recheck (final=False); run violations also include final=True checks. Phase preconditions were absent in harness v1."
       }
     }
   ],
-  "debug_apk_sha256": "00dc0370796d2ec211e3b4b8cab0e7d7a9fadf984a461a8120a8abe32cd3fe55"
+  "debug_apk_sha256": "00dc0370796d2ec211e3b4b8cab0e7d7a9fadf984a461a8120a8abe32cd3fe55",
+  "review_limitations": [
+    "M2-01: harness v1 did not assert the S03 PENDING/pause/ACK-window preconditions. Historical PASS is not proof of those preconditions."
+  ]
 }

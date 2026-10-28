@@ -1,0 +1,175 @@
+diff --git a/app/src/test/java/dev/locallinklab/app/ProbeCancellationRedTeamTest.kt b/app/src/test/java/dev/locallinklab/app/ProbeCancellationRedTeamTest.kt
+new file mode 100644
+index 0000000..365141d
+--- /dev/null
++++ b/app/src/test/java/dev/locallinklab/app/ProbeCancellationRedTeamTest.kt
+@@ -0,0 +1,89 @@
++package dev.locallinklab.app
++
++import android.app.Application
++import android.os.Looper
++import androidx.lifecycle.Lifecycle
++import androidx.lifecycle.LifecycleOwner
++import androidx.lifecycle.LifecycleRegistry
++import androidx.room.Room
++import androidx.test.core.app.ApplicationProvider
++import org.junit.After
++import org.junit.Assert.*
++import org.junit.Before
++import org.junit.Test
++import org.junit.runner.RunWith
++import org.robolectric.RobolectricTestRunner
++import org.robolectric.Shadows.shadowOf
++import org.robolectric.annotation.Config
++import java.net.InetAddress
++import java.net.ServerSocket
++import java.time.Duration
++import java.util.UUID
++import kotlin.concurrent.thread
++
++/**
++ * M2 red-team regression written by the reviewer against 127ea32 (expected PASS).
++ * Same harness as ControllerRobolectricTest: real Controller/Room/TcpTransport + POS on 127.0.0.1:18765.
++ */
++@RunWith(RobolectricTestRunner::class)
++@Config(sdk = [34], application = Application::class)
++class ProbeCancellationRedTeamTest {
++    private val posPort = System.getProperty("pos.port") ?: "18765"
++    private lateinit var db: LinkDatabase
++    private lateinit var controller: LinkController
++    private val owner = object : LifecycleOwner {
++        private val registry = LifecycleRegistry(this)
++        override val lifecycle: Lifecycle get() = registry
++    }
++
++    @Before fun setUp() {
++        db = Room.inMemoryDatabaseBuilder(ApplicationProvider.getApplicationContext<Application>(), LinkDatabase::class.java).build()
++        controller = LinkController(Repository(db))
++        controller.onStart(owner)
++        val sequence = controller.connect("127.0.0.1", posPort)
++        assertTrue("initial probe completed", waitFor(30_000) {
++            controller.probeResult.value?.sequence == sequence && controller.settings.value != null && !controller.busy.value
++        })
++    }
++
++    @After fun tearDown() {
++        controller.close()
++        pump(300)
++        db.close()
++    }
++
++    private fun step() { shadowOf(Looper.getMainLooper()).idleFor(Duration.ofMillis(20)); Thread.sleep(20) }
++    private fun pump(ms: Long) { val end = System.nanoTime() + ms * 1_000_000; while (System.nanoTime() < end) step() }
++    private fun waitFor(ms: Long, condition: () -> Boolean): Boolean {
++        val end = System.nanoTime() + ms * 1_000_000
++        while (System.nanoTime() < end) { if (condition()) return true; step() }
++        return condition()
++    }
++
++    /** A probe cancelled by ON_STOP publishes no result, keeps settings, sends nothing until ON_START. */
++    @Test fun backgroundDuringProbePublishesNothingAndDoesNotDeliver() {
++        ServerSocket(0, 1, InetAddress.getByName("127.0.0.1")).use { silent ->
++            thread(isDaemon = true) { runCatching { silent.accept().use { Thread.sleep(9000) } } }
++            val before = controller.probeResult.value
++            val saved = controller.settings.value
++            val sequence = controller.connect("127.0.0.1", silent.localPort.toString())
++            assertTrue("probe must start", waitFor(3_000) { controller.busy.value })
++            controller.onStop(owner)
++            assertTrue("probe must stop", waitFor(3_000) { !controller.busy.value })
++            pump(6_000) // past the cancelled probe's own 5 s deadline
++            assertEquals("a cancelled probe must not publish a result", before, controller.probeResult.value)
++            assertNotEquals(sequence, controller.probeResult.value?.sequence)
++            assertEquals(saved, controller.settings.value)
++            assertEquals("백그라운드 · 전송 중지", controller.runtime.value)
++            val id = UUID.randomUUID().toString()
++            controller.accept(id)
++            assertTrue(waitFor(5_000) { controller.orders.value.any { it.requestId == id } && !controller.busy.value })
++            pump(1_500)
++            assertEquals("no delivery while stopped", "PENDING", controller.orders.value.single { it.requestId == id }.status)
++            controller.onStart(owner)
++            assertTrue("delivery resumes on ON_START", waitFor(15_000) {
++                controller.orders.value.single { it.requestId == id }.status == "ACKNOWLEDGED"
++            })
++        }
++    }
++}
+diff --git a/lab/m2_redteam_evidence.py b/lab/m2_redteam_evidence.py
+new file mode 100644
+index 0000000..858e556
+--- /dev/null
++++ b/lab/m2_redteam_evidence.py
+@@ -0,0 +1,74 @@
++"""M2 red-team evidence script written by the reviewer against 127ea32 (not a product test).
++
++python -m lab.m2_redteam_evidence
++
++E1 models the S03_after_pos_commit hook in lab/android_run.py: after_commit holds the FIRST connection's
++ACK. A retry of the same request takes the existing-row path (created=False), which skips the hook, so the
++app can durably record the original receipt before force-stop if the harness is slower than one attempt
++deadline. Nothing in android_run asserts that the order is still PENDING when the process is killed.
++
++E2 shows that the observations used by S03 cannot tell a restored PENDING order from one that was
++already delivered before the kill (e.g. by a build that ignores user_paused): evaluate(final=False)
++returns no violation for both, and the only pause check is the persisted flag, not the behaviour.
++"""
++import asyncio
++import json
++from pathlib import Path
++import tempfile
++import uuid
++
++from pos.server import PosServer
++from pos.store import Store
++from pos.wire import decode, encode
++from .verdict import evaluate
++
++
++async def held_ack_retry():
++    with tempfile.TemporaryDirectory() as work:
++        store = Store(Path(work) / "pos.db")
++        release, committed = asyncio.Event(), asyncio.Event()
++
++        async def after_commit(request, response):  # same shape as the S03_after_pos_commit branch
++            committed.set()
++            await release.wait()
++            return True
++
++        server = await PosServer(store, after_commit=after_commit).start()
++        request = dict(version=1, type="submit_order", pos_db_id=store.db_id, request_id=str(uuid.uuid4()),
++                       order=dict(item_code="DEMO_COFFEE", quantity=1, unit_price_krw=3000))
++        try:
++            _, first = await asyncio.open_connection("127.0.0.1", server.port)
++            first.write(encode(request)); await first.drain()
++            await asyncio.wait_for(committed.wait(), 5)
++            first.close()  # the app's own attempt deadline closes the first socket
++            reader, retry = await asyncio.open_connection("127.0.0.1", server.port)
++            retry.write(encode(request)); await retry.drain()
++            try:
++                reply = decode(await asyncio.wait_for(reader.readuntil(b"\n"), 1.0))
++            except asyncio.TimeoutError:
++                reply = None
++            retry.close()
++            return {"ack_still_held": not release.is_set(), "retry_reply_type": reply and reply["type"],
++                    "retry_got_receipt": bool(reply and reply.get("receipt_id"))}
++        finally:
++            release.set()
++            await server.close()
++
++
++def restore_phase_blind_spot():
++    rid, db, receipt = str(uuid.uuid4()), str(uuid.uuid4()), str(uuid.uuid4())
++    baseline = [dict(request_id=rid, pos_db_id=db, item_code="DEMO_COFFEE", quantity=1, unit_price_krw=3000)]
++    pending_local = [{**baseline[0], "status": "PENDING", "receipt_id": None}]
++    delivered_local = [{**baseline[0], "status": "ACKNOWLEDGED", "receipt_id": receipt}]
++    delivered_pos = [dict(request_id=rid, receipt_id=receipt, item_code="DEMO_COFFEE", quantity=1, unit_price_krw=3000)]
++    return {
++        "restored_pending_when_really_pending": evaluate(baseline, pending_local, [], db, final=False),
++        "restored_pending_when_already_delivered": evaluate(baseline, delivered_local, delivered_pos, db, final=False),
++        "final_when_already_delivered": evaluate(baseline, delivered_local, delivered_pos, db, final=True,
++                                                 original_receipts={rid: receipt}),
++    }
++
++
++if __name__ == "__main__":
++    print(json.dumps({"E1_held_ack_retry": asyncio.run(held_ack_retry()),
++                      "E2_restore_phase": restore_phase_blind_spot()}, indent=2))

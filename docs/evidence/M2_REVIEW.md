@@ -1,5 +1,7 @@
 # M1 독립 검토 반영 후 M2 재검증
 
+후속 OPUS M2-01 검토에서 당시 하네스가 S03의 PENDING·중지 중 미전송·ACK 보류 전제를 검사하지 않았음이 확인됐다. 아래 PASS 기록은 역사적 실행 결과이며 이 전제의 검증을 뜻하지 않는다. [처리 기록](../reviews/M2_RESPONSE.md)에 수정과 재검증을 분리해 기록한다.
+
 2026-10-28 UTC. 고정 구현은 `127ea3232bd6a6dc9b8c1b54eca78b3e092127d7`이다. [CI 40629074288](https://github.com/chrysaor80/local-link-lab/actions/runs/40629074288) 전체 SUCCESS. M1의 필수 수정과 회귀 검사를 통합한 같은 코드에서 기존 M2 장애·결함 검출을 다시 실행했다. OPUS의 수정본 또는 M2 재승인을 뜻하지 않는다.
 
 CI는 PR merge `85d9da1d899852932582c3dee5129e33733e7db4`를 checkout했다. 구현 HEAD와 두 Git tree가 모두 `c8840faa918c0532f1a2974b3ec9974789e0e33a`로 같음을 확인했다. 외부 실행기의 source_commit에는 이 실제 checkout SHA가 남아 있다. 후속 문서 커밋은 구현을 변경하지 않는다.
