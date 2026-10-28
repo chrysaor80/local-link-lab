@@ -32,12 +32,12 @@ JDK 17, Android SDK 35, Python 3.10 이상이 필요합니다. `local.properties
 ```powershell
 py -m unittest pos.test_pos -v
 .\gradlew.bat :core:test :app:assembleDebug
-py -m pos.server --db artifacts/pos.db --host 0.0.0.0 --port 8765
+py -m pos.server --db artifacts/pos.db --host 192.168.0.10 --port 8765
 ```
 
 `app/build/outputs/apk/debug/app-debug.apk`를 설치하고, 앱에서 PC의 LAN IPv4와 포트 `8765`를 입력해 **연결 확인 → 기기에 주문 접수**를 실행합니다. 두 번째 주문은 **새 주문 준비**로 별도 ID를 만듭니다. `POS 저장 확인`은 서버 영수증을 Android DB에도 저장한 뒤 표시됩니다. 주소·방화벽·USB 확인 절차는 [Windows 안내](docs/WINDOWS.md)를 참고하세요.
 
-에뮬레이터에서는 호스트 주소 `10.0.2.2`, USB 포워딩에서는 `adb reverse tcp:8765 tcp:8765` 후 `127.0.0.1`을 사용합니다. 이 경로들은 Wi-Fi LAN 검증과 구분합니다. 서버는 기본적으로 `127.0.0.1`에만 바인딩하며, 위 `0.0.0.0` 설정은 통제된 LAN 시연용입니다.
+에뮬레이터에서는 호스트 주소 `10.0.2.2`, USB 포워딩에서는 `adb reverse tcp:8765 tcp:8765` 후 `127.0.0.1`을 사용합니다. 이 경로들은 Wi-Fi LAN 검증과 구분합니다. 서버는 기본적으로 `127.0.0.1`에만 바인딩합니다. 위 `192.168.0.10`은 예시이므로 `ipconfig`로 확인한 PC의 실제 LAN IPv4로 바꾸세요.
 
 합성 주문만 사용하세요. 실결제 승인, TLS/인증, 자동 검색, 백그라운드 지속 전송은 포함하지 않습니다. 현재 최소 버전은 Android 6/API 23으로 잠정 설정했으며 사용자 기기 호환성은 확인 전입니다.
 

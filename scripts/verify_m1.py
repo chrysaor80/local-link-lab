@@ -18,3 +18,4 @@ for key in ("request_id", "item_code", "quantity", "unit_price_krw"):
 assert row["receipt_id"] == result["receipt_id"]
 assert result["status"] == "ACKNOWLEDGED"
 print("M1 PASS: UI intent, Room ACK, entire POS row set and receipt match (emulator NAT).")
+print(json.dumps({"baseline": baseline, "android_result": result, "pos_rows": rows}, ensure_ascii=True))

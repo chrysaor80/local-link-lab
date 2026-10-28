@@ -55,7 +55,7 @@ jobs:
           arch: x86_64
           disable-animations: true
           script: |
-            ./gradlew :app:connectedDebugAndroidTest --stacktrace
+            ./gradlew :app:connectedDebugAndroidTest -Pandroid.injected.androidTest.leaveApksInstalledAfterRun=true --stacktrace
             adb exec-out run-as dev.locallinklab.app cat files/m1-baseline.json > artifacts/m1-baseline.json
             adb exec-out run-as dev.locallinklab.app cat files/m1-result.json > artifacts/m1-result.json
             adb logcat -d > artifacts/logcat.txt
