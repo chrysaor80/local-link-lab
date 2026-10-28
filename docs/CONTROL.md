@@ -7,7 +7,7 @@
 | 단계 | 산출물 | 현재 상태 | 종료 기준 |
 |---|---|---|---|
 | M0 | 범위·프로토콜·시나리오·판단 기록·검토 요청 | OPUS 검토 반영, M1 진행 | 명세 자체 검사, OPUS의 범위·계약 검토 반영 |
-| M1 | Android → POS 실제 왕복 | 구현 준비 중 | 실제 앱과 Room, 실제 TCP와 POS DB, UI 결과 대조 |
+| M1 | Android → POS 실제 왕복 | 구현 및 로컬 빌드 완료, CI 에뮬레이터 검증 대기 | 실제 앱과 Room, 실제 TCP와 POS DB, UI 결과 대조 |
 | M2 | 장애 3종과 핵심 검증, 결함 사본 2종 | 예정 | 시나리오별 근거 확보, OPUS 검토 반영 |
 | M3 | CI·APK·영상·공개 설명 | 예정 | 실행 증거와 한계가 일치하는 지원용 산출물 |
 
@@ -20,21 +20,25 @@
 
 ## 다음 작업
 
-1. M0의 필수 지적을 반영했다. 별도 문서 검토 왕복을 반복하지 않고 M1 구현 결과에 다음 검토를 묶는다.
-2. M1에서 최소 Android 빌드를 먼저 실행해 도구 버전·SDK·저장 권한·LAN 접속을 확인한다.
-3. Android 기기 확보 시 Windows에서 모델·API 레벨을 기록한다. 확보 전에는 에뮬레이터 사용 여부를 명시한다.
-4. 실제 주문 한 건 왕복 후 M1 검토 요청을 묶는다. 계약을 바꿀 필요가 있으면 근거와 영향 시나리오를 함께 적는다.
+1. M1 CI에서 API 29 에뮬레이터 UI·Room·TCP·호스트 POS DB를 대조한다.
+2. 성공한 커밋과 실행 URL을 고정해 OPUS에 M1 검토를 요청한다.
+3. M2에서 단절·응답 유실·OS 프로세스 종료와 결함 사본 2종을 검증한다.
+4. 기기 확보 후 Windows와 삼성 기기 모델/API를 기록하고 실제 LAN을 확인한다.
 
-## 미해결 사항
+## 실행 근거
 
-- 원격 독립 저장소: 사용자가 `chrysaor80/local-link-lab` 공개 저장소를 생성했다. GitHub 연결 도구로 명세와 스크립트를 올린다. CLI의 GitHub API 접근은 사용할 수 없으므로 연결 도구를 사용한다.
-- Android 빌드 환경: 현재 실행 환경에 JDK 17과 Android SDK 35·adb를 준비함. 앱 빌드·기기 테스트를 완료했다고 표시하지 않는다.
-- OPUS 직접 실행 연결은 없음. 검토자는 저장소/커밋 또는 전달 묶음을 읽고 결과를 이 채팅에 전달한다.
+- M0 검토 수정: `0b572af` (main). [처리 내역](reviews/M0_RESPONSE.md).
+- M1 작업 브랜치: `codex/m1-first-roundtrip`.
+- Linux 로컬: Python 3.11, JDK 17.0.21, SDK 35.
+- `python scripts/check_spec.py`: 14 구조 예제, 31 원문 예제, 본문 JSON 4개, 시나리오 12개, 결함 계획 2개. PASS.
+- `python -m unittest pos.test_pos -v`: 7개 PASS. 실제 loopback TCP와 SQLite; Android 경로가 아님.
+- `:core:test`: 9개 PASS. 공유 원문 31개, 정책 대역, 실제 소켓 취소/제한 시간.
+- `:app:assembleDebug`, `:app:assembleDebugAndroidTest`, `:app:lintDebug`: PASS. APK 생성은 Android 실행 성공을 뜻하지 않음.
+- GitHub Actions Linux/Windows POS, API 29 에뮬레이터: 실행 대기.
+- Android 프로세스 종료, 결함 사본 2종, 삼성 실기기/LAN: NOT_RUN.
 
-## 이번 작업의 실행 증거
+Room DB 재열기 검사는 OS 프로세스 종료 검증으로 간주하지 않는다. 에뮬레이터 정상 왕복의 판정은 UI에서 접수 전에 기록한 기준값, Room의 ACK 결과, 새 POS DB의 전체 행 집합과 영수증을 비교한다. 실행 누락은 성공으로 처리하지 않는다.
 
-`python scripts/check_spec.py` 성공: 구조 예제 14개, 원문 예제 31개, 본문 JSON 4개, 시나리오 정의 12개, 결함 사본 계획 2개, 내부 링크 11개. 공개 출처·비공개 링크 점검은 구현 담당의 수동 점검이며 검사 스크립트의 자동 기능으로 주장하지 않는다. 제품 테스트는 아직 실행하지 않았다.
+## 협업과 환경
 
-검토자는 전달된 원격 커밋을 기준으로 읽는다. 오프라인 전달 묶음의 `REVISION.txt`에는 그 묶음의 기준 커밋을 기록한다. 이 검사는 메시지 구조와 문서 참조의 일관성에 한정된다. APK 빌드, TCP 왕복, Android 종료 복원, 결함 검출은 모두 NOT_RUN이다.
-
-`spec.yml`은 명세 검사만 실행하는 CI 설정이다. GitHub Actions의 실제 실행 여부는 해당 커밋의 Actions 결과를 확인한다. v0.1 제품 테스트·APK 생성 조건은 M3에서 구현한다.
+원격 저장소 업로드는 Git push로 가능하다. GitHub API와 CI 조회는 연결 도구를 사용한다. 로컬에는 KVM이 없어 Android 실행은 CI 에뮬레이터로 확인한다. OPUS 직접 연결은 없으므로 고정 커밋의 검토 요청을 사용자가 전달한다. 공개 출처·비공개 링크 점검은 구현 담당의 수동 점검이다.

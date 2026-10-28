@@ -121,7 +121,7 @@ def check():
     print(f"SPEC CHECK OK: {len(examples)} wire examples, {len(raw_examples)} raw examples, "
           f"{len(doc_examples)} document examples, {len(scenarios)} scenario definitions, "
           f"{len(catalog['mutations'])} mutation plans, {links} local links")
-    print("Product scenarios: NOT_RUN. Android/SDK/POS implementations: NOT_IMPLEMENTED.")
+    print("This command checks specification consistency only; runtime evidence is tracked in docs/CONTROL.md.")
     return 0
 
 

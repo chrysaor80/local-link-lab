@@ -7,12 +7,12 @@
 | 구성 | 결정 |
 |---|---|
 | 사용자 환경 | Windows PC, 확보 예정인 삼성 Android 기기. 기종·OS는 아직 확인 전 |
-| 앱 | Kotlin, Compose, ViewModel, Flow, Room. 화면은 연결 설정·주문·진단의 최소 구성 |
+| 앱 | Kotlin, Compose, Flow, Room. 프로세스 단위 전송 Controller와 저장 가능한 화면 초안을 분리. 화면은 연결 설정·주문·진단의 최소 구성 |
 | SDK | Android와 분리한 Kotlin 핵심 정책 + TCP·Room 어댑터. 배포용 SDK 패키징은 후속 |
 | POS | Python 표준 라이브러리 TCP 서버와 SQLite. 별도 웹 대시보드는 제외 |
 | 통신 | 숫자 IPv4와 포트 직접 입력, TCP 한 방식, 단말 1대·POS DB 1개 |
 | 실행 수명 | 앱이 전경에 있을 때 전송. 백그라운드 전환 시 네트워크 작업을 멈추고 요청을 보존 |
-| 버전 | M1 환경 확인 때 호환되는 JDK·Gradle·Kotlin·Android 의존성 조합을 고정. 기기 확인 전 최소 SDK를 확정하지 않음 |
+| 버전 | JDK 17, Gradle 8.11.1, AGP 8.9.2, Kotlin 2.1.20, compile/target SDK 35. minSdk 23 잠정값이며 실기기 확인 전 지원 검증으로 주장하지 않음 |
 
 ## 필수 기능
 
