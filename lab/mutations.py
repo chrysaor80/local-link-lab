@@ -13,11 +13,14 @@ import sys
 import tempfile
 
 from .android_run import CASES
+from .identity import clean_source
 
 ENGINE = Path("core/src/main/kotlin/dev/locallinklab/core/DeliveryEngine.kt")
+CONTROLLER = Path("app/src/main/java/dev/locallinklab/app/LinkApplication.kt")
 MUTANTS = {
-    "MUT01": {"scenario": "S02", "expected": "POS_EXTRA_ID"},
-    "MUT02": {"scenario": "S01", "expected": "ACK_WITHOUT_POS"},
+    "MUT01": {"scenario": "S02", "expected": "POS_EXTRA_ID", "file": ENGINE},
+    "MUT02": {"scenario": "S01", "expected": "ACK_WITHOUT_POS", "file": ENGINE},
+    "MUT03": {"scenario": "S03_am_kill", "expected": "SENT_WHILE_PAUSED", "file": CONTROLLER},
 }
 
 
@@ -28,6 +31,8 @@ def replace_once(text, old, new):
 
 
 def mutate(text, name):
+    if name == "MUT03":
+        return replace_once(text, '                    if (config.userPaused) { _runtime.value = "사용자가 전송을 일시 중지함"; return@collectLatest }\n', "")
     if name == "MUT01":
         text = replace_once(text, "val pending = outbox.nextPending()", "var pending = outbox.nextPending()")
         return replace_once(text, '                event("전송 중 (${attempt + 1}/$attempts)")',
@@ -51,7 +56,7 @@ def run_logged(argv, *, cwd, log, timeout):
 
 def main(args):
     root = Path.cwd()
-    sha = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+    sha = clean_source()
     baseline = json.loads(Path(args.normal_summary).read_text(encoding="utf-8"))
     if baseline["source_commit"] != sha or baseline["verdict"] != "PASS" or set(baseline["required"]) != set(CASES):
         raise RuntimeError("The same base revision must pass every normal fault case first")
@@ -61,6 +66,8 @@ def main(args):
     output.mkdir(parents=True, exist_ok=False)
     outcomes = []
     normal_apk = root / "app/build/outputs/apk/debug/app-debug.apk"
+    if baseline.get("harness_version") != 2 or baseline.get("apk_identity", {}).get("build_sha256") != hashlib.sha256(normal_apk.read_bytes()).hexdigest():
+        raise RuntimeError("Normal evidence must bind the installed APK to the clean baseline build")
     try:
         for name, config in MUTANTS.items():
             folder = output / name
@@ -71,10 +78,11 @@ def main(args):
                 target = Path(temp) / "repo"
                 shutil.copytree(root, target, ignore=shutil.ignore_patterns(
                     ".git", ".gradle", ".kotlin", "build", "artifacts", "local.properties", ".idea", ".venv", "__pycache__"))
-                original = (target / ENGINE).read_text(encoding="utf-8")
+                source_file = config["file"]
+                original = (target / source_file).read_text(encoding="utf-8")
                 changed = mutate(original, name)
-                (target / ENGINE).write_text(changed, encoding="utf-8")
-                patch = "".join(difflib.unified_diff(original.splitlines(True), changed.splitlines(True), fromfile=str(ENGINE), tofile=str(ENGINE)))
+                (target / source_file).write_text(changed, encoding="utf-8")
+                patch = "".join(difflib.unified_diff(original.splitlines(True), changed.splitlines(True), fromfile=str(source_file), tofile=str(source_file)))
                 (folder / "mutation.diff").write_text(patch, encoding="utf-8")
                 outcome["patch_sha256"] = hashlib.sha256(patch.encode()).hexdigest()
                 gradle = str(target / ("gradlew.bat" if os.name == "nt" else "gradlew"))
@@ -88,14 +96,17 @@ def main(args):
                     if install == 0:
                         # Run the ORIGINAL harness and verdict, not a copy altered by the mutation.
                         code = run_logged([sys.executable, "-m", "lab.android_run", "--out", str(folder / "execution"),
-                                           "--serial", args.serial, "--scenario", config["scenario"], "--source-commit", sha],
+                                           "--serial", args.serial, "--scenario", config["scenario"], "--source-commit", sha, "--apk", str(apk)],
                                           cwd=root, log=folder / "run.log", timeout=120)
                         outcome["scenario_exit"] = code
                         report = folder / "execution" / config["scenario"] / "result.json"
                         if report.exists():
                             result = json.loads(report.read_text(encoding="utf-8"))
+                            outcome["execution_identity"] = json.loads((folder / "execution/summary.json").read_text(encoding="utf-8"))
                             outcome["violations"] = result["violations"]
-                            if code == 1 and result["verdict"] == "FAIL" and config["expected"] in result["violations"]:
+                            if (code == 1 and result["verdict"] == "FAIL"
+                                    and outcome["execution_identity"]["verdict"] == "FAIL"
+                                    and config["expected"] in result["violations"]):
                                 outcome["verdict"] = "KILLED"
                             elif code == 0 and result["verdict"] == "PASS":
                                 outcome["verdict"] = "SURVIVED"

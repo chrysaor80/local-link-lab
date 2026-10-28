@@ -12,13 +12,14 @@ from datetime import datetime, timezone
 import json
 from pathlib import Path
 import sqlite3
-import subprocess
 import time
 import uuid
 
 from pos.server import PosServer
 from pos.store import Store
 from .verdict import evaluate, summarize
+from .identity import APK, clean_source, installed_apk
+from .phases import paused_violations, commit_window
 
 PACKAGE = "dev.locallinklab.app"
 CASES = ("S01", "S02", "S03_am_kill", "S03_force_stop", "S03_after_pos_commit", "C07_resume")
@@ -41,7 +42,7 @@ class Adb:
         self.serial = serial
         self.history = []
 
-    async def run(self, *args, timeout=20, check=True):
+    async def run(self, *args, timeout=20, check=True, binary=False):
         self.history.append({"at": now(), "command": ["adb", *args]})
         proc = await asyncio.create_subprocess_exec("adb", "-s", self.serial, *args,
                                                     stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
@@ -53,7 +54,7 @@ class Adb:
         text = out.decode("utf-8", errors="replace").strip()
         if check and proc.returncode:
             raise Blocked(f"adb failed ({proc.returncode}): {args[:3]}: {err.decode(errors='replace')}")
-        return text
+        return out if binary else text
 
     async def control(self, command, **values):
         token = str(uuid.uuid4())
@@ -104,7 +105,7 @@ def pos_rows(store):
 
 async def run_case(adb, scenario, folder, source_sha):
     folder.mkdir(parents=True, exist_ok=False)
-    record = {"scenario_id": scenario, "source_commit": source_sha, "execution_level": "ANDROID_EXTERNAL",
+    record = {"scenario_id": scenario, "source_commit": source_sha, "harness_version": 2, "execution_level": "ANDROID_EXTERNAL",
               "network_path": "emulator-nat", "started_at": now(), "verdict": "BLOCKED", "events": [], "violations": []}
     commands_start = len(adb.history)
     store = Store(folder / "pos.db")
@@ -120,12 +121,16 @@ async def run_case(adb, scenario, folder, source_sha):
     first_drop = True
     other_store = Store(folder / "other-pos.db") if scenario == "C07_resume" else None
     other_submits = 0
+    submit_count = 0
+    released_acks = 0
 
     def event(name, **details):
         record["events"].append({"event": name, "at": now(), **details})
 
     async def before_submit(request):
-        nonlocal other_submits
+        nonlocal other_submits, submit_count
+        submit_count += 1
+        event("SUBMIT_RECEIVED", request_id=request["request_id"], count=submit_count)
         if other_store is not None and server.store is other_store:
             other_submits += 1
         if before_blocked:
@@ -143,22 +148,46 @@ async def run_case(adb, scenario, folder, source_sha):
             first_drop = False
             event("ACK_DROPPED", request_id=request["request_id"])
             return False
+        return True
+
+    async def before_ack(request, response):
+        nonlocal released_acks
         if scenario == "S03_after_pos_commit":
             event("ACK_HELD", request_id=request["request_id"])
             await allow_ack.wait()
+        released_acks += 1
+        event("ACK_RELEASED", request_id=request["request_id"])
         return True
 
-    server = await PosServer(store, before_submit=before_submit, after_commit=after_commit).start()
+    server = await PosServer(store, before_submit=before_submit, after_commit=after_commit, before_ack=before_ack).start()
     last_snapshot = None
 
-    async def observe(label, *, final=False):
+    async def observe(label, *, final=False, paused=False, require_window=False):
         nonlocal last_snapshot
         last_snapshot = await adb.control("snapshot")
         rows = pos_rows(store)
         violations = evaluate(baseline, last_snapshot["rows"], rows, store.db_id,
                               final=final, original_receipts=receipts)
-        record["observations"].append({"phase": label, "at": now(), "local": last_snapshot, "pos_rows": rows, "violations": violations})
+        if paused:
+            violations += paused_violations(last_snapshot, rows, submit_count)
+        window = commit_window(last_snapshot, rows, receipts, released_acks) if require_window else None
+        record["observations"].append({"phase": label, "at": now(), "local": last_snapshot, "pos_rows": rows,
+                                       "submit_count": submit_count, "released_acks": released_acks,
+                                       "final": final, "paused_check": paused, "commit_window": window,
+                                       "violations": sorted(set(violations))})
+        if require_window and not window:
+            raise Blocked("Fault window missed: expected PENDING, one committed POS row and every ACK held")
         return violations
+
+    async def observe_paused(label):
+        # Observe worker readiness as well as persisted settings. A flag alone proves no behaviour.
+        deadline = time.monotonic() + 8
+        while time.monotonic() < deadline:
+            violations = await observe(label, paused=True)
+            if violations or last_snapshot["runtime"] == "사용자가 전송을 일시 중지함":
+                return violations
+            await asyncio.sleep(0.1)
+        raise Blocked("Paused foreground worker did not reach an observable checkpoint")
 
     record["observations"] = []
     try:
@@ -173,12 +202,13 @@ async def run_case(adb, scenario, folder, source_sha):
         await adb.control("configure", host="10.0.2.2", port=server.port)
         await adb.control("pause")
         admission = await adb.control("accept", request_id=baseline[0]["request_id"])
-        if not admission["rows"] or admission["rows"][0]["status"] != "PENDING":
-            raise Blocked("Acceptance did not leave a committed pending order")
+        if not admission["rows"]:
+            raise Blocked("Acceptance did not leave a committed order")
         event("LOCAL_COMMITTED", request_id=baseline[0]["request_id"])
         save(folder / "admission.json", admission)
+        record["violations"] += await observe_paused("accepted_paused")
 
-        if scenario in ("S03_am_kill", "S03_force_stop"):
+        if not record["violations"] and scenario in ("S03_am_kill", "S03_force_stop"):
             if scenario == "S03_am_kill":
                 await adb.run("shell", "input", "keyevent", "KEYCODE_HOME")
                 deadline = time.monotonic() + 5
@@ -201,10 +231,7 @@ async def run_case(adb, scenario, folder, source_sha):
             if not new or new == old:
                 raise Blocked("No new Android PID after explicit relaunch")
             event("EXPLICIT_RELAUNCH", pid=new)
-            snapshot = await adb.control("snapshot")
-            if not snapshot["user_paused"]:
-                record["violations"] = ["USER_PAUSE_LOST"]
-            record["violations"] += await observe("restored_pending")
+            record["violations"] += await observe_paused("restored_pending")
         if not record["violations"]:
             if scenario == "C07_resume":
                 server.store = other_store
@@ -231,23 +258,29 @@ async def run_case(adb, scenario, folder, source_sha):
                 record["violations"] += await observe("request_blocked")
                 before_blocked = False
                 event("CONNECTION_DELIVERY_RESTORED")
+                # Observation latency must not consume the recovery attempt budget.
+                # Explicit recovery also works if a slow ADB host exhausted the old worker.
+                await adb.control("resume")
+                event("RECOVERY_BUDGET_RESTARTED")
             elif scenario == "S02":
                 await asyncio.wait_for(committed.wait(), 8)
             elif scenario == "S03_after_pos_commit":
                 await asyncio.wait_for(committed.wait(), 8)
-                record["violations"] += await observe("committed_ack_held")
+                record["violations"] += await observe("committed_ack_held", require_window=True)
                 old = await adb.pid()
                 if not old:
                     raise Blocked("Missing original PID")
                 await adb.run("shell", "am", "force-stop", PACKAGE)
                 await adb.wait_dead(old)
                 event("OLD_PROCESS_TERMINATED", pid=old, method="force-stop")
-                allow_ack.set()
                 await adb.launch()
                 new = await adb.pid()
                 if not new or new == old:
                     raise Blocked("No new Android PID after explicit relaunch")
                 event("EXPLICIT_RELAUNCH", pid=new)
+                record["violations"] += await observe("restored_ack_held", require_window=True)
+                allow_ack.set()
+                event("ACK_BARRIER_RELEASED")
 
         deadline = time.monotonic() + 35
         while not record["violations"] and time.monotonic() < deadline:
@@ -283,14 +316,31 @@ async def run_case(adb, scenario, folder, source_sha):
 async def main(args):
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
-    sha = args.source_commit or subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
     adb = Adb(args.serial)
+    try:
+        sha = clean_source()
+        if args.source_commit and args.source_commit != sha:
+            raise ValueError("Mutation base differs from the harness checkout")
+        identity = await installed_apk(adb, args.apk)
+    except (ValueError, OSError, Blocked) as exc:
+        save(out / "summary.json", {"verdict": "BLOCKED", "error": str(exc), "results": []})
+        print(f"Identity BLOCKED: {exc}", flush=True)
+        return 2
     results = []
     for scenario in args.scenario or CASES:
         results.append(await run_case(adb, scenario, out / scenario, sha))
     required = args.scenario or list(CASES)
     verdict = summarize(results, required)
-    save(out / "summary.json", {"source_commit": sha, "required": required, "verdict": verdict,
+    try:
+        final_identity = await installed_apk(adb, args.apk)
+        if clean_source() != sha:
+            raise ValueError("Source changed during verification")
+    except (ValueError, OSError, Blocked) as exc:
+        final_identity = {"error": str(exc)}
+        verdict = "BLOCKED"
+    save(out / "summary.json", {"source_commit": sha, "source_clean": True, "harness_version": 2,
+                                "apk_identity": identity, "final_apk_identity": final_identity,
+                                "required": required, "verdict": verdict,
                                 "results": [{key: r[key] for key in ("scenario_id", "verdict", "violations")} for r in results]})
     return 0 if verdict == "PASS" else 1
 
@@ -301,4 +351,5 @@ if __name__ == "__main__":
     parser.add_argument("--serial", default="emulator-5554")
     parser.add_argument("--scenario", action="append", choices=CASES)
     parser.add_argument("--source-commit", help="Base revision when executing an isolated mutation copy")
+    parser.add_argument("--apk", type=Path, default=APK, help="Expected installed build artifact (normal or isolated mutant)")
     raise SystemExit(asyncio.run(main(parser.parse_args())))

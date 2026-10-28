@@ -18,7 +18,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - run: python -m unittest pos.test_pos pos.test_m1_redteam lab.test_verdict lab.test_variants -v
+      - run: python -m unittest pos.test_pos pos.test_m1_redteam lab.test_verdict lab.test_variants lab.test_m2_redteam -v
   android:
     runs-on: ubuntu-24.04
     timeout-minutes: 35
