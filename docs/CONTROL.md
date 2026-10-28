@@ -8,7 +8,7 @@
 |---|---|---|---|
 | M0 | 범위·프로토콜·시나리오·판단 기록·검토 요청 | OPUS 검토 반영, M1 진행 | 명세 자체 검사, OPUS의 범위·계약 검토 반영 |
 | M1 | Android → POS 실제 왕복 | 정상 왕복 검증 완료, OPUS 독립 검토 대기 | 실제 앱과 Room, 실제 TCP와 POS DB, UI 결과 대조 |
-| M2 | 장애 3종과 핵심 검증, 결함 사본 2종 | 작업 배정·착수 순서 확정, 장애 검증 미실행 | 시나리오별 근거 확보, OPUS 검토 반영 |
+| M2 | 장애 3종과 핵심 검증, 결함 사본 2종 | 사건 기준 실행기·판정기·결함 사본 실행기 구현, Android 실행 대기 | 시나리오별 근거 확보, OPUS 검토 반영 |
 | M3 | CI·APK·영상·공개 설명 | 예정 | 실행 증거와 한계가 일치하는 지원용 산출물 |
 
 ## 담당과 변경 관리
@@ -20,7 +20,7 @@
 
 ## 다음 작업
 
-1. [OPUS 업무 요청](reviews/OPUS_M1_REDTEAM.md)을 전달한다. 고정된 M1에 대해 독립 검토·장애 레드팀·최소 재현 테스트를 맡긴다. 제품 구현·통합은 Codex가 담당한다.
+1. 사용자가 [OPUS 업무 요청](reviews/OPUS_M1_REDTEAM.md)을 전달했다. 결과를 기다린다. 고정된 M1에 대해 독립 검토·장애 레드팀·최소 재현 테스트를 맡긴다. 제품 구현·통합은 Codex가 담당한다.
 2. OPUS 검토 대기 중 Codex는 [M2 작업 순서](M2_WORK.md)에 따라 결과 판정기·사건 기준 장애 주입·외부 Android 실행기를 준비한다. 중대한 발견이 있으면 관련 구현과 회귀 수정을 우선한다.
 3. M2에서 단절·응답 유실·OS 프로세스 종료와 결함 사본 2종을 검증한 뒤 다음 독립 검토를 묶는다.
 4. 기기 확보 후 Windows와 삼성 기기 모델/API를 기록하고 실제 LAN을 확인한다.
@@ -38,7 +38,9 @@
 - GitHub Actions: [M1 실행 40620268630](https://github.com/chrysaor80/local-link-lab/actions/runs/40620268630) 전체 SUCCESS. Linux/Windows 각각 POS 7개, JVM 9개, API 29 에뮬레이터 Android 4개 PASS.
 - UI 접수 전 기준값 ↔ Room ACK ↔ 새 POS DB 전체 행 1개/영수증 대조 PASS. network_path=`emulator-nat`, Android 10/API 29 x86_64.
 - [검증 APK·로그·DB·테스트 보고서](https://github.com/chrysaor80/local-link-lab/actions/runs/40620268630/artifacts/12786603308). [영구 요약](evidence/M1.md).
-- Android 프로세스 종료, 결함 사본 2종, 삼성 실기기/LAN: NOT_RUN.
+- M2 작업 브랜치: `codex/m2-fault-verification`. M1의 고정 검토 스냅샷은 유지한다.
+- M2 로컬: 판정기 7개 + 기존 POS 7개 PASS, debug/release APK 빌드 PASS, release DEX에서 테스트 제어 Receiver 부재 확인 PASS.
+- Android 프로세스 종료, 결함 사본 2종, 삼성 실기기/LAN: NOT_RUN. M2 CI 실행 전 상태다.
 
 Room DB 재열기 검사는 OS 프로세스 종료 검증으로 간주하지 않는다. 에뮬레이터 정상 왕복의 판정은 UI에서 접수 전에 기록한 기준값, Room의 ACK 결과, 새 POS DB의 전체 행 집합과 영수증을 비교한다. 실행 누락은 성공으로 처리하지 않는다.
 

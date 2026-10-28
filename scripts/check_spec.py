@@ -88,7 +88,7 @@ def check():
         errors.append(f"scenario table and catalog differ: {sorted(documented ^ ids)}")
     if set(catalog["primary_demo_ids"]) != {"S01", "S02", "S03"}:
         errors.append("primary demo scope differs from M0")
-    allowed_levels = {"JVM_UNIT", "POS_INTEGRATION", "ANDROID_MANUAL"}
+    allowed_levels = {"JVM_UNIT", "POS_INTEGRATION", "ANDROID_MANUAL", "ANDROID_EXTERNAL"}
     for scenario in scenarios:
         sid = scenario["id"]
         if not scenario["invariants"] or not set(scenario["invariants"]) <= invariants:
@@ -97,7 +97,7 @@ def check():
             errors.append(f"{sid}: unknown or missing execution level")
         if not scenario["trigger"] or not scenario["observations"]:
             errors.append(f"{sid}: trigger and observations are required")
-        if sid == "S03" and scenario["execution_levels"] != ["ANDROID_MANUAL"]:
+        if sid == "S03" and not set(scenario["execution_levels"]) <= {"ANDROID_MANUAL", "ANDROID_EXTERNAL"}:
             errors.append("S03: process death needs Android evidence")
     for mutation in catalog["mutations"]:
         if not mutation["detected_by"] or not set(mutation["detected_by"]) <= ids:

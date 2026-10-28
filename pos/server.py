@@ -13,10 +13,11 @@ from .wire import MAX_FRAME, InvalidFrame, decode, encode, error
 
 
 class PosServer:
-    def __init__(self, store, *, read_timeout=5.0, write_timeout=1.0, max_connections=32, after_commit=None):
+    def __init__(self, store, *, read_timeout=5.0, write_timeout=1.0, max_connections=32, after_commit=None, before_submit=None):
         self.store = store
         self.read_timeout, self.write_timeout = read_timeout, write_timeout
         self.max_connections, self.after_commit = max_connections, after_commit
+        self.before_submit = before_submit
         self.tasks = set()
         self.db_tasks = set()
         self.server = None
@@ -58,6 +59,8 @@ class PosServer:
                 if request["type"] == "hello":
                     response = dict(version=1, type="hello_ack", pos_db_id=self.store.db_id)
                 elif request["type"] == "submit_order":
+                    if self.before_submit is not None and not await self.before_submit(request):
+                        return
                     # Separate connection in a worker thread; lock waits do not block other sockets.
                     db_task = asyncio.create_task(asyncio.to_thread(self.store.submit, request))
                     self.db_tasks.add(db_task)

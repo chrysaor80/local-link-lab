@@ -38,7 +38,8 @@
       "execution_levels": [
         "JVM_UNIT",
         "POS_INTEGRATION",
-        "ANDROID_MANUAL"
+        "ANDROID_MANUAL",
+        "ANDROID_EXTERNAL"
       ],
       "trigger": "LOCAL_COMMITTED_BEFORE_FIRST_SEND",
       "observations": [
@@ -58,7 +59,8 @@
       "execution_levels": [
         "JVM_UNIT",
         "POS_INTEGRATION",
-        "ANDROID_MANUAL"
+        "ANDROID_MANUAL",
+        "ANDROID_EXTERNAL"
       ],
       "trigger": "POS_COMMITTED_BEFORE_ACK",
       "observations": [
@@ -80,7 +82,8 @@
         "I05"
       ],
       "execution_levels": [
-        "ANDROID_MANUAL"
+        "ANDROID_MANUAL",
+        "ANDROID_EXTERNAL"
       ],
       "variants": [
         "am_kill_idle_pending",

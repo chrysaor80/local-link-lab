@@ -1,6 +1,6 @@
 # 시나리오와 검증 증거
 
-정본은 [scenarios.json](../spec/scenarios.json)이다. 아래는 사람이 읽는 대응표다. 현재 전부 계획이며 제품 테스트 실행 결과가 아니다.
+정본은 [scenarios.json](../spec/scenarios.json)이다. 아래는 사람이 읽는 대응표다. 이 표는 요구하는 검증의 정의다. 실제 실행 결과는 CONTROL과 evidence에 별도로 기록한다.
 
 | ID | 검증 대상 | 재현 지점과 기대 결과 |
 |---|---|---|
@@ -21,6 +21,7 @@
 
 - **JVM_UNIT**: 실제 Kotlin 핵심 코드 + 가짜 전송/저장소. 코루틴 시간·난수 통제. Android OS·Room·실제 TCP 검증이라고 쓰지 않는다.
 - **POS_INTEGRATION**: 실제 POS 코드·임시 SQLite 파일·실제 loopback TCP. 별도 DB connection으로 저장 결과를 읽는다.
+- **ANDROID_EXTERNAL**: 실제 앱과 Room을 외부 Python/adb 실행기가 제어하고 실제 TCP/POS와 비교한다. PID 종료와 명시적 재실행을 직접 관측한다. 자동 데이터 초기화는 폐기 가능한 에뮬레이터에 제한한다.
 - **ANDROID_MANUAL**: Windows + 기기 또는 에뮬레이터에서 실제 앱 실행. 두 환경을 결과에 명시한다.
 - 여러 OS를 자동 실행하거나 무선 간섭을 재현하는 것은 후속 범위다. S04는 응답 침묵을 재현하며 랜선 제거와 동일한 물리 현상을 검증했다고 쓰지 않는다.
 

@@ -28,3 +28,24 @@ M1 구현·증거의 고정 기준은 `ee67e2c62d844c538fd7cca26543ab3a103628fe`
 ## 전달 방식
 
 사용자는 OPUS에 요청서 링크를 한 번 전달하고 결과 보고를 이 채팅에 돌려주면 된다. 커밋마다 두 도구 사이에서 코드를 복사하지 않는다. OPUS 재현 코드는 결과와 함께 받아 Codex가 적용·검증한다. OPUS에 직접 요청을 보내는 도구는 현재 연결되어 있지 않다.
+
+
+## 구현된 실행 도구
+
+- `lab/verdict.py`: 접수 전 기준 집합과 로컬/POS 전체 행, 영수증을 비교한다. 중간 PENDING은 허용하되 POS 저장 없는 ACK는 즉시 실패한다.
+- `lab/android_run.py`: S01 전송 도중 POS 저장 전 연결 종료, S02 POS 저장 후 첫 ACK 유실, S03의 am kill/force-stop/저장 직후 force-stop 변형을 실행한다. 장애 사건·PID·전체 행·명령을 남긴다.
+- `lab/mutations.py`: 정상 5개 실행이 먼저 통과한 동일 소스에서 별도 임시 사본을 빌드한다. MUT01은 재시도 ID를 바꾸고 MUT02는 ACK 전에 로컬 확인을 저장한다. 원본 판정기가 지정한 데이터 위반을 실제 검출해야 KILLED이며 빌드·설치·환경 실패는 BLOCKED다.
+- `LabControlReceiver`는 debug source set에만 존재하며 DUMP 권한으로 보호된다. 주문 접수와 일시 중지는 실제 화면과 같은 Controller를 거친다. release DEX 부재를 별도 검사한다.
+
+설치된 debug APK가 있는 에뮬레이터에서 저장소 루트 기준 실행:
+
+```text
+python -m unittest pos.test_pos lab.test_verdict -v
+python -m lab.check_variants
+python -m lab.android_run --out artifacts/m2-normal
+python -m lab.mutations --normal-summary artifacts/m2-normal/summary.json --out artifacts/m2-mutations
+```
+
+실행기는 테스트 앱 데이터를 초기화하므로 실제 폰에서는 자동 실행을 거부한다. `--serial`은 에뮬레이터 선택에 사용한다. 실기기 검증은 별도로 준비한다. 출력 폴더의 기존 실행 결과를 덮어쓰지 않는다. 실행기가 종료되면 계속 백그라운드 작업이 진행되는 구조가 아니다.
+
+S01은 요청 프레임 수신 후 POS 저장 전 소켓을 닫아 미처리 요청의 재시도를 재현한다. Wi-Fi 전원 차단이나 패킷 손실 분포를 재현한 시험으로 표현하지 않는다. 정상 보존·복구 결과와 별도로 주입 지점을 명시한다.
