@@ -52,6 +52,10 @@ py -u -m pos.server --db artifacts/pos.db --host 192.168.0.10 --port 8765 > arti
 - `.github/workflows/m1.yml`: Linux/Windows POS·판정기 검사, APK/JVM 검사, Android 정상 왕복·장애 6개·결함 사본 2개 검출. 실행 결과는 Actions에서 확인합니다.
 
 
+## 시연과 지원 준비
+
+[M3 준비](docs/M3_WORK.md)에서 필수 검사 통과 후에만 시연 후보를 생성하도록 구성합니다. [Windows·폰 실행 안내](docs/DEMO_QUICKSTART.md), [2~3분 촬영 계획](docs/DEMO_VIDEO.md), [지원·면접 설명 초안](docs/PORTFOLIO.md)을 제공합니다. 실제 촬영과 삼성 기기 실행은 아직 완료하지 않았습니다.
+
 ## 협업
 
 구현 담당은 코드·실행 결과를 제출하고, 검토 담당은 같은 커밋의 명세와 코드를 독립적으로 검토합니다. 문서 확정, 실제 왕복 완료, 장애 검증 완료의 세 시점에 검토를 요청합니다. [M0 검토 처리 결과](docs/reviews/M0_RESPONSE.md)를 반영했으며 [M1 독립 검토 처리](docs/reviews/M1_RESPONSE.md)와 추가 회귀 결과를 기록했습니다.
