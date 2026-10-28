@@ -19,3 +19,7 @@ OPUS 재현 테스트는 정상 fixture에 PID 사건을 추가하면서, 실패
 412a448의 [CI 40648061750](https://github.com/chrysaor80/local-link-lab/actions/runs/40648061750)는 정상 5개 PASS, S03_after_pos_commit 1개 BLOCKED로 전체 성공이 아니다. 결함 실행과 후보 생성도 진행되지 않았다. [원본 관측](../evidence/m3-recheck-blocked.json)을 보존했다. 종료 전 PENDING·POS 1·ACK 방출 0은 맞았고 PID 소멸 후 am start -W를 호출했으나, 직후 1회의 pidof에서 새 PID를 확인하지 못했다. 당시 시작 명령 응답을 저장하지 않아 OS 내부 원인은 확정하지 않는다.
 
 재실행 뒤 새 PID가 실제 나타날 때까지 최대 5초 관측하도록 바꾸고, 같은 PID나 끝까지 없는 PID는 계속 BLOCKED로 둔다. 시작 명령 응답과 실패 시 logcat도 보존한다. 지연 후 새 PID는 통과하고 동일/미등장 PID는 실패하는 회귀 2개를 추가했다. 이 변경은 앱 자동 재실행이나 장애 전제 완화가 아니다. 이후 실행을 별도로 검증한다.
+
+## 최종 에뮬레이터 결과
+
+관측 보강까지 포함한 구현 c44ae9d의 [CI 40649335083](https://github.com/chrysaor80/local-link-lab/actions/runs/40649335083)는 전체 SUCCESS다. Python 51개(Windows/Linux 각각), 관련 -O 검사 23개, JVM 19/7개, Android 계측 4/2개, 장애 6 PASS·결함 3 KILLED를 확인했다. 새 PID/사건 순서·build stamp·정상 APK 재설치까지 실제 원본으로 대조했고 새 후보와 화면을 보존했다. [실행 근거](../evidence/M3_EMULATOR.md)에 SHA·artifact·실패 이력·미검증 범위를 기록했다.

@@ -1,8 +1,8 @@
 # M3 시연·지원 준비
 
-OPUS의 고정 검토 대상은 `127ea3232bd6a6dc9b8c1b54eca78b3e092127d7`이다. M3는 OPUS M2 검토 수정본을 통합하고 강화된 검증을 통과한 CI 산출물과 실행·설명 자료를 준비한다.
+OPUS는 M2 수정본 `6c7187d021ab5390ab5c3388dfd99b24327a15f3`를 승인했다. M3는 OPUS M2 검토 수정본을 통합하고 강화된 검증을 통과한 CI 산출물과 실행·설명 자료를 준비한다.
 
-이전 후보 생성은 [M3 CI 근거](evidence/M3.md)로 검증했다. 하네스 v2와 설치 APK 결속을 요구하는 새 조건도 [수정본 근거](evidence/M3_REDTEAM_FIX.md)에서 재검증을 마쳤다. 실행·촬영·지원 초안은 준비됐고 실제 촬영과 삼성 기기 실행은 남아 있다.
+이전 후보 생성은 [M3 CI 근거](evidence/M3.md)로 검증했다. 하네스 v2·PID/장애 사건·빌드 stamp·정상 APK 복원을 요구하는 최신 조건도 [에뮬레이터 근거](evidence/M3_EMULATOR.md)에서 검증했다. 실행·촬영·지원 초안은 준비됐고 실제 촬영과 삼성 기기 실행은 남아 있다.
 
 ## 이번 작업과 종료 기준
 
@@ -27,7 +27,7 @@ OPUS의 고정 검토 대상은 `127ea3232bd6a6dc9b8c1b54eca78b3e092127d7`이다
 
 ## 검증 방법
 
-`python -m unittest lab.test_candidate -v`와 `python -O -m unittest lab.test_candidate -v`는 실패한 job, 빠진 stamp/시나리오, 빈/건너뛴 JUnit, 다른 소스, 바뀐 APK, 빌드 실패를 KILLED로 잘못 표기한 결과 등을 거부하고 후보 폴더가 생기지 않는지 검사한다. 합성 파일 fixture이며 Android 실행의 대체 증거가 아니다. 실제 후보 생성은 CI 40639250044에서 끝까지 실행해 확인했다. 조건 검사 12개를 일반 실행과 -O에서 모두 통과했다.
+`python -m unittest lab.test_candidate -v`와 `python -O -m unittest lab.test_candidate -v`는 실패한 job, 빠진 stamp/시나리오, 빈/건너뛴 JUnit, 다른 소스, 바뀐 APK, 빌드 실패를 KILLED로 잘못 표기한 결과 등을 거부하고 후보 폴더가 생기지 않는지 검사한다. 합성 파일 fixture이며 Android 실행의 대체 증거가 아니다. 실제 후보 생성은 CI 40649335083에서 끝까지 실행해 확인했다. 관련 후보/사건/빌드 검사 23개를 일반 실행과 -O에서 모두 통과했고 Python 전체는 51개다.
 
 ## 사용자와 진행할 부분
 
