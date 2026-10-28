@@ -1,0 +1,554 @@
+{
+  "source_commit": "85d9da1d899852932582c3dee5129e33733e7db4",
+  "head_commit": "127ea3232bd6a6dc9b8c1b54eca78b3e092127d7",
+  "identical_tree": "c8840faa918c0532f1a2974b3ec9974789e0e33a",
+  "ci_run": 40629074288,
+  "artifact_id": 12790658682,
+  "ci_result": "SUCCESS",
+  "counts": {
+    "core_jvm": {
+      "tests": 19,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "controller_jvm": {
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "android_normal": {
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "android_recovery": {
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "python_windows": {
+      "tests": 21,
+      "failures": 0
+    },
+    "python_linux": {
+      "tests": 21,
+      "failures": 0
+    },
+    "normal_scenarios": 6,
+    "mutations_killed": 2
+  },
+  "normal": [
+    {
+      "scenario_id": "C07_resume",
+      "verdict": "PASS",
+      "network_path": "emulator-nat",
+      "android_api": "29",
+      "started_at": "2026-10-28T03:59:27.079629+00:00",
+      "finished_at": "2026-10-28T03:59:29.468423+00:00",
+      "events": [
+        {
+          "event": "LOCAL_COMMITTED",
+          "at": "2026-10-28T03:59:28.827920+00:00",
+          "request_id": "12989830-93e3-4b35-8304-ab8c52c2ab7a"
+        },
+        {
+          "event": "OTHER_DB_BOUND",
+          "at": "2026-10-28T03:59:28.828811+00:00",
+          "pos_db_id": "f3e19d96-2167-4a9e-8e19-26aa171e26db"
+        },
+        {
+          "event": "DESTINATION_MISMATCH_STOPPED",
+          "at": "2026-10-28T03:59:29.027877+00:00",
+          "other_submits": 0,
+          "other_rows": []
+        },
+        {
+          "event": "ORIGINAL_DB_RESTORED",
+          "at": "2026-10-28T03:59:29.096924+00:00"
+        },
+        {
+          "event": "POS_COMMITTED",
+          "at": "2026-10-28T03:59:29.258783+00:00",
+          "request_id": "12989830-93e3-4b35-8304-ab8c52c2ab7a",
+          "receipt_id": "4a8a98b6-dde2-44df-98f4-108d0114c901"
+        }
+      ],
+      "original_receipts": {
+        "12989830-93e3-4b35-8304-ab8c52c2ab7a": "4a8a98b6-dde2-44df-98f4-108d0114c901"
+      },
+      "baseline": [
+        {
+          "request_id": "12989830-93e3-4b35-8304-ab8c52c2ab7a",
+          "pos_db_id": "25b504ce-2b09-4380-8631-35414ec58ca4",
+          "item_code": "DEMO_COFFEE",
+          "quantity": 1,
+          "unit_price_krw": 3000
+        }
+      ],
+      "final_local_rows": [
+        {
+          "request_id": "12989830-93e3-4b35-8304-ab8c52c2ab7a",
+          "pos_db_id": "25b504ce-2b09-4380-8631-35414ec58ca4",
+          "item_code": "DEMO_COFFEE",
+          "quantity": 1,
+          "unit_price_krw": 3000,
+          "status": "ACKNOWLEDGED",
+          "receipt_id": "4a8a98b6-dde2-44df-98f4-108d0114c901"
+        }
+      ],
+      "final_pos_rows": [
+        {
+          "request_id": "12989830-93e3-4b35-8304-ab8c52c2ab7a",
+          "receipt_id": "4a8a98b6-dde2-44df-98f4-108d0114c901",
+          "item_code": "DEMO_COFFEE",
+          "quantity": 1,
+          "unit_price_krw": 3000
+        }
+      ],
+      "rechecked_violations": []
+    },
+    {
+      "scenario_id": "S01",
+      "verdict": "PASS",
+      "network_path": "emulator-nat",
+      "android_api": "29",
+      "started_at": "2026-10-28T03:58:58.381972+00:00",
+      "finished_at": "2026-10-28T03:59:03.135339+00:00",
+      "events": [
+        {
+          "event": "LOCAL_COMMITTED",
+          "at": "2026-10-28T03:59:01.706265+00:00",
+          "request_id": "fe35533d-4e99-4f65-94e6-9f4040b2cfb3"
+        },
+        {
+          "event": "REQUEST_BLOCKED_BEFORE_POS_WRITE",
+          "at": "2026-10-28T03:59:01.795887+00:00",
+          "request_id": "fe35533d-4e99-4f65-94e6-9f4040b2cfb3"
+        },
+        {
+          "event": "CONNECTION_DELIVERY_RESTORED",
+          "at": "2026-10-28T03:59:01.926562+00:00"
+        },
+        {
+          "event": "POS_COMMITTED",
+          "at": "2026-10-28T03:59:02.913008+00:00",
+          "request_id": "fe35533d-4e99-4f65-94e6-9f4040b2cfb3",
+          "receipt_id": "e0b6d91c-6a50-40da-8ecb-4dac118ceb5c"
+        }
+      ],
+      "original_receipts": {
+        "fe35533d-4e99-4f65-94e6-9f4040b2cfb3": "e0b6d91c-6a50-40da-8ecb-4dac118ceb5c"
+      },
+      "baseline": [
+        {
+          "request_id": "fe35533d-4e99-4f65-94e6-9f4040b2cfb3",
+          "pos_db_id": "f3b35267-1927-4100-b64a-8dd370ea3e0a",
+          "item_code": "DEMO_COFFEE",
+          "quantity": 1,
+          "unit_price_krw": 3000
+        }
+      ],
+      "final_local_rows": [
+        {
+          "request_id": "fe35533d-4e99-4f65-94e6-9f4040b2cfb3",
+          "pos_db_id": "f3b35267-1927-4100-b64a-8dd370ea3e0a",
+          "item_code": "DEMO_COFFEE",
+          "quantity": 1,
+          "unit_price_krw": 3000,
+          "status": "ACKNOWLEDGED",
+          "receipt_id": "e0b6d91c-6a50-40da-8ecb-4dac118ceb5c"
+        }
+      ],
+      "final_pos_rows": [
+        {
+          "request_id": "fe35533d-4e99-4f65-94e6-9f4040b2cfb3",
+          "receipt_id": "e0b6d91c-6a50-40da-8ecb-4dac118ceb5c",
+          "item_code": "DEMO_COFFEE",
+          "quantity": 1,
+          "unit_price_krw": 3000
+        }
+      ],
+      "rechecked_violations": []
+    },
+    {
+      "scenario_id": "S02",
+      "verdict": "PASS",
+      "network_path": "emulator-nat",
+      "android_api": "29",
+      "started_at": "2026-10-28T03:59:03.136243+00:00",
+      "finished_at": "2026-10-28T03:59:07.692493+00:00",
+      "events": [
+        {
+          "event": "LOCAL_COMMITTED",
+          "at": "2026-10-28T03:59:06.303686+00:00",
+          "request_id": "1311236d-aed4-40fd-aa23-aea42ee2f49d"
+        },
+        {
+          "event": "POS_COMMITTED",
+          "at": "2026-10-28T03:59:06.405123+00:00",
+          "request_id": "1311236d-aed4-40fd-aa23-aea42ee2f49d",
+          "receipt_id": "b24f7b34-f746-4c44-9f31-1369c5424946"
+        },
+        {
+          "event": "ACK_DROPPED",
+          "at": "2026-10-28T03:59:06.405151+00:00",
+          "request_id": "1311236d-aed4-40fd-aa23-aea42ee2f49d"
+        }
+      ],
+      "original_receipts": {
+        "1311236d-aed4-40fd-aa23-aea42ee2f49d": "b24f7b34-f746-4c44-9f31-1369c5424946"
+      },
+      "baseline": [
+        {
+          "request_id": "1311236d-aed4-40fd-aa23-aea42ee2f49d",
+          "pos_db_id": "b5bf77ce-9390-4d57-a2f1-a1be696a216c",
+          "item_code": "DEMO_COFFEE",
+          "quantity": 1,
+          "unit_price_krw": 3000
+        }
+      ],
+      "final_local_rows": [
+        {
+          "request_id": "1311236d-aed4-40fd-aa23-aea42ee2f49d",
+          "pos_db_id": "b5bf77ce-9390-4d57-a2f1-a1be696a216c",
+          "item_code": "DEMO_COFFEE",
+          "quantity": 1,
+          "unit_price_krw": 3000,
+          "status": "ACKNOWLEDGED",
+          "receipt_id": "b24f7b34-f746-4c44-9f31-1369c5424946"
+        }
+      ],
+      "final_pos_rows": [
+        {
+          "request_id": "1311236d-aed4-40fd-aa23-aea42ee2f49d",
+          "receipt_id": "b24f7b34-f746-4c44-9f31-1369c5424946",
+          "item_code": "DEMO_COFFEE",
+          "quantity": 1,
+          "unit_price_krw": 3000
+        }
+      ],
+      "rechecked_violations": []
+    },
+    {
+      "scenario_id": "S03_after_pos_commit",
+      "verdict": "PASS",
+      "network_path": "emulator-nat",
+      "android_api": "29",
+      "started_at": "2026-10-28T03:59:22.160081+00:00",
+      "finished_at": "2026-10-28T03:59:27.078907+00:00",
+      "events": [
+        {
+          "event": "LOCAL_COMMITTED",
+          "at": "2026-10-28T03:59:25.196613+00:00",
+          "request_id": "74de96d2-d7ea-436f-83ae-7463aafdb3e7"
+        },
+        {
+          "event": "POS_COMMITTED",
+          "at": "2026-10-28T03:59:25.285219+00:00",
+          "request_id": "74de96d2-d7ea-436f-83ae-7463aafdb3e7",
+          "receipt_id": "8facf122-bfe0-471b-9c77-7ae893dd5f82"
+        },
+        {
+          "event": "ACK_HELD",
+          "at": "2026-10-28T03:59:25.285245+00:00",
+          "request_id": "74de96d2-d7ea-436f-83ae-7463aafdb3e7"
+        },
+        {
+          "event": "OLD_PROCESS_TERMINATED",
+          "at": "2026-10-28T03:59:25.525548+00:00",
+          "pid": "4602",
+          "method": "force-stop"
+        },
+        {
+          "event": "EXPLICIT_RELAUNCH",
+          "at": "2026-10-28T03:59:26.563621+00:00",
+          "pid": "4704"
+        }
+      ],
+      "original_receipts": {
+        "74de96d2-d7ea-436f-83ae-7463aafdb3e7": "8facf122-bfe0-471b-9c77-7ae893dd5f82"
+      },
+      "baseline": [
+        {
+          "request_id": "74de96d2-d7ea-436f-83ae-7463aafdb3e7",
+          "pos_db_id": "8f81f411-9528-48cf-96ba-dc4b40264ab4",
+          "item_code": "DEMO_COFFEE",
+          "quantity": 1,
+          "unit_price_krw": 3000
+        }
+      ],
+      "final_local_rows": [
+        {
+          "request_id": "74de96d2-d7ea-436f-83ae-7463aafdb3e7",
+          "pos_db_id": "8f81f411-9528-48cf-96ba-dc4b40264ab4",
+          "item_code": "DEMO_COFFEE",
+          "quantity": 1,
+          "unit_price_krw": 3000,
+          "status": "ACKNOWLEDGED",
+          "receipt_id": "8facf122-bfe0-471b-9c77-7ae893dd5f82"
+        }
+      ],
+      "final_pos_rows": [
+        {
+          "request_id": "74de96d2-d7ea-436f-83ae-7463aafdb3e7",
+          "receipt_id": "8facf122-bfe0-471b-9c77-7ae893dd5f82",
+          "item_code": "DEMO_COFFEE",
+          "quantity": 1,
+          "unit_price_krw": 3000
+        }
+      ],
+      "rechecked_violations": []
+    },
+    {
+      "scenario_id": "S03_am_kill",
+      "verdict": "PASS",
+      "network_path": "emulator-nat",
+      "android_api": "29",
+      "started_at": "2026-10-28T03:59:07.693452+00:00",
+      "finished_at": "2026-10-28T03:59:15.031994+00:00",
+      "events": [
+        {
+          "event": "LOCAL_COMMITTED",
+          "at": "2026-10-28T03:59:11.055426+00:00",
+          "request_id": "edd9bbf4-7a92-46db-8bec-c7a20d7c6ced"
+        },
+        {
+          "event": "OLD_PROCESS_TERMINATED",
+          "at": "2026-10-28T03:59:12.071606+00:00",
+          "pid": "4187",
+          "method": "kill"
+        },
+        {
+          "event": "EXPLICIT_RELAUNCH",
+          "at": "2026-10-28T03:59:14.477419+00:00",
+          "pid": "4316"
+        },
+        {
+          "event": "POS_COMMITTED",
+          "at": "2026-10-28T03:59:14.810153+00:00",
+          "request_id": "edd9bbf4-7a92-46db-8bec-c7a20d7c6ced",
+          "receipt_id": "917c2ef4-b9b7-4c6f-88e5-c556b8f8cd4f"
+        }
+      ],
+      "original_receipts": {
+        "edd9bbf4-7a92-46db-8bec-c7a20d7c6ced": "917c2ef4-b9b7-4c6f-88e5-c556b8f8cd4f"
+      },
+      "baseline": [
+        {
+          "request_id": "edd9bbf4-7a92-46db-8bec-c7a20d7c6ced",
+          "pos_db_id": "8cee9095-58a3-4e41-b81b-b03ad6ea400e",
+          "item_code": "DEMO_COFFEE",
+          "quantity": 1,
+          "unit_price_krw": 3000
+        }
+      ],
+      "final_local_rows": [
+        {
+          "request_id": "edd9bbf4-7a92-46db-8bec-c7a20d7c6ced",
+          "pos_db_id": "8cee9095-58a3-4e41-b81b-b03ad6ea400e",
+          "item_code": "DEMO_COFFEE",
+          "quantity": 1,
+          "unit_price_krw": 3000,
+          "status": "ACKNOWLEDGED",
+          "receipt_id": "917c2ef4-b9b7-4c6f-88e5-c556b8f8cd4f"
+        }
+      ],
+      "final_pos_rows": [
+        {
+          "request_id": "edd9bbf4-7a92-46db-8bec-c7a20d7c6ced",
+          "receipt_id": "917c2ef4-b9b7-4c6f-88e5-c556b8f8cd4f",
+          "item_code": "DEMO_COFFEE",
+          "quantity": 1,
+          "unit_price_krw": 3000
+        }
+      ],
+      "rechecked_violations": []
+    },
+    {
+      "scenario_id": "S03_force_stop",
+      "verdict": "PASS",
+      "network_path": "emulator-nat",
+      "android_api": "29",
+      "started_at": "2026-10-28T03:59:15.032815+00:00",
+      "finished_at": "2026-10-28T03:59:22.158921+00:00",
+      "events": [
+        {
+          "event": "LOCAL_COMMITTED",
+          "at": "2026-10-28T03:59:18.507938+00:00",
+          "request_id": "51232ab8-496a-4971-b300-4521da7bf599"
+        },
+        {
+          "event": "OLD_PROCESS_TERMINATED",
+          "at": "2026-10-28T03:59:18.628057+00:00",
+          "pid": "4417",
+          "method": "force-stop"
+        },
+        {
+          "event": "EXPLICIT_RELAUNCH",
+          "at": "2026-10-28T03:59:21.395206+00:00",
+          "pid": "4492"
+        },
+        {
+          "event": "POS_COMMITTED",
+          "at": "2026-10-28T03:59:21.864382+00:00",
+          "request_id": "51232ab8-496a-4971-b300-4521da7bf599",
+          "receipt_id": "ff061a23-b082-4b3c-83b3-212b9369bacb"
+        }
+      ],
+      "original_receipts": {
+        "51232ab8-496a-4971-b300-4521da7bf599": "ff061a23-b082-4b3c-83b3-212b9369bacb"
+      },
+      "baseline": [
+        {
+          "request_id": "51232ab8-496a-4971-b300-4521da7bf599",
+          "pos_db_id": "6739a3ed-3d33-4020-8297-20795ea91e03",
+          "item_code": "DEMO_COFFEE",
+          "quantity": 1,
+          "unit_price_krw": 3000
+        }
+      ],
+      "final_local_rows": [
+        {
+          "request_id": "51232ab8-496a-4971-b300-4521da7bf599",
+          "pos_db_id": "6739a3ed-3d33-4020-8297-20795ea91e03",
+          "item_code": "DEMO_COFFEE",
+          "quantity": 1,
+          "unit_price_krw": 3000,
+          "status": "ACKNOWLEDGED",
+          "receipt_id": "ff061a23-b082-4b3c-83b3-212b9369bacb"
+        }
+      ],
+      "final_pos_rows": [
+        {
+          "request_id": "51232ab8-496a-4971-b300-4521da7bf599",
+          "receipt_id": "ff061a23-b082-4b3c-83b3-212b9369bacb",
+          "item_code": "DEMO_COFFEE",
+          "quantity": 1,
+          "unit_price_krw": 3000
+        }
+      ],
+      "rechecked_violations": []
+    }
+  ],
+  "mutations": [
+    {
+      "mutation": "MUT01",
+      "base_commit": "85d9da1d899852932582c3dee5129e33733e7db4",
+      "scenario": "S02",
+      "expected_violation": "POS_EXTRA_ID",
+      "verdict": "KILLED",
+      "patch_sha256": "01c370fd792c9042386aed78f04037fed2fe8bbe1fb66d4cde72138cb980b609",
+      "build_exit": 0,
+      "apk_sha256": "a3dfaf27adbba164bfb12cda0550b21a8210138c99f840256b1b8ef15f00eee7",
+      "install_exit": 0,
+      "scenario_exit": 1,
+      "violations": [
+        "LOCAL_NOT_ACKNOWLEDGED",
+        "POS_EXTRA_ID",
+        "POS_ID_SET"
+      ],
+      "observation": {
+        "local_rows": [
+          {
+            "request_id": "e3f74571-f1ab-494b-b542-69b6eb0d5d32",
+            "pos_db_id": "fc0977d2-0c28-4933-971c-3a9fa2e56cf4",
+            "item_code": "DEMO_COFFEE",
+            "quantity": 1,
+            "unit_price_krw": 3000,
+            "status": "PENDING",
+            "receipt_id": null
+          }
+        ],
+        "pos_rows": [
+          {
+            "request_id": "1d3822bc-4468-4fe0-8336-6ab91bb72350",
+            "receipt_id": "fadc47a4-4423-4e96-b85e-9cfa0c67b997",
+            "item_code": "DEMO_COFFEE",
+            "quantity": 1,
+            "unit_price_krw": 3000
+          },
+          {
+            "request_id": "e3f74571-f1ab-494b-b542-69b6eb0d5d32",
+            "receipt_id": "50472972-9aec-43d6-aed6-7cd647cb487d",
+            "item_code": "DEMO_COFFEE",
+            "quantity": 1,
+            "unit_price_krw": 3000
+          }
+        ],
+        "rechecked_violations": [
+          "POS_EXTRA_ID"
+        ],
+        "baseline": [
+          {
+            "request_id": "e3f74571-f1ab-494b-b542-69b6eb0d5d32",
+            "pos_db_id": "fc0977d2-0c28-4933-971c-3a9fa2e56cf4",
+            "item_code": "DEMO_COFFEE",
+            "quantity": 1,
+            "unit_price_krw": 3000
+          }
+        ],
+        "pos_db_id": "fc0977d2-0c28-4933-971c-3a9fa2e56cf4",
+        "final": false,
+        "original_receipts": {
+          "e3f74571-f1ab-494b-b542-69b6eb0d5d32": "50472972-9aec-43d6-aed6-7cd647cb487d",
+          "1d3822bc-4468-4fe0-8336-6ab91bb72350": "fadc47a4-4423-4e96-b85e-9cfa0c67b997"
+        },
+        "recheck_scope": "Interim data-only recheck (final=False); run violations also include final=True checks. Phase preconditions were absent in harness v1."
+      }
+    },
+    {
+      "mutation": "MUT02",
+      "base_commit": "85d9da1d899852932582c3dee5129e33733e7db4",
+      "scenario": "S01",
+      "expected_violation": "ACK_WITHOUT_POS",
+      "verdict": "KILLED",
+      "patch_sha256": "87d4d939bdbadd9e362dd4646a19dc7439c95586fca8a3381e20aa97bd00fd73",
+      "build_exit": 0,
+      "apk_sha256": "6d64ae7c19e50bfccee0ed15a4ed7fdd130e7631101e90275991b8f4ccfca8e9",
+      "install_exit": 0,
+      "scenario_exit": 1,
+      "violations": [
+        "ACK_WITHOUT_POS",
+        "POS_ID_SET"
+      ],
+      "observation": {
+        "local_rows": [
+          {
+            "request_id": "f9f79ec2-cd68-44fa-a6b3-384025424867",
+            "pos_db_id": "226cb701-bb52-4eeb-a059-0fc32696c5e6",
+            "item_code": "DEMO_COFFEE",
+            "quantity": 1,
+            "unit_price_krw": 3000,
+            "status": "ACKNOWLEDGED",
+            "receipt_id": "c3fb4c43-29f6-4ac7-949d-e9f69fdc0189"
+          }
+        ],
+        "pos_rows": [],
+        "rechecked_violations": [
+          "ACK_WITHOUT_POS"
+        ],
+        "baseline": [
+          {
+            "request_id": "f9f79ec2-cd68-44fa-a6b3-384025424867",
+            "pos_db_id": "226cb701-bb52-4eeb-a059-0fc32696c5e6",
+            "item_code": "DEMO_COFFEE",
+            "quantity": 1,
+            "unit_price_krw": 3000
+          }
+        ],
+        "pos_db_id": "226cb701-bb52-4eeb-a059-0fc32696c5e6",
+        "final": false,
+        "original_receipts": {},
+        "recheck_scope": "Interim data-only recheck (final=False); run violations also include final=True checks. Phase preconditions were absent in harness v1."
+      }
+    }
+  ],
+  "debug_apk_sha256": "00dc0370796d2ec211e3b4b8cab0e7d7a9fadf984a461a8120a8abe32cd3fe55",
+  "review_limitations": [
+    "M2-01: harness v1 did not assert the S03 PENDING/pause/ACK-window preconditions. Historical PASS is not proof of those preconditions."
+  ]
+}

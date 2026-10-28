@@ -8,8 +8,8 @@
 |---|---|---|---|
 | M0 | 범위·프로토콜·시나리오·판단 기록·검토 요청 | OPUS 검토 반영, M1 진행 | 명세 자체 검사, OPUS의 범위·계약 검토 반영 |
 | M1 | Android → POS 실제 왕복 | OPUS 조건부 승인, 필수 수정·CI 재검증 완료 | 실제 앱과 Room, 실제 TCP와 POS DB, UI 결과 대조 |
-| M2 | 장애 3종과 핵심 검증, 결함 사본 2종 | 작업 배정·착수 순서 확정, 장애 검증 미실행 | 시나리오별 근거 확보, OPUS 검토 반영 |
-| M3 | CI·APK·영상·공개 설명 | 예정 | 실행 증거와 한계가 일치하는 지원용 산출물 |
+| M2 | 장애 3종과 핵심 검증, 결함 사본 3종 | OPUS 조건부 승인 반영, 검증 빈틈 수정·CI 재검증 완료 | 시나리오별 근거 확보, OPUS 검토 반영 |
+| M3 | CI·APK·영상·공개 설명 | PR #3에서 강화한 후보 생성 CI 검증 완료, 촬영·실기기 대기 | 실행 증거와 한계가 일치하는 지원용 산출물 |
 
 ## 담당과 변경 관리
 
@@ -20,14 +20,17 @@
 
 ## 다음 작업
 
-1. [OPUS 보고서](reviews/OPUS_M1_REVIEW_REPORT.md)와 패치를 수신했다. [처리 기록](reviews/M1_RESPONSE.md)에 따라 M1-01~07을 처리했다. 필수 수정·회귀 CI 완료, Windows QuickEdit 실제 재현은 미확인이다.
-2. 병행 M2 브랜치에 같은 수정을 통합했다. M2 장애·결함 검출 재실행을 확인한 뒤 고정 커밋으로 독립 검토를 요청한다.
-3. M2에서 단절·응답 유실·OS 프로세스 종료와 결함 사본 2종을 검증한 뒤 다음 독립 검토를 묶는다.
-4. 기기 확보 후 Windows와 삼성 기기 모델/API를 기록하고 실제 LAN을 확인한다.
+1. OPUS가 검토한 `127ea3232bd6a6dc9b8c1b54eca78b3e092127d7`의 [보고](reviews/OPUS_M2_REVIEW_REPORT.md)를 수령했다. [처리 기록](reviews/M2_RESPONSE.md)의 단계별 검사·MUT03·APK 결속 보강을 CI에서 검증했다. [집중 재확인 요청](reviews/M2_RECHECK_REQUEST.md)으로 OPUS에게 수정 해소 여부만 확인한다.
+2. M3의 하네스 v2·결함 3종·설치 APK 대조를 [PR #3](https://github.com/chrysaor80/local-link-lab/pull/3)에서 통합했다. [CI 40639250044](https://github.com/chrysaor80/local-link-lab/actions/runs/40639250044)의 새 후보 생성과 내려받은 원본 대조를 완료했다. 기기 설치·LAN 확인과 영상 촬영을 준비한다.
+3. 기기 확보 후 Windows와 삼성 기기 모델/API를 기록하고 실제 LAN을 확인한다.
 
 ## 실행 근거
 
-최신 M1 검토 수정본 `b5501e6`: [CI 40628744795](https://github.com/chrysaor80/local-link-lab/actions/runs/40628744795) 전체 SUCCESS. Python 13개(Windows/Linux 각각), core JVM 14개, Controller JVM 6개, Android 정상 4개·복구 2개 PASS. [처리 기록](reviews/M1_RESPONSE.md)에 수정 전 재현과 원본 artifact 대조를 기록했다. 아래는 최초 정상 왕복의 역사적 근거다.
+최신 M2 수정 구현 `6c7187d`: [CI 40639032749](https://github.com/chrysaor80/local-link-lab/actions/runs/40639032749) 전체 SUCCESS. Python 26개(Windows/Linux 각각), 코어 JVM 19개, Controller JVM 7개, Android 정상 4개·복구 2개, 장애 6개 PASS·결함 3개 KILLED. [실행 근거](evidence/M2_REDTEAM_FIX.md)에 설치 APK 해시와 강화된 S03 전제를 원본에서 대조했다.
+
+이전 M2 통합 구현 `127ea32`: [CI 40629074288](https://github.com/chrysaor80/local-link-lab/actions/runs/40629074288) 전체 SUCCESS. Python 21개(Windows/Linux 각각), core JVM 19개, Controller JVM 6개, Android 정상 4개·복구 2개, 장애 6개 PASS·결함 사본 2개 KILLED. [당시 근거](evidence/M2_REVIEW.md)에 CI checkout SHA와 구현 tree 일치 및 내려받은 데이터 재대조를 기록했다.
+
+M1 검토 수정본 `b5501e6`: [CI 40628744795](https://github.com/chrysaor80/local-link-lab/actions/runs/40628744795) 전체 SUCCESS. Python 13개(Windows/Linux 각각), core JVM 14개, Controller JVM 6개, Android 정상 4개·복구 2개 PASS. [처리 기록](reviews/M1_RESPONSE.md)에 수정 전 재현과 원본 artifact 대조를 기록했다.
 
 - M0 검토 수정: `0b572af` (main). [처리 내역](reviews/M0_RESPONSE.md).
 - M1 작업 브랜치: `codex/m1-first-roundtrip`. [PR #1](https://github.com/chrysaor80/local-link-lab/pull/1).
@@ -40,7 +43,13 @@
 - GitHub Actions: [M1 실행 40620268630](https://github.com/chrysaor80/local-link-lab/actions/runs/40620268630) 전체 SUCCESS. Linux/Windows 각각 POS 7개, JVM 9개, API 29 에뮬레이터 Android 4개 PASS.
 - UI 접수 전 기준값 ↔ Room ACK ↔ 새 POS DB 전체 행 1개/영수증 대조 PASS. network_path=`emulator-nat`, Android 10/API 29 x86_64.
 - [검증 APK·로그·DB·테스트 보고서](https://github.com/chrysaor80/local-link-lab/actions/runs/40620268630/artifacts/12786603308). [영구 요약](evidence/M1.md).
-- Android 프로세스 종료, 결함 사본 2종, 삼성 실기기/LAN: NOT_RUN.
+- M2 작업 브랜치: `codex/m2-fault-verification`. M1의 고정 검토 스냅샷은 유지한다.
+- M2 검증 구현 SHA: `70a4ecaa31fb8fa0f0b1026da390ccf15726c98c`. [PR #2](https://github.com/chrysaor80/local-link-lab/pull/2). 후속 문서 커밋은 검증된 구현을 바꾸지 않는다.
+- [M2 CI 40624098387](https://github.com/chrysaor80/local-link-lab/actions/runs/40624098387) 전체 SUCCESS. JVM 14개, Python 판정기 7개 + POS 7개(Windows/Linux 각각), Android 계측 4개, debug/release 빌드·release 제어 코드 부재 검사 PASS.
+- Android 외부 실행기: S01, S02, S03 am kill/force-stop/commit 직후 force-stop, C07 재개 전 DB 확인의 6개 실행 PASS. PID 종료와 새 PID를 관측했고 최종 주문은 각각 1건.
+- MUT01 ID 재발급과 MUT02 ACK 전 완료: 각각 추가 주문과 POS에 없는 완료 상태를 검출해 KILLED. 두 사본의 빌드·설치는 성공했으며 환경 실패를 검출로 세지 않았다.
+- [M2 영구 증거](evidence/M2.md), [원본 artifact](https://github.com/chrysaor80/local-link-lab/actions/runs/40624098387/artifacts/12789036204).
+- 삼성 실기기/LAN, 실제 디스크 고갈·전원 차단, 전체 UI 동시 조작·업데이트 등은 NOT_RUN.
 
 Room DB 재열기 검사는 OS 프로세스 종료 검증으로 간주하지 않는다. 에뮬레이터 정상 왕복의 판정은 UI에서 접수 전에 기록한 기준값, Room의 ACK 결과, 새 POS DB의 전체 행 집합과 영수증을 비교한다. 실행 누락은 성공으로 처리하지 않는다.
 
@@ -48,6 +57,6 @@ Room DB 재열기 검사는 OS 프로세스 종료 검증으로 간주하지 않
 
 원격 업로드는 Git push 또는 GitHub 연결 도구로 수행한다. GitHub API와 CI 조회는 연결 도구를 사용한다. 로컬에는 KVM이 없어 Android 실행은 CI 에뮬레이터로 확인한다. OPUS 직접 연결은 없으므로 고정 커밋의 검토 요청을 사용자가 전달한다. 공개 출처·비공개 링크 점검은 구현 담당의 수동 점검이다.
 
-## M2에서 보강할 경계
+## 보강한 경계와 검증 한계
 
-POS_MISMATCH에서 PENDING 보존과 현재 worker 중지는 구현됐지만, 전경 복귀/수동 재개 때 목적지 hello 재확인을 반드시 거치는 상태 전이는 남아 있다. POS 트랜잭션의 DB ID 검사는 항상 수행된다. API 23 호환성, 기기 이전 차단의 실제 OS 동작과 메모리/저장 공간 장애는 확인 전이다. Lint는 오류 없이 통과했으며 백업 속성 안내 경고 1개가 남아 있다.
+M2는 전경 복귀/수동 재개마다 저장된 대상 DB를 hello로 먼저 확인하도록 보강했다. 다른 DB면 주문을 보내지 않고 중지하며, 확인 실패 시 주문을 보존한다. POS 트랜잭션의 DB ID 검사도 유지한다. JVM 검사와 실제 에뮬레이터 C07 재개 시험으로 확인한다. API 23 호환성, 기기 이전 차단의 실제 OS 동작과 메모리/저장 공간 장애는 확인 전이다. Lint는 오류 없이 통과했으며 백업 속성 안내 경고 1개가 남아 있다.

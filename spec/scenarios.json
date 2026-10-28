@@ -38,7 +38,8 @@
       "execution_levels": [
         "JVM_UNIT",
         "POS_INTEGRATION",
-        "ANDROID_MANUAL"
+        "ANDROID_MANUAL",
+        "ANDROID_EXTERNAL"
       ],
       "trigger": "LOCAL_COMMITTED_BEFORE_FIRST_SEND",
       "observations": [
@@ -58,7 +59,8 @@
       "execution_levels": [
         "JVM_UNIT",
         "POS_INTEGRATION",
-        "ANDROID_MANUAL"
+        "ANDROID_MANUAL",
+        "ANDROID_EXTERNAL"
       ],
       "trigger": "POS_COMMITTED_BEFORE_ACK",
       "observations": [
@@ -80,7 +82,8 @@
         "I05"
       ],
       "execution_levels": [
-        "ANDROID_MANUAL"
+        "ANDROID_MANUAL",
+        "ANDROID_EXTERNAL"
       ],
       "variants": [
         "am_kill_idle_pending",
@@ -94,7 +97,10 @@
         "same_request_id_and_payload",
         "one_pos_row",
         "local_ack_committed",
-        "original_receipt_after_commit_death"
+        "original_receipt_after_commit_death",
+        "pending_before_death_and_after_restore",
+        "zero_submits_while_paused",
+        "all_retry_acks_held_until_new_process_observed"
       ]
     },
     {
@@ -235,7 +241,8 @@
       "execution_levels": [
         "JVM_UNIT",
         "POS_INTEGRATION",
-        "ANDROID_MANUAL"
+        "ANDROID_MANUAL",
+        "ANDROID_EXTERNAL"
       ],
       "trigger": "PENDING_AND_CHANGED_ADDRESS",
       "observations": [
@@ -263,6 +270,15 @@
         "C03"
       ],
       "expected_violation": "lost_or_prematurely_completed_order"
+    },
+    {
+      "id": "MUT03",
+      "change": "ignore_persisted_user_pause",
+      "detected_by": [
+        "S03",
+        "C04"
+      ],
+      "expected_violation": "sent_while_paused"
     }
   ]
 }

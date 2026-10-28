@@ -49,3 +49,9 @@ M1 수정은 PR #1에 반영하고 M2 브랜치에도 통합한다. M2의 정상
 - 원본 artifact를 내려받아 JUnit 개수/실패/누락과 정상 주문 기준값·POS 전체 행·영수증을 다시 대조했다. 새 두 계측 검사는 연결 거부와 5초 침묵 응답 뒤 수동 재개 없이 주문이 ACK되는지 검사한다.
 
 OPUS 조건의 필수 수정과 회귀 실행은 완료했다. OPUS가 수정본을 재검토했다고 기록하지 않는다. 문서만 추가한 후속 커밋과 실제 검증 구현 SHA를 구분한다.
+
+## M2 통합 시 추가 확인
+
+M1 수정본을 M2의 DestinationVerifier와 함께 통합했다. 실패한 probe 뒤에도 저장된 DB를 hello로 확인한 다음 전송한다. `lab/check_variants.py`에도 M1-03과 같은 assert 의존이 있어 명시적 실패로 바꿨다. 정상·debug 제어 누락·release 제어 유출의 세 구성을 일반/`-O` 실행에서 각각 검사한다. 합성 ZIP 검사는 검사기 분기 회귀이며 실제 빌드 APK도 별도 검사한다.
+
+통합본 로컬 결과: Python 21개, core JVM 19개, Controller JVM 6개 PASS. debug/release/계측 APK 빌드 및 실제 APK의 일반/`-O` 제어 코드 제외 검사 PASS. 통합본 `127ea32`의 Android 정상 4개·연결 회귀 2개·M2 시나리오 6개·결함 사본 2개 검출도 CI에서 통과했다. [M2 재검증 근거](../evidence/M2_REVIEW.md)에 실제 checkout SHA, artifact, 관측을 기록했다.

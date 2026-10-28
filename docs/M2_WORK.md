@@ -1,6 +1,6 @@
 # M2 작업 배정과 진행 순서
 
-M1 구현·증거의 고정 기준은 `ee67e2c62d844c538fd7cca26543ab3a103628fe`다. [OPUS 검토 요청](reviews/OPUS_M1_REDTEAM.md)은 이 기준을 읽는다. M2는 Codex가 담당한다. 이 문서는 착수 순서이며 장애 검증 완료 기록이 아니다.
+M1 구현·증거의 고정 기준은 `ee67e2c62d844c538fd7cca26543ab3a103628fe`다. [OPUS 검토 요청](reviews/OPUS_M1_REDTEAM.md)은 이 기준을 읽는다. M2는 Codex가 담당한다. 이 문서는 역할과 실행 도구의 설명이다. 완료한 검증의 고정 SHA와 실제 결과는 [M2 증거](evidence/M2.md)에 있다.
 
 | 담당 | 맡을 일 | 산출물 |
 |---|---|---|
@@ -20,7 +20,7 @@ M1 구현·증거의 고정 기준은 `ee67e2c62d844c538fd7cca26543ab3a103628fe`
 
 1. 목적지 불일치 후 재개 전 hello 재확인 등 알려진 경계를 보강하고, OPUS 발견을 회귀 테스트로 고정한다.
 2. S01 단절, S02 응답 유실, S03 OS 프로세스 종료를 새 DB와 고정 기준으로 실행한다. 핵심 보조 시나리오의 실제 실행 수준도 기록한다.
-3. 정상 구현이 통과한 동일 판정기에 MUT01(ID 재발급), MUT02(ACK 전 완료) 사본을 넣어 의도한 데이터 위반으로 실패하는지 확인한다.
+3. 정상 구현이 통과한 동일 판정기에 MUT01(ID 재발급), MUT02(ACK 전 완료), MUT03(사용자 중지 무시) 사본을 넣어 의도한 데이터 위반으로 실패하는지 확인한다.
 4. 소스 SHA·환경·명령·사건·관측·판정·증거 위치를 묶어 M2 검토를 한 번 요청한다.
 
 삼성 폰이 준비되기 전의 Android 증거는 에뮬레이터로 표시한다. 실제 Windows PC/폰의 LAN 검증은 기기 확보 후 별도 실행한다. NSD/BLE/USB 확장·다중 단말·배포 플랫폼 확장은 기존 후속 범위를 유지한다.
@@ -28,3 +28,26 @@ M1 구현·증거의 고정 기준은 `ee67e2c62d844c538fd7cca26543ab3a103628fe`
 ## 전달 방식
 
 사용자는 OPUS에 요청서 링크를 한 번 전달하고 결과 보고를 이 채팅에 돌려주면 된다. 커밋마다 두 도구 사이에서 코드를 복사하지 않는다. OPUS 재현 코드는 결과와 함께 받아 Codex가 적용·검증한다. OPUS에 직접 요청을 보내는 도구는 현재 연결되어 있지 않다.
+
+
+## 구현된 실행 도구
+
+- `lab/verdict.py`: 접수 전 기준 집합과 로컬/POS 전체 행, 영수증을 비교한다. 중간 PENDING은 허용하되 POS 저장 없는 ACK는 즉시 실패한다.
+- `lab/android_run.py`: S01 전송 도중 POS 저장 전 연결 종료, S02 POS 저장 후 첫 ACK 유실, S03의 am kill/force-stop/저장 직후 force-stop 변형, C07 재개 전 다른 DB 차단을 실행한다. 장애 사건·PID·전체 행·명령을 남긴다.
+- `lab/mutations.py`: 정상 6개 실행이 먼저 통과한 동일 소스에서 별도 임시 사본을 빌드한다. MUT01은 재시도 ID를 바꾸고 MUT02는 ACK 전에 로컬 확인을 저장하며 MUT03은 사용자 중지 검사를 제거한다. 원본 판정기가 지정한 데이터 위반을 실제 검출해야 KILLED이며 빌드·설치·환경 실패는 BLOCKED다.
+- `LabControlReceiver`는 debug source set에만 존재하며 DUMP 권한으로 보호된다. 주문 접수와 일시 중지는 실제 화면과 같은 Controller를 거친다. release DEX와 binary manifest의 부재를 별도 검사한다.
+
+하네스 v2는 깨끗한 checkout과 빌드 APK에 일치하는 설치 APK를 요구한다. 유휴 S03은 PENDING·POS 0건·submit 0회·중지 worker 상태를, commit 후 종료는 최초·재시도 ACK 보류와 종료 전/복원 후 PENDING을 검사한다. OPUS M2 검토 반영은 [처리 기록](reviews/M2_RESPONSE.md)에 있다.
+
+설치된 debug APK가 있는 폐기 가능한 에뮬레이터에서 저장소 루트 기준 실행:
+
+```text
+python -m unittest pos.test_pos lab.test_verdict -v
+python -m lab.check_variants
+python -m lab.android_run --out artifacts/m2-normal
+python -m lab.mutations --normal-summary artifacts/m2-normal/summary.json --out artifacts/m2-mutations
+```
+
+실행기는 테스트 앱 데이터를 초기화하므로 실제 폰에서는 자동 실행을 거부한다. `--serial`은 에뮬레이터 선택에 사용한다. 실기기 검증은 별도로 준비한다. 출력 폴더의 기존 실행 결과를 덮어쓰지 않는다. 실행기가 종료되면 계속 백그라운드 작업이 진행되는 구조가 아니다.
+
+S01은 요청 프레임 수신 후 POS 저장 전 소켓을 닫아 미처리 요청의 재시도를 재현한다. Wi-Fi 전원 차단이나 패킷 손실 분포를 재현한 시험으로 표현하지 않는다. 정상 보존·복구 결과와 별도로 주입 지점을 명시한다.
