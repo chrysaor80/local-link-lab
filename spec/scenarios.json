@@ -238,7 +238,8 @@
       "execution_levels": [
         "JVM_UNIT",
         "POS_INTEGRATION",
-        "ANDROID_MANUAL"
+        "ANDROID_MANUAL",
+        "ANDROID_EXTERNAL"
       ],
       "trigger": "PENDING_AND_CHANGED_ADDRESS",
       "observations": [

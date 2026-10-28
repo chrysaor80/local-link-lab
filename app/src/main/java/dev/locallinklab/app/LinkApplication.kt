@@ -56,8 +56,20 @@ class LinkController(val repository: Repository) : DefaultLifecycleObserver {
                         return@collectLatest
                     }
                     if (config.userPaused) { _runtime.value = "사용자가 전송을 일시 중지함"; return@collectLatest }
+                    val endpoint = Endpoint(config.host, config.port)
+                    when (DestinationVerifier(transport).verify(endpoint, config.posDbId) { _runtime.value = it }) {
+                        DestinationResult.VERIFIED -> Unit
+                        DestinationResult.MISMATCH -> {
+                            _runtime.value = "POS DB가 달라 전송을 중지했습니다. 연결 주소를 다시 확인하세요."
+                            return@collectLatest
+                        }
+                        DestinationResult.UNAVAILABLE -> {
+                            _runtime.value = "POS 확인 한도 · 주문을 보관했습니다. 전송 재개를 눌러 확인하세요."
+                            return@collectLatest
+                        }
+                    }
                     while (true) {
-                        when (DeliveryEngine(repository, transport).drain(Endpoint(config.host, config.port)) { _runtime.value = it }) {
+                        when (DeliveryEngine(repository, transport).drain(endpoint) { _runtime.value = it }) {
                             StopReason.EMPTY -> { _runtime.value = "대기 중"; wake.receive() }
                             StopReason.RETRY_LIMIT -> { _runtime.value = "재시도 한도 · 전송 재개를 눌러 확인하세요."; return@collectLatest }
                             StopReason.POS_MISMATCH -> { _runtime.value = "다른 POS DB입니다. 원래 POS 주소를 확인하세요."; return@collectLatest }

@@ -21,7 +21,7 @@ from pos.store import Store
 from .verdict import evaluate, summarize
 
 PACKAGE = "dev.locallinklab.app"
-CASES = ("S01", "S02", "S03_am_kill", "S03_force_stop", "S03_after_pos_commit")
+CASES = ("S01", "S02", "S03_am_kill", "S03_force_stop", "S03_after_pos_commit", "C07_resume")
 
 
 def now():
@@ -118,11 +118,16 @@ async def run_case(adb, scenario, folder, source_sha):
     allow_ack = asyncio.Event()
     before_blocked = scenario == "S01"
     first_drop = True
+    other_store = Store(folder / "other-pos.db") if scenario == "C07_resume" else None
+    other_submits = 0
 
     def event(name, **details):
         record["events"].append({"event": name, "at": now(), **details})
 
     async def before_submit(request):
+        nonlocal other_submits
+        if other_store is not None and server.store is other_store:
+            other_submits += 1
         if before_blocked:
             event("REQUEST_BLOCKED_BEFORE_POS_WRITE", request_id=request["request_id"])
             blocked_request.set()
@@ -201,8 +206,27 @@ async def run_case(adb, scenario, folder, source_sha):
                 record["violations"] = ["USER_PAUSE_LOST"]
             record["violations"] += await observe("restored_pending")
         if not record["violations"]:
+            if scenario == "C07_resume":
+                server.store = other_store
+                event("OTHER_DB_BOUND", pos_db_id=other_store.db_id)
             await adb.control("resume")
-            if scenario == "S01":
+            if scenario == "C07_resume":
+                deadline = time.monotonic() + 8
+                while time.monotonic() < deadline:
+                    snapshot = await adb.control("snapshot")
+                    if snapshot["runtime"] == "POS DB가 달라 전송을 중지했습니다. 연결 주소를 다시 확인하세요.":
+                        break
+                    await asyncio.sleep(0.1)
+                else:
+                    raise Blocked("No observed destination verification stop")
+                if other_submits or pos_rows(other_store):
+                    record["violations"].append("SUBMITTED_BEFORE_DESTINATION_VERIFIED")
+                event("DESTINATION_MISMATCH_STOPPED", other_submits=other_submits, other_rows=pos_rows(other_store))
+                record["violations"] += await observe("identity_mismatch")
+                server.store = store
+                event("ORIGINAL_DB_RESTORED")
+                await adb.control("resume")
+            elif scenario == "S01":
                 await asyncio.wait_for(blocked_request.wait(), 8)
                 record["violations"] += await observe("request_blocked")
                 before_blocked = False

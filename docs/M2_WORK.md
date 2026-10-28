@@ -33,8 +33,8 @@ M1 구현·증거의 고정 기준은 `ee67e2c62d844c538fd7cca26543ab3a103628fe`
 ## 구현된 실행 도구
 
 - `lab/verdict.py`: 접수 전 기준 집합과 로컬/POS 전체 행, 영수증을 비교한다. 중간 PENDING은 허용하되 POS 저장 없는 ACK는 즉시 실패한다.
-- `lab/android_run.py`: S01 전송 도중 POS 저장 전 연결 종료, S02 POS 저장 후 첫 ACK 유실, S03의 am kill/force-stop/저장 직후 force-stop 변형을 실행한다. 장애 사건·PID·전체 행·명령을 남긴다.
-- `lab/mutations.py`: 정상 5개 실행이 먼저 통과한 동일 소스에서 별도 임시 사본을 빌드한다. MUT01은 재시도 ID를 바꾸고 MUT02는 ACK 전에 로컬 확인을 저장한다. 원본 판정기가 지정한 데이터 위반을 실제 검출해야 KILLED이며 빌드·설치·환경 실패는 BLOCKED다.
+- `lab/android_run.py`: S01 전송 도중 POS 저장 전 연결 종료, S02 POS 저장 후 첫 ACK 유실, S03의 am kill/force-stop/저장 직후 force-stop 변형, C07 재개 전 다른 DB 차단을 실행한다. 장애 사건·PID·전체 행·명령을 남긴다.
+- `lab/mutations.py`: 정상 6개 실행이 먼저 통과한 동일 소스에서 별도 임시 사본을 빌드한다. MUT01은 재시도 ID를 바꾸고 MUT02는 ACK 전에 로컬 확인을 저장한다. 원본 판정기가 지정한 데이터 위반을 실제 검출해야 KILLED이며 빌드·설치·환경 실패는 BLOCKED다.
 - `LabControlReceiver`는 debug source set에만 존재하며 DUMP 권한으로 보호된다. 주문 접수와 일시 중지는 실제 화면과 같은 Controller를 거친다. release DEX 부재를 별도 검사한다.
 
 설치된 debug APK가 있는 에뮬레이터에서 저장소 루트 기준 실행:
