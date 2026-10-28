@@ -1,6 +1,6 @@
 # Local Link Lab 진행 관리
 
-갱신: 2026-10-28 Asia/Seoul. 사용자 환경은 Windows, 삼성 구형폰 확보 예정. 기종·Android 버전·주당 투입 시간은 미확인이다.
+갱신: 2026-10-28 Asia/Seoul. 사용자 환경은 Windows, 삼성 구형폰 충전 중. 기종·Android 버전은 아직 미확인이며 우선 에뮬레이터 검증을 진행한다.
 
 ## 진행 상태
 
@@ -8,8 +8,8 @@
 |---|---|---|---|
 | M0 | 범위·프로토콜·시나리오·판단 기록·검토 요청 | OPUS 검토 반영, M1 진행 | 명세 자체 검사, OPUS의 범위·계약 검토 반영 |
 | M1 | Android → POS 실제 왕복 | OPUS 조건부 승인, 필수 수정·CI 재검증 완료 | 실제 앱과 Room, 실제 TCP와 POS DB, UI 결과 대조 |
-| M2 | 장애 3종과 핵심 검증, 결함 사본 3종 | OPUS 조건부 승인 반영, 검증 빈틈 수정·CI 재검증 완료 | 시나리오별 근거 확보, OPUS 검토 반영 |
-| M3 | CI·APK·영상·공개 설명 | PR #3에서 강화한 후보 생성 CI 검증 완료, 촬영·실기기 대기 | 실행 증거와 한계가 일치하는 지원용 산출물 |
+| M2 | 장애 3종과 핵심 검증, 결함 사본 3종 | OPUS 수정본 승인(6c7187d), 기존 필수 조건 해소 | 시나리오별 근거 확보, OPUS 검토 반영 |
+| M3 | CI·APK·영상·공개 설명 | 재확인 P3 보강·에뮬레이터 재검증 진행, 촬영·실기기 대기 | 실행 증거와 한계가 일치하는 지원용 산출물 |
 
 ## 담당과 변경 관리
 
@@ -20,9 +20,9 @@
 
 ## 다음 작업
 
-1. OPUS가 검토한 `127ea3232bd6a6dc9b8c1b54eca78b3e092127d7`의 [보고](reviews/OPUS_M2_REVIEW_REPORT.md)를 수령했다. [처리 기록](reviews/M2_RESPONSE.md)의 단계별 검사·MUT03·APK 결속 보강을 CI에서 검증했다. [집중 재확인 요청](reviews/M2_RECHECK_REQUEST.md)으로 OPUS에게 수정 해소 여부만 확인한다.
-2. M3의 하네스 v2·결함 3종·설치 APK 대조를 [PR #3](https://github.com/chrysaor80/local-link-lab/pull/3)에서 통합했다. [CI 40639250044](https://github.com/chrysaor80/local-link-lab/actions/runs/40639250044)의 새 후보 생성과 내려받은 원본 대조를 완료했다. 기기 설치·LAN 확인과 영상 촬영을 준비한다.
-3. 기기 확보 후 Windows와 삼성 기기 모델/API를 기록하고 실제 LAN을 확인한다.
+1. [OPUS 재확인 보고](reviews/OPUS_M2_RECHECK_REPORT.md)에서 M2 수정본 6c7187d 승인을 받았다. [P3 처리 기록](reviews/M2_RECHECK_RESPONSE.md)의 후보 사건 검사·빌드 stamp·S01 표현 보강을 M3에서 검증한다.
+2. 폰 충전·기종 확인을 기다리는 동안 GitHub Actions의 API 29 에뮬레이터에서 실제 앱/TCP/POS 시나리오를 실행하고 화면 캡처를 보존한다.
+3. 기종/API 확인 후 Windows와 삼성 폰의 실제 LAN·설치·수동 시연을 추가 검증한다.
 
 ## 실행 근거
 

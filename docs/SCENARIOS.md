@@ -5,7 +5,7 @@
 | ID | 검증 대상 | 재현 지점과 기대 결과 |
 |---|---|---|
 | S00 | 정상 왕복 | 로컬 commit → 전송 → POS commit → ACK → 로컬 확인. POS 1건 |
-| S01 | 연결 단절 | 로컬 commit 이후 첫 전송을 차단하고 복구. ID·본문 보존, POS 1건 |
+| S01 | 연결 단절 | 로컬 commit 이후 첫 전송 차단 → 수동 재개 → 같은 ID·본문, POS 1건 |
 | S02 | 처리 후 응답 유실 | POS commit 이벤트 직후 ACK를 버리고 닫기. 재시도 ACK의 receipt_id 동일, POS 1건 |
 | S03 | Android 프로세스 종료 | 로컬 commit 확인 후 미확인 상태에서 종료·명시적 재실행. 같은 ID·본문 복원 |
 | S04 | 응답 없는 상대 | 요청을 읽은 서버가 응답도 연결 종료도 하지 않음. 시도 전체 제한 시간에 종료, 상한 후 일시 중지 |
@@ -37,7 +37,7 @@ S03의 `am kill` 변형은 백그라운드 전환으로 worker를 멈춘 뒤의 
 
 `force_stop_after_pos_commit` 변형은 POS commit 사건 이후 최초·재시도 ACK를 모두 보류한다. 외부 실행기는 종료 전 PENDING·영수증 없음·POS 1건·ACK 방출 0회를 확인하고, adb force-stop과 PID 소멸·새 PID를 관측한다. 재실행 후에도 같은 전제를 확인한 다음 ACK 장벽을 해제한다. 전제를 놓치면 BLOCKED이며 성공으로 세지 않는다. 서버 자체가 임의 셸 명령을 실행하는 기능은 넣지 않는다. 최종 같은 ID·최초 receipt·POS 전체 1건·로컬 확인을 검증한다. OS 저메모리 회수나 전원 차단과 같다고 표기하지 않는다.
 
-유휴 S03은 접수 후와 재실행 후 각각 PENDING·영수증 없음·POS 0건·submit 시도 0회를 검사하고 전경 worker의 사용자 중지 상태를 관측한다. 플래그만 남아 있고 전송했으면 SENT_WHILE_PAUSED로 FAIL이다. S01은 관측 뒤 연결 복구와 명시적 재개를 함께 실행해 관측 지연으로 소모된 시도 예산을 다시 시작한다.
+유휴 S03은 접수 후와 재실행 후 각각 PENDING·영수증 없음·POS 0건·submit 시도 0회를 검사하고 전경 worker의 사용자 중지 상태를 관측한다. 플래그만 남아 있고 전송했으면 SENT_WHILE_PAUSED로 FAIL이다. S01은 관측 뒤 연결 복구와 명시적 재개를 함께 실행해 관측 지연으로 소모된 시도 예산을 다시 시작한다. S01은 수동 재개 후 복구를 검증하며 recovered_by_resume=true를 기록한다. Android 자동 재시도 근거는 추가 재개 없이 ACK 유실 후 복구하는 S02다.
 
 C01 실기기는 debug 전용 한도 축소/저장 실패 주입으로 재현하고 release 변형에서 제외한다. C04는 사용자 중지가 프로세스 재실행에도 유지되는지 확인한다.
 
@@ -55,7 +55,7 @@ DB close/open은 저장소 재개 테스트다. 프로세스 종료 증거가 �
 
 각 실행은 source_commit, scenario_id, execution_level, network_path(loopback/emulator/adb-reverse/lan-wifi), OS/기기, 시작·종료 시각, 실제 실행 명령, 주입 사건, 관측 결과, 판정, 로그/DB 증거 위치를 남긴다. 에뮬레이터·adb reverse 통과를 실제 LAN/Windows 방화벽 검증으로 세지 않는다.
 
-하네스 v2는 시작·종료 시 깨끗한 checkout을 확인하고 pm path의 실제 설치 APK 바이트 해시를 빌드 산출물과 대조한다. 수정 중인 소스·다른 APK면 BLOCKED다. 이는 CI의 빌드 절차와 함께 사용하는 증거이며 해시 자체가 소스에서 APK를 재현 빌드했다는 증명은 아니다.
+하네스 v2는 시작·종료 시 깨끗한 checkout을 확인하고 pm path의 실제 설치 APK 바이트 해시를 빌드 산출물과 대조한다. 수정 중인 소스·다른 APK면 BLOCKED다. 로컬 실행도 빌드 stamp의 소스·APK 해시를 요구하며, 결함 시험 뒤 정상 APK 재설치를 해시로 확인한다. 후보는 PID 변경과 종료/재실행 순서, 각 장애 사건의 누락도 차단한다. 이는 CI의 빌드 절차와 함께 사용하는 증거이며 해시 자체가 소스에서 APK를 재현 빌드했다는 증명은 아니다.
 
 판정은 PASS / FAIL / BLOCKED / NOT_RUN. 종료 코드 0만으로 전체 통과를 결정하지 않는다. 필수 관측이나 필수 실행이 없으면 전체 성공이 될 수 없다. 재실행 통과가 이전 실패를 지우지 않는다.
 

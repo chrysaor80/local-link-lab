@@ -18,7 +18,7 @@ import uuid
 from pos.server import PosServer
 from pos.store import Store
 from .verdict import evaluate, summarize
-from .identity import APK, clean_source, installed_apk
+from .identity import APK, STAMP, clean_source, installed_apk, check_stamp
 from .phases import paused_violations, commit_window
 
 PACKAGE = "dev.locallinklab.app"
@@ -106,7 +106,8 @@ def pos_rows(store):
 async def run_case(adb, scenario, folder, source_sha):
     folder.mkdir(parents=True, exist_ok=False)
     record = {"scenario_id": scenario, "source_commit": source_sha, "harness_version": 2, "execution_level": "ANDROID_EXTERNAL",
-              "network_path": "emulator-nat", "started_at": now(), "verdict": "BLOCKED", "events": [], "violations": []}
+              "network_path": "emulator-nat", "started_at": now(), "verdict": "BLOCKED", "events": [], "violations": [],
+              "recovered_by_resume": False}
     commands_start = len(adb.history)
     store = Store(folder / "pos.db")
     baseline = [dict(request_id=str(uuid.uuid4()), pos_db_id=store.db_id,
@@ -261,6 +262,7 @@ async def run_case(adb, scenario, folder, source_sha):
                 # Observation latency must not consume the recovery attempt budget.
                 # Explicit recovery also works if a slow ADB host exhausted the old worker.
                 await adb.control("resume")
+                record["recovered_by_resume"] = True
                 event("RECOVERY_BUDGET_RESTARTED")
             elif scenario == "S02":
                 await asyncio.wait_for(committed.wait(), 8)
@@ -321,6 +323,8 @@ async def main(args):
         sha = clean_source()
         if args.source_commit and args.source_commit != sha:
             raise ValueError("Mutation base differs from the harness checkout")
+        kind = "mutation" if args.source_commit else "normal"
+        build_stamp = check_stamp(args.stamp, sha, args.apk, kind=kind)
         identity = await installed_apk(adb, args.apk)
     except (ValueError, OSError, Blocked) as exc:
         save(out / "summary.json", {"verdict": "BLOCKED", "error": str(exc), "results": []})
@@ -333,12 +337,15 @@ async def main(args):
     verdict = summarize(results, required)
     try:
         final_identity = await installed_apk(adb, args.apk)
+        if check_stamp(args.stamp, sha, args.apk, kind=kind) != build_stamp:
+            raise ValueError("Build stamp changed during verification")
         if clean_source() != sha:
             raise ValueError("Source changed during verification")
     except (ValueError, OSError, Blocked) as exc:
         final_identity = {"error": str(exc)}
         verdict = "BLOCKED"
     save(out / "summary.json", {"source_commit": sha, "source_clean": True, "harness_version": 2,
+                                "build_stamp": build_stamp,
                                 "apk_identity": identity, "final_apk_identity": final_identity,
                                 "required": required, "verdict": verdict,
                                 "results": [{key: r[key] for key in ("scenario_id", "verdict", "violations")} for r in results]})
@@ -352,4 +359,5 @@ if __name__ == "__main__":
     parser.add_argument("--scenario", action="append", choices=CASES)
     parser.add_argument("--source-commit", help="Base revision when executing an isolated mutation copy")
     parser.add_argument("--apk", type=Path, default=APK, help="Expected installed build artifact (normal or isolated mutant)")
+    parser.add_argument("--stamp", type=Path, default=STAMP, help="Record created immediately after a successful build")
     raise SystemExit(asyncio.run(main(parser.parse_args())))

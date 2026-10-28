@@ -20,9 +20,9 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - run: python -m unittest pos.test_pos pos.test_m1_redteam lab.test_verdict lab.test_variants lab.test_m2_redteam lab.test_candidate -v
+      - run: python -m unittest pos.test_pos pos.test_m1_redteam lab.test_verdict lab.test_variants lab.test_m2_redteam lab.test_candidate lab.test_m3_recheck lab.test_build_identity -v
       - name: Candidate gate also survives Python optimization
-        run: python -O -m unittest lab.test_candidate -v
+        run: python -O -m unittest lab.test_candidate lab.test_m3_recheck lab.test_build_identity -v
   android:
     runs-on: ubuntu-24.04
     timeout-minutes: 35
@@ -49,7 +49,7 @@ jobs:
         run: ./gradlew :core:test :app:testDebugUnitTest :app:assembleDebug :app:assembleRelease :app:assembleDebugAndroidTest --stacktrace
       - name: Release excludes lab control
         run: python -m lab.check_variants
-      - name: Record APK identity before emulator verification
+      - name: Build and stamp the clean source before emulator verification
         run: python -m lab.package_candidate stamp
       - name: Enable KVM
         run: |
@@ -76,6 +76,7 @@ jobs:
             cp -r app/build/outputs/androidTest-results artifacts/m1-android-tests
             ./gradlew :app:connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=dev.locallinklab.app.ControllerRecoveryTest -Pandroid.injected.androidTest.leaveApksInstalledAfterRun=true --stacktrace
             python -m lab.android_run --out artifacts/m2-normal
+            adb exec-out screencap -p > artifacts/emulator-result.png
             python -m lab.mutations --normal-summary artifacts/m2-normal/summary.json --out artifacts/m2-mutations
             adb logcat -d > artifacts/m2-logcat.txt
       - name: Preserve test evidence and debug APK

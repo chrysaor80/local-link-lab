@@ -34,3 +34,7 @@ OPUS의 고정 검토 대상은 `127ea3232bd6a6dc9b8c1b54eca78b3e092127d7`이다
 [설치·LAN 안내](DEMO_QUICKSTART.md), [영상 촬영 계획](DEMO_VIDEO.md), [지원·면접 설명 초안](PORTFOLIO.md)을 사용한다. 삼성 폰의 기종/API, USB 승인, 사용자 PC의 LAN·방화벽은 사용자가 실제 기기에서 관측해야 한다. CI Windows 테스트가 그 환경의 성공을 대신하지 않는다.
 
 시연 후보의 debug 서명 키는 CI 실행마다 달라질 수 있다. 설치 충돌을 자동 삭제로 해결하지 않으며, 테스트 폰의 기존 주문 데이터 보존 여부를 먼저 확인한다. 배포용 signing key/Play Store/자동 업데이트는 후속 범위다.
+
+## 재확인 이후 보강
+
+OPUS는 M2 수정 6c7187d를 승인했다. P3는 후보 단계의 PID/장애 사건 대조, 로컬 실행의 build stamp 필수화, 정상 APK 재설치 해시 확인으로 보강한다. stamp CLI는 깨끗한 checkout에서 Gradle을 먼저 실행하고 소스·APK 해시를 발행한다. S01은 수동 재개 후 복구, S02는 추가 재개 없는 자동 재시도로 표시한다. [처리 기록](reviews/M2_RECHECK_RESPONSE.md)에 재현·실행 결과를 기록한다.
