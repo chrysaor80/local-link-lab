@@ -2,7 +2,7 @@
 
 Android 단말과 PC의 POS 시뮬레이터 사이에서 주문 요청을 보존하고, 통신 장애 후 같은 요청을 다시 처리하는 과정을 검증하는 포트폴리오 프로젝트입니다. 실제 결제 승인 기능은 포함하지 않습니다.
 
-현재 단계는 **M1 독립 검토 반영·M2 재검증 완료·독립 검토 대기**입니다. Android 앱, Kotlin 연결 코어, Python POS를 구현했습니다. 정상 왕복과 장애·복구 6개 실행을 API 29 Android 에뮬레이터에서 검증했습니다. ID 재발급·ACK 전 완료 결함 사본 2개도 같은 판정기가 실제 데이터 위반으로 검출했습니다. [진행 기록](docs/CONTROL.md)에 커밋·실행 근거와 미검증 범위를 표시합니다. `scripts/check_spec.py`는 명세의 일관성만 검사합니다.
+현재 단계는 **M2 독립 검토 대기·시연 후보 생성 검증 완료**입니다. Android 앱, Kotlin 연결 코어, Python POS를 구현했습니다. 정상 왕복과 장애·복구 6개 실행을 API 29 Android 에뮬레이터에서 검증했습니다. ID 재발급·ACK 전 완료 결함 사본 2개도 같은 판정기가 실제 데이터 위반으로 검출했습니다. [진행 기록](docs/CONTROL.md)에 커밋·실행 근거와 미검증 범위를 표시합니다. `scripts/check_spec.py`는 명세의 일관성만 검사합니다.
 
 ## 읽는 순서
 
@@ -54,7 +54,7 @@ py -u -m pos.server --db artifacts/pos.db --host 192.168.0.10 --port 8765 > arti
 
 ## 시연과 지원 준비
 
-[M3 준비](docs/M3_WORK.md)에서 필수 검사 통과 후에만 시연 후보를 생성하도록 구성합니다. [Windows·폰 실행 안내](docs/DEMO_QUICKSTART.md), [2~3분 촬영 계획](docs/DEMO_VIDEO.md), [지원·면접 설명 초안](docs/PORTFOLIO.md)을 제공합니다. 실제 촬영과 삼성 기기 실행은 아직 완료하지 않았습니다.
+필수 검사 통과 후에만 시연 후보를 생성합니다. [검증된 시연 묶음과 근거](docs/evidence/M3.md), [M3 진행](docs/M3_WORK.md)을 참고하세요. [Windows·폰 실행 안내](docs/DEMO_QUICKSTART.md), [2~3분 촬영 계획](docs/DEMO_VIDEO.md), [지원·면접 설명 초안](docs/PORTFOLIO.md)을 제공합니다. 실제 촬영과 삼성 기기 실행은 아직 완료하지 않았습니다.
 
 ## 협업
 

@@ -2,6 +2,8 @@
 
 OPUS의 고정 검토 대상은 `127ea3232bd6a6dc9b8c1b54eca78b3e092127d7`이다. M3는 그 구현을 바꾸지 않고 CI 산출물과 실행·설명 자료를 준비한다. 검토 결과의 새 결함은 시연 확장보다 우선한다.
 
+현재 후보 생성은 [M3 CI 근거](evidence/M3.md)로 검증했다. 실행·촬영·지원 초안은 준비됐고 실제 촬영과 삼성 기기 실행은 남아 있다.
+
 ## 이번 작업과 종료 기준
 
 | 항목 | 범위 | 완료 판단 |
@@ -25,7 +27,7 @@ OPUS의 고정 검토 대상은 `127ea3232bd6a6dc9b8c1b54eca78b3e092127d7`이다
 
 ## 검증 방법
 
-`python -m unittest lab.test_candidate -v`와 `python -O -m unittest lab.test_candidate -v`는 실패한 job, 빠진 stamp/시나리오, 빈/건너뛴 JUnit, 다른 소스, 바뀐 APK, 빌드 실패를 KILLED로 잘못 표기한 결과 등을 거부하고 후보 폴더가 생기지 않는지 검사한다. 합성 파일 fixture이며 Android 실행의 대체 증거가 아니다. 실제 후보 생성은 새 CI에서 끝까지 실행해 확인한다.
+`python -m unittest lab.test_candidate -v`와 `python -O -m unittest lab.test_candidate -v`는 실패한 job, 빠진 stamp/시나리오, 빈/건너뛴 JUnit, 다른 소스, 바뀐 APK, 빌드 실패를 KILLED로 잘못 표기한 결과 등을 거부하고 후보 폴더가 생기지 않는지 검사한다. 합성 파일 fixture이며 Android 실행의 대체 증거가 아니다. 실제 후보 생성은 CI 40635121568에서 끝까지 실행해 확인했다.
 
 ## 사용자와 진행할 부분
 

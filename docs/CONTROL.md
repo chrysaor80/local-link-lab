@@ -9,7 +9,7 @@
 | M0 | 범위·프로토콜·시나리오·판단 기록·검토 요청 | OPUS 검토 반영, M1 진행 | 명세 자체 검사, OPUS의 범위·계약 검토 반영 |
 | M1 | Android → POS 실제 왕복 | OPUS 조건부 승인, 필수 수정·CI 재검증 완료 | 실제 앱과 Room, 실제 TCP와 POS DB, UI 결과 대조 |
 | M2 | 장애 3종과 핵심 검증, 결함 사본 2종 | M1 수정 통합 후 재검증 완료, OPUS 독립 검토 대기 | 시나리오별 근거 확보, OPUS 검토 반영 |
-| M3 | CI·APK·영상·공개 설명 | 후보 생성 gate·실행/촬영/지원 초안 구현, CI 확인 전 | 실행 증거와 한계가 일치하는 지원용 산출물 |
+| M3 | CI·APK·영상·공개 설명 | 시연 후보 생성 CI 검증 완료, 촬영·실기기 실행 대기 | 실행 증거와 한계가 일치하는 지원용 산출물 |
 
 ## 담당과 변경 관리
 
@@ -21,10 +21,12 @@
 ## 다음 작업
 
 1. 사용자가 [OPUS M2 요청](reviews/M2_REQUEST.md)을 전달했다. 검토 결과를 기다린다. 검토 코드는 `127ea3232bd6a6dc9b8c1b54eca78b3e092127d7`로 고정하고 M1 수정 확인과 M2 검증기 레드팀을 한 번에 요청한다.
-2. [M3 준비](M3_WORK.md)의 후보 생성 CI를 확인한다. [폰 실행 안내](DEMO_QUICKSTART.md), [영상 계획](DEMO_VIDEO.md), [지원/면접 초안](PORTFOLIO.md)을 준비했다. 촬영과 실기기 실행은 미완료다. OPUS가 새 결함을 보고하면 재현·회귀 수정을 우선한다.
+2. [M3 준비](M3_WORK.md)의 후보 생성 CI를 확인했고 [시연 묶음·근거](evidence/M3.md)를 기록했다. [폰 실행 안내](DEMO_QUICKSTART.md), [영상 계획](DEMO_VIDEO.md), [지원/면접 초안](PORTFOLIO.md)을 준비했다. 촬영과 실기기 실행은 미완료다. OPUS가 새 결함을 보고하면 재현·회귀 수정을 우선한다.
 3. 기기 확보 후 Windows와 삼성 기기 모델/API를 기록하고 실제 LAN을 확인한다.
 
 ## 실행 근거
+
+M3 준비 구현 `100cb23`: [CI 40635121568](https://github.com/chrysaor80/local-link-lab/actions/runs/40635121568) 전체 SUCCESS. 필수 검사 성공 뒤 시연 후보 생성, 다운로드한 APK/동봉 파일의 해시와 별도 POS 실행을 확인했다. [M3 근거](evidence/M3.md). OPUS 검토 대상의 app/core/pos 및 기존 장애 실행기 코드는 변경하지 않았다.
 
 최신 M2 통합 구현 `127ea32`: [CI 40629074288](https://github.com/chrysaor80/local-link-lab/actions/runs/40629074288) 전체 SUCCESS. Python 21개(Windows/Linux 각각), core JVM 19개, Controller JVM 6개, Android 정상 4개·복구 2개, 장애 6개 PASS·결함 사본 2개 KILLED. [최신 근거](evidence/M2_REVIEW.md)에 CI checkout SHA와 구현 tree 일치 및 내려받은 데이터 재대조를 기록했다.
 
