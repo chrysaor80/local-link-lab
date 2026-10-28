@@ -25,9 +25,11 @@ M0 검토 반영본. 구조는 [wire.schema.json](../spec/wire.schema.json), 원
 - 정수는 소수점·지수 없는 JSON 정수 리터럴만 허용한다. 1.0·1e0·boolean을 거부한다. UUID와 item_code는 전체 문자열이 패턴과 일치해야 하며 이스케이프된 후행 LF도 거부한다.
 - 한 시도마다 TCP 연결 하나를 열고 요청 한 프레임·응답 한 프레임 후 닫는다. 단말 worker와 진행 주문은 각각 하나다. 주기적 heartbeat는 없다. 한 read를 한 메시지로 가정하지 않는다.
 - 기본 포트 8765(변경 가능). loopback·에뮬레이터·adb reverse는 127.0.0.1 bind, LAN Wi-Fi는 실제 NIC IPv4 bind. network_path를 따로 기록한다.
+- IPv4는 ASCII 십진수 네 옥텟(0~255)이며 `0` 외의 앞자리 0을 허용하지 않는다. DNS 조회 없이 네 바이트 주소로 연결한다. 잘못된 주소는 기존 전송을 취소하기 전에 거부한다.
 - 클라이언트 접속 제한 2초, 연결·쓰기·읽기 전체 5초. 단조 시계를 쓰고 부분 수신으로 시간을 연장하지 않는다.
 - POS는 동시 연결을 처리하되 최대 활성 연결 32개. 수락부터 첫 LF까지 전체 5초, 응답 쓰기 1초 제한. 초과 시 닫고 자원을 해제한다. 침묵 연결 하나가 다른 요청을 막으면 안 된다.
 - SQLite busy/locked는 클라이언트 제한보다 짧게 종료하고 TEMPORARY_UNAVAILABLE 또는 연결 종료로 처리한다.
+- 전송 자체 제한 시간 초과는 통신 오류로 보고한다. 상위 job의 취소·제한 시간은 CancellationException으로 전파한다.
 - 취소·제한 시간에는 실제 소켓을 닫는다. SocketException이어도 job 취소가 원인이면 재시도하지 않는다. withTimeout만으로 blocking I/O가 끝난다고 가정하지 않는다.
 
 ## I06 목적지 확인과 주소 변경
@@ -44,6 +46,10 @@ hello는 주문을 만들지 않는 첫 설정·주소 변경 진단이다. M2�
 
 같은 pos_db_id가 확인되면 미확인 주문이 있어도 IP/포트 변경을 허용한다. 다른 DB면 미확인(PENDING+NEEDS_ATTENTION) 주문이 있을 때 변경을 거부한다. worker를 중지·종료한 뒤 목적지와 DB ID를 원자적으로 저장하고 재개한다.
 
+연결 확인이 실패하거나 다른 DB로의 설정 변경이 거부되면 기존 영속 설정으로 전송을 이어간다. 실패 사유는 전송 상태와 별도 표시한다. 저장된 사용자 일시 중지는 해제하지 않으며 첫 설정 실패 시 접수는 계속 불가능하다.
+
+hello와 오류의 DB ID도 현재 파일의 metadata에서 읽는다. 실행 중 DB 파일이 사라지면 빈 파일을 자동 생성하거나 과거 ID를 응답하지 않고 연결을 닫는다. DB 교체/삭제 후 데이터 복구를 보장한다는 의미는 아니다.
+
 hello 뒤 DB가 교체되는 경쟁도 막도록 모든 주문에 대상 pos_db_id를 포함한다. POS는 주문 트랜잭션에서 이를 확인하고 불일치 시 POS_MISMATCH, 쓰기 없음. 앱은 PENDING을 유지하고 목적지 재확인까지 자동 시도를 중지한다.
 
 ```json
@@ -55,6 +61,8 @@ hello 뒤 DB가 교체되는 경쟁도 막도록 모든 주문에 대상 pos_db_
 ```
 
 ## I04 응답 의미·재시도·순서
+
+파서 오류의 code·request_id 기대값은 [wire.error-expectations.json](../spec/wire.error-expectations.json)에 둔다. 중복 키·문법/인코딩/프레임 오류는 요청 ID를 신뢰하지 않는다. 파싱을 마친 객체의 유효한 ID만 상관관계에 사용한다.
 
 ERROR는 version=1, type=error, 서버 pos_db_id, request_id(해석 불가 시 null), code를 가진다.
 

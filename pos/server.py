@@ -39,6 +39,13 @@ class PosServer:
         if self.db_tasks:
             await asyncio.gather(*list(self.db_tasks), return_exceptions=True)
 
+    async def identity(self):
+        # Read the same file used by submit; a deleted/unreadable DB cannot certify an old ID.
+        task = asyncio.create_task(asyncio.to_thread(lambda: self.store.db_id))
+        self.db_tasks.add(task)
+        task.add_done_callback(self.db_tasks.discard)
+        return await asyncio.shield(task)
+
     async def _handle(self, reader, writer):
         task = asyncio.current_task()
         if len(self.tasks) >= self.max_connections:
@@ -54,10 +61,10 @@ class PosServer:
                 request = decode(frame)
                 rid = request.get("request_id")
             except InvalidFrame as exc:
-                response = error(self.store.db_id, exc.request_id, exc.code)
+                response = error(await self.identity(), exc.request_id, exc.code)
             else:
                 if request["type"] == "hello":
-                    response = dict(version=1, type="hello_ack", pos_db_id=self.store.db_id)
+                    response = dict(version=1, type="hello_ack", pos_db_id=await self.identity())
                 elif request["type"] == "submit_order":
                     if self.before_submit is not None and not await self.before_submit(request):
                         return
@@ -71,13 +78,13 @@ class PosServer:
                         if self.after_commit is not None and not await self.after_commit(request, response):
                             return
                 else:
-                    response = error(self.store.db_id, rid, "INVALID_REQUEST")
+                    response = error(await self.identity(), rid, "INVALID_REQUEST")
             writer.write(encode(response))
             await asyncio.wait_for(writer.drain(), self.write_timeout)
         except sqlite3.Error:
             # A commit may already have happened: never claim definitive rejection here.
             with suppress(Exception):
-                writer.write(encode(error(self.store.db_id, rid, "TEMPORARY_UNAVAILABLE")))
+                writer.write(encode(error(await self.identity(), rid, "TEMPORARY_UNAVAILABLE")))
                 await asyncio.wait_for(writer.drain(), self.write_timeout)
         except (asyncio.TimeoutError, asyncio.IncompleteReadError, asyncio.LimitOverrunError, ConnectionError):
             pass

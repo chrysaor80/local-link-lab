@@ -72,6 +72,14 @@ def check():
         if type(example["expected_valid"]) is not bool or actual != example["expected_valid"]:
             errors.append(f"raw {example['name']}: unexpected result")
 
+    error_expectations = read_json("spec/wire.error-expectations.json")
+    if set(error_expectations) != {e["name"] for e in raw_examples if not e["expected_valid"]}:
+        errors.append("raw invalid frames and error expectations differ")
+    for name, expected in error_expectations.items():
+        response = dict(version=1, type="error", pos_db_id="323e4567-e89b-42d3-a456-426614174000", **expected)
+        if not validator.is_valid(response):
+            errors.append(f"{name}: invalid error expectation")
+
     protocol = (ROOT / "docs/PROTOCOL.md").read_text(encoding="utf-8")
     doc_examples = re.findall(r"```json\n(.*?)\n```", protocol, re.DOTALL)
     for index, raw in enumerate(doc_examples):
