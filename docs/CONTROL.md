@@ -8,8 +8,8 @@
 |---|---|---|---|
 | M0 | 범위·프로토콜·시나리오·판단 기록·검토 요청 | OPUS 검토 반영, M1 진행 | 명세 자체 검사, OPUS의 범위·계약 검토 반영 |
 | M1 | Android → POS 실제 왕복 | OPUS 조건부 승인, 필수 수정·CI 재검증 완료 | 실제 앱과 Room, 실제 TCP와 POS DB, UI 결과 대조 |
-| M2 | 장애 3종과 핵심 검증, 결함 사본 3종 | OPUS 조건부 승인, 검증 빈틈 수정·CI 재검증 진행 | 시나리오별 근거 확보, OPUS 검토 반영 |
-| M3 | CI·APK·영상·공개 설명 | 후보 생성 조건 보강·CI 재검증 진행, 촬영·실기기 대기 | 실행 증거와 한계가 일치하는 지원용 산출물 |
+| M2 | 장애 3종과 핵심 검증, 결함 사본 3종 | OPUS 조건부 승인 반영, 검증 빈틈 수정·CI 재검증 완료 | 시나리오별 근거 확보, OPUS 검토 반영 |
+| M3 | CI·APK·영상·공개 설명 | PR #3에서 강화한 후보 생성 CI 검증 완료, 촬영·실기기 대기 | 실행 증거와 한계가 일치하는 지원용 산출물 |
 
 ## 담당과 변경 관리
 
@@ -20,15 +20,17 @@
 
 ## 다음 작업
 
-1. OPUS가 검토한 `127ea3232bd6a6dc9b8c1b54eca78b3e092127d7`의 [보고](reviews/OPUS_M2_REVIEW_REPORT.md)를 수령했다. [처리 기록](reviews/M2_RESPONSE.md)의 단계별 검사·MUT03·APK 결속 보강을 CI에서 검증하고 실행 SHA를 기록한다.
-2. M3의 배포 후보 생성 조건에 하네스 v2·결함 3종·설치 APK 해시 대조를 통합한다. 기존 후보의 S03 관측 한계는 유지하며 새 검증 뒤 후보를 다시 생성한다.
+1. OPUS가 검토한 `127ea3232bd6a6dc9b8c1b54eca78b3e092127d7`의 [보고](reviews/OPUS_M2_REVIEW_REPORT.md)를 수령했다. [처리 기록](reviews/M2_RESPONSE.md)의 단계별 검사·MUT03·APK 결속 보강을 CI에서 검증했다. [집중 재확인 요청](reviews/M2_RECHECK_REQUEST.md)으로 OPUS에게 수정 해소 여부만 확인한다.
+2. M3의 하네스 v2·결함 3종·설치 APK 대조를 [PR #3](https://github.com/chrysaor80/local-link-lab/pull/3)에서 통합했다. [CI 40639250044](https://github.com/chrysaor80/local-link-lab/actions/runs/40639250044)의 새 후보 생성과 내려받은 원본 대조를 완료했다. 기기 설치·LAN 확인과 영상 촬영을 준비한다.
 3. 기기 확보 후 Windows와 삼성 기기 모델/API를 기록하고 실제 LAN을 확인한다.
 
 ## 실행 근거
 
-M3 준비 구현 `100cb23`: [CI 40635121568](https://github.com/chrysaor80/local-link-lab/actions/runs/40635121568) 전체 SUCCESS. 필수 검사 성공 뒤 시연 후보 생성, 다운로드한 APK/동봉 파일의 해시와 별도 POS 실행을 확인했다. [M3 근거](evidence/M3.md). OPUS 검토 대상의 app/core/pos 및 기존 장애 실행기 코드는 변경하지 않았다.
+최신 M3 통합 구현 `70a6347`: [CI 40639250044](https://github.com/chrysaor80/local-link-lab/actions/runs/40639250044) 전체 SUCCESS. Python 38개(Windows/Linux 각각)와 후보 조건 검사 12개(-O 포함), JVM·Android·장애·결함 3종을 통과해 새 시연 후보를 생성했다. [M3 최신 근거](evidence/M3_REDTEAM_FIX.md)에 실제 설치 APK·묶음 해시와 원본 관측을 대조했다.
 
-최신 M2 통합 구현 `127ea32`: [CI 40629074288](https://github.com/chrysaor80/local-link-lab/actions/runs/40629074288) 전체 SUCCESS. Python 21개(Windows/Linux 각각), core JVM 19개, Controller JVM 6개, Android 정상 4개·복구 2개, 장애 6개 PASS·결함 사본 2개 KILLED. [최신 근거](evidence/M2_REVIEW.md)에 CI checkout SHA와 구현 tree 일치 및 내려받은 데이터 재대조를 기록했다.
+최신 M2 수정 구현 `6c7187d`: [CI 40639032749](https://github.com/chrysaor80/local-link-lab/actions/runs/40639032749) 전체 SUCCESS. Python 26개(Windows/Linux 각각), 코어 JVM 19개, Controller JVM 7개, Android 정상 4개·복구 2개, 장애 6개 PASS·결함 3개 KILLED. [실행 근거](evidence/M2_REDTEAM_FIX.md)에 설치 APK 해시와 강화된 S03 전제를 원본에서 대조했다.
+
+이전 M2 통합 구현 `127ea32`: [CI 40629074288](https://github.com/chrysaor80/local-link-lab/actions/runs/40629074288) 전체 SUCCESS. Python 21개(Windows/Linux 각각), core JVM 19개, Controller JVM 6개, Android 정상 4개·복구 2개, 장애 6개 PASS·결함 사본 2개 KILLED. [당시 근거](evidence/M2_REVIEW.md)에 CI checkout SHA와 구현 tree 일치 및 내려받은 데이터 재대조를 기록했다.
 
 M1 검토 수정본 `b5501e6`: [CI 40628744795](https://github.com/chrysaor80/local-link-lab/actions/runs/40628744795) 전체 SUCCESS. Python 13개(Windows/Linux 각각), core JVM 14개, Controller JVM 6개, Android 정상 4개·복구 2개 PASS. [처리 기록](reviews/M1_RESPONSE.md)에 수정 전 재현과 원본 artifact 대조를 기록했다.
 

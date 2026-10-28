@@ -1,0 +1,2509 @@
+{
+  "source_commit": "7efeb5746b99780f3fc52a26c2aac28e60a9f611",
+  "normal_summary": {
+    "source_commit": "7efeb5746b99780f3fc52a26c2aac28e60a9f611",
+    "source_clean": true,
+    "harness_version": 2,
+    "apk_identity": {
+      "package_path": "/data/app/dev.locallinklab.app-aziGARlS-YFJWrcBTHB65w==/base.apk",
+      "installed_sha256": "77422c02ebd7e267826088ee28df666b0f23e32cc0deb535849e47628a35593b",
+      "build_sha256": "77422c02ebd7e267826088ee28df666b0f23e32cc0deb535849e47628a35593b"
+    },
+    "final_apk_identity": {
+      "package_path": "/data/app/dev.locallinklab.app-aziGARlS-YFJWrcBTHB65w==/base.apk",
+      "installed_sha256": "77422c02ebd7e267826088ee28df666b0f23e32cc0deb535849e47628a35593b",
+      "build_sha256": "77422c02ebd7e267826088ee28df666b0f23e32cc0deb535849e47628a35593b"
+    },
+    "required": [
+      "S01",
+      "S02",
+      "S03_am_kill",
+      "S03_force_stop",
+      "S03_after_pos_commit",
+      "C07_resume"
+    ],
+    "verdict": "PASS",
+    "results": [
+      {
+        "scenario_id": "S01",
+        "verdict": "PASS",
+        "violations": []
+      },
+      {
+        "scenario_id": "S02",
+        "verdict": "PASS",
+        "violations": []
+      },
+      {
+        "scenario_id": "S03_am_kill",
+        "verdict": "PASS",
+        "violations": []
+      },
+      {
+        "scenario_id": "S03_force_stop",
+        "verdict": "PASS",
+        "violations": []
+      },
+      {
+        "scenario_id": "S03_after_pos_commit",
+        "verdict": "PASS",
+        "violations": []
+      },
+      {
+        "scenario_id": "C07_resume",
+        "verdict": "PASS",
+        "violations": []
+      }
+    ]
+  },
+  "normal": [
+    {
+      "baseline": [
+        {
+          "request_id": "38e08c0e-a4c6-4c91-9d67-212611d2584f",
+          "pos_db_id": "8da89242-86b2-49a2-8077-2ec448b06456",
+          "item_code": "DEMO_COFFEE",
+          "quantity": 1,
+          "unit_price_krw": 3000
+        }
+      ],
+      "pos_db_id": "8da89242-86b2-49a2-8077-2ec448b06456",
+      "result": {
+        "scenario_id": "S01",
+        "source_commit": "7efeb5746b99780f3fc52a26c2aac28e60a9f611",
+        "harness_version": 2,
+        "execution_level": "ANDROID_EXTERNAL",
+        "network_path": "emulator-nat",
+        "started_at": "2026-10-28T05:42:41.264160+00:00",
+        "verdict": "PASS",
+        "events": [
+          {
+            "event": "LOCAL_COMMITTED",
+            "at": "2026-10-28T05:42:43.403192+00:00",
+            "request_id": "38e08c0e-a4c6-4c91-9d67-212611d2584f"
+          },
+          {
+            "event": "SUBMIT_RECEIVED",
+            "at": "2026-10-28T05:42:43.502278+00:00",
+            "request_id": "38e08c0e-a4c6-4c91-9d67-212611d2584f",
+            "count": 1
+          },
+          {
+            "event": "REQUEST_BLOCKED_BEFORE_POS_WRITE",
+            "at": "2026-10-28T05:42:43.502297+00:00",
+            "request_id": "38e08c0e-a4c6-4c91-9d67-212611d2584f"
+          },
+          {
+            "event": "CONNECTION_DELIVERY_RESTORED",
+            "at": "2026-10-28T05:42:43.571782+00:00"
+          },
+          {
+            "event": "SUBMIT_RECEIVED",
+            "at": "2026-10-28T05:42:43.624192+00:00",
+            "request_id": "38e08c0e-a4c6-4c91-9d67-212611d2584f",
+            "count": 2
+          },
+          {
+            "event": "POS_COMMITTED",
+            "at": "2026-10-28T05:42:43.627307+00:00",
+            "request_id": "38e08c0e-a4c6-4c91-9d67-212611d2584f",
+            "receipt_id": "5e99740d-ad3a-4225-a766-1a439a39e08f"
+          },
+          {
+            "event": "ACK_RELEASED",
+            "at": "2026-10-28T05:42:43.627325+00:00",
+            "request_id": "38e08c0e-a4c6-4c91-9d67-212611d2584f"
+          },
+          {
+            "event": "RECOVERY_BUDGET_RESTARTED",
+            "at": "2026-10-28T05:42:43.666430+00:00"
+          }
+        ],
+        "violations": [],
+        "observations": [
+          {
+            "phase": "accepted_paused",
+            "at": "2026-10-28T05:42:43.458057+00:00",
+            "local": {
+              "ok": true,
+              "token": "aee75e9d-4b77-4447-8bab-845f20bd564b",
+              "pid": 3828,
+              "runtime": "사용자가 전송을 일시 중지함",
+              "user_paused": true,
+              "pos_db_id": "8da89242-86b2-49a2-8077-2ec448b06456",
+              "rows": [
+                {
+                  "request_id": "38e08c0e-a4c6-4c91-9d67-212611d2584f",
+                  "pos_db_id": "8da89242-86b2-49a2-8077-2ec448b06456",
+                  "item_code": "DEMO_COFFEE",
+                  "quantity": 1,
+                  "unit_price_krw": 3000,
+                  "status": "PENDING",
+                  "receipt_id": null
+                }
+              ]
+            },
+            "pos_rows": [],
+            "submit_count": 0,
+            "released_acks": 0,
+            "final": false,
+            "paused_check": true,
+            "commit_window": null,
+            "violations": []
+          },
+          {
+            "phase": "request_blocked",
+            "at": "2026-10-28T05:42:43.571765+00:00",
+            "local": {
+              "ok": true,
+              "token": "e7cc093e-46f3-4208-9a87-68fa76ac0a29",
+              "pid": 3828,
+              "runtime": "재시도 대기",
+              "user_paused": false,
+              "pos_db_id": "8da89242-86b2-49a2-8077-2ec448b06456",
+              "rows": [
+                {
+                  "request_id": "38e08c0e-a4c6-4c91-9d67-212611d2584f",
+                  "pos_db_id": "8da89242-86b2-49a2-8077-2ec448b06456",
+                  "item_code": "DEMO_COFFEE",
+                  "quantity": 1,
+                  "unit_price_krw": 3000,
+                  "status": "PENDING",
+                  "receipt_id": null
+                }
+              ]
+            },
+            "pos_rows": [],
+            "submit_count": 1,
+            "released_acks": 0,
+            "final": false,
+            "paused_check": false,
+            "commit_window": null,
+            "violations": []
+          },
+          {
+            "phase": "recovery",
+            "at": "2026-10-28T05:42:43.734822+00:00",
+            "local": {
+              "ok": true,
+              "token": "dd55906e-a41d-4a90-bf84-a6df49c6b0d8",
+              "pid": 3828,
+              "runtime": "대기 중",
+              "user_paused": false,
+              "pos_db_id": "8da89242-86b2-49a2-8077-2ec448b06456",
+              "rows": [
+                {
+                  "request_id": "38e08c0e-a4c6-4c91-9d67-212611d2584f",
+                  "pos_db_id": "8da89242-86b2-49a2-8077-2ec448b06456",
+                  "item_code": "DEMO_COFFEE",
+                  "quantity": 1,
+                  "unit_price_krw": 3000,
+                  "status": "ACKNOWLEDGED",
+                  "receipt_id": "5e99740d-ad3a-4225-a766-1a439a39e08f"
+                }
+              ]
+            },
+            "pos_rows": [
+              {
+                "request_id": "38e08c0e-a4c6-4c91-9d67-212611d2584f",
+                "receipt_id": "5e99740d-ad3a-4225-a766-1a439a39e08f",
+                "item_code": "DEMO_COFFEE",
+                "quantity": 1,
+                "unit_price_krw": 3000
+              }
+            ],
+            "submit_count": 2,
+            "released_acks": 1,
+            "final": false,
+            "paused_check": false,
+            "commit_window": null,
+            "violations": []
+          },
+          {
+            "phase": "final",
+            "at": "2026-10-28T05:42:43.775096+00:00",
+            "local": {
+              "ok": true,
+              "token": "51725d20-2b90-443f-b9e7-0351986c7e02",
+              "pid": 3828,
+              "runtime": "대기 중",
+              "user_paused": false,
+              "pos_db_id": "8da89242-86b2-49a2-8077-2ec448b06456",
+              "rows": [
+                {
+                  "request_id": "38e08c0e-a4c6-4c91-9d67-212611d2584f",
+                  "pos_db_id": "8da89242-86b2-49a2-8077-2ec448b06456",
+                  "item_code": "DEMO_COFFEE",
+                  "quantity": 1,
+                  "unit_price_krw": 3000,
+                  "status": "ACKNOWLEDGED",
+                  "receipt_id": "5e99740d-ad3a-4225-a766-1a439a39e08f"
+                }
+              ]
+            },
+            "pos_rows": [
+              {
+                "request_id": "38e08c0e-a4c6-4c91-9d67-212611d2584f",
+                "receipt_id": "5e99740d-ad3a-4225-a766-1a439a39e08f",
+                "item_code": "DEMO_COFFEE",
+                "quantity": 1,
+                "unit_price_krw": 3000
+              }
+            ],
+            "submit_count": 2,
+            "released_acks": 1,
+            "final": true,
+            "paused_check": false,
+            "commit_window": null,
+            "violations": []
+          }
+        ],
+        "android_api": "29",
+        "android_model": "Android SDK built for x86_64",
+        "final_pos_rows": [
+          {
+            "request_id": "38e08c0e-a4c6-4c91-9d67-212611d2584f",
+            "receipt_id": "5e99740d-ad3a-4225-a766-1a439a39e08f",
+            "item_code": "DEMO_COFFEE",
+            "quantity": 1,
+            "unit_price_krw": 3000
+          }
+        ],
+        "original_receipts": {
+          "38e08c0e-a4c6-4c91-9d67-212611d2584f": "5e99740d-ad3a-4225-a766-1a439a39e08f"
+        },
+        "finished_at": "2026-10-28T05:42:43.775443+00:00"
+      },
+      "rechecked_observations": 4
+    },
+    {
+      "baseline": [
+        {
+          "request_id": "04618456-814c-4088-b1f7-395c101979c0",
+          "pos_db_id": "096687da-62e6-4318-abd8-415f707443e1",
+          "item_code": "DEMO_COFFEE",
+          "quantity": 1,
+          "unit_price_krw": 3000
+        }
+      ],
+      "pos_db_id": "096687da-62e6-4318-abd8-415f707443e1",
+      "result": {
+        "scenario_id": "S02",
+        "source_commit": "7efeb5746b99780f3fc52a26c2aac28e60a9f611",
+        "harness_version": 2,
+        "execution_level": "ANDROID_EXTERNAL",
+        "network_path": "emulator-nat",
+        "started_at": "2026-10-28T05:42:43.775897+00:00",
+        "verdict": "PASS",
+        "events": [
+          {
+            "event": "LOCAL_COMMITTED",
+            "at": "2026-10-28T05:42:45.834500+00:00",
+            "request_id": "04618456-814c-4088-b1f7-395c101979c0"
+          },
+          {
+            "event": "SUBMIT_RECEIVED",
+            "at": "2026-10-28T05:42:45.967692+00:00",
+            "request_id": "04618456-814c-4088-b1f7-395c101979c0",
+            "count": 1
+          },
+          {
+            "event": "POS_COMMITTED",
+            "at": "2026-10-28T05:42:45.970227+00:00",
+            "request_id": "04618456-814c-4088-b1f7-395c101979c0",
+            "receipt_id": "82903112-e4bd-454b-95f5-856ad3218c1c"
+          },
+          {
+            "event": "ACK_DROPPED",
+            "at": "2026-10-28T05:42:45.970238+00:00",
+            "request_id": "04618456-814c-4088-b1f7-395c101979c0"
+          },
+          {
+            "event": "SUBMIT_RECEIVED",
+            "at": "2026-10-28T05:42:47.094207+00:00",
+            "request_id": "04618456-814c-4088-b1f7-395c101979c0",
+            "count": 2
+          },
+          {
+            "event": "ACK_RELEASED",
+            "at": "2026-10-28T05:42:47.095037+00:00",
+            "request_id": "04618456-814c-4088-b1f7-395c101979c0"
+          }
+        ],
+        "violations": [],
+        "observations": [
+          {
+            "phase": "accepted_paused",
+            "at": "2026-10-28T05:42:45.877903+00:00",
+            "local": {
+              "ok": true,
+              "token": "ee093709-0b13-4fca-b0c0-92952e7c6e48",
+              "pid": 3973,
+              "runtime": "사용자가 전송을 일시 중지함",
+              "user_paused": true,
+              "pos_db_id": "096687da-62e6-4318-abd8-415f707443e1",
+              "rows": [
+                {
+                  "request_id": "04618456-814c-4088-b1f7-395c101979c0",
+                  "pos_db_id": "096687da-62e6-4318-abd8-415f707443e1",
+                  "item_code": "DEMO_COFFEE",
+                  "quantity": 1,
+                  "unit_price_krw": 3000,
+                  "status": "PENDING",
+                  "receipt_id": null
+                }
+              ]
+            },
+            "pos_rows": [],
+            "submit_count": 0,
+            "released_acks": 0,
+            "final": false,
+            "paused_check": true,
+            "commit_window": null,
+            "violations": []
+          },
+          {
+            "phase": "recovery",
+            "at": "2026-10-28T05:42:46.064279+00:00",
+            "local": {
+              "ok": true,
+              "token": "ffcd9acc-6ae5-4b90-88ee-38a22bcc5fff",
+              "pid": 3973,
+              "runtime": "재시도 대기",
+              "user_paused": false,
+              "pos_db_id": "096687da-62e6-4318-abd8-415f707443e1",
+              "rows": [
+                {
+                  "request_id": "04618456-814c-4088-b1f7-395c101979c0",
+                  "pos_db_id": "096687da-62e6-4318-abd8-415f707443e1",
+                  "item_code": "DEMO_COFFEE",
+                  "quantity": 1,
+                  "unit_price_krw": 3000,
+                  "status": "PENDING",
+                  "receipt_id": null
+                }
+              ]
+            },
+            "pos_rows": [
+              {
+                "request_id": "04618456-814c-4088-b1f7-395c101979c0",
+                "receipt_id": "82903112-e4bd-454b-95f5-856ad3218c1c",
+                "item_code": "DEMO_COFFEE",
+                "quantity": 1,
+                "unit_price_krw": 3000
+              }
+            ],
+            "submit_count": 1,
+            "released_acks": 0,
+            "final": false,
+            "paused_check": false,
+            "commit_window": null,
+            "violations": []
+          },
+          {
+            "phase": "recovery",
+            "at": "2026-10-28T05:42:46.253282+00:00",
+            "local": {
+              "ok": true,
+              "token": "fd2d4136-c816-479b-a3cf-b1be1b70e690",
+              "pid": 3973,
+              "runtime": "재시도 대기",
+              "user_paused": false,
+              "pos_db_id": "096687da-62e6-4318-abd8-415f707443e1",
+              "rows": [
+                {
+                  "request_id": "04618456-814c-4088-b1f7-395c101979c0",
+                  "pos_db_id": "096687da-62e6-4318-abd8-415f707443e1",
+                  "item_code": "DEMO_COFFEE",
+                  "quantity": 1,
+                  "unit_price_krw": 3000,
+                  "status": "PENDING",
+                  "receipt_id": null
+                }
+              ]
+            },
+            "pos_rows": [
+              {
+                "request_id": "04618456-814c-4088-b1f7-395c101979c0",
+                "receipt_id": "82903112-e4bd-454b-95f5-856ad3218c1c",
+                "item_code": "DEMO_COFFEE",
+                "quantity": 1,
+                "unit_price_krw": 3000
+              }
+            ],
+            "submit_count": 1,
+            "released_acks": 0,
+            "final": false,
+            "paused_check": false,
+            "commit_window": null,
+            "violations": []
+          },
+          {
+            "phase": "recovery",
+            "at": "2026-10-28T05:42:46.444199+00:00",
+            "local": {
+              "ok": true,
+              "token": "1e99ae66-8b8e-43a7-a778-b82d3b315176",
+              "pid": 3973,
+              "runtime": "재시도 대기",
+              "user_paused": false,
+              "pos_db_id": "096687da-62e6-4318-abd8-415f707443e1",
+              "rows": [
+                {
+                  "request_id": "04618456-814c-4088-b1f7-395c101979c0",
+                  "pos_db_id": "096687da-62e6-4318-abd8-415f707443e1",
+                  "item_code": "DEMO_COFFEE",
+                  "quantity": 1,
+                  "unit_price_krw": 3000,
+                  "status": "PENDING",
+                  "receipt_id": null
+                }
+              ]
+            },
+            "pos_rows": [
+              {
+                "request_id": "04618456-814c-4088-b1f7-395c101979c0",
+                "receipt_id": "82903112-e4bd-454b-95f5-856ad3218c1c",
+                "item_code": "DEMO_COFFEE",
+                "quantity": 1,
+                "unit_price_krw": 3000
+              }
+            ],
+            "submit_count": 1,
+            "released_acks": 0,
+            "final": false,
+            "paused_check": false,
+            "commit_window": null,
+            "violations": []
+          },
+          {
+            "phase": "recovery",
+            "at": "2026-10-28T05:42:46.635629+00:00",
+            "local": {
+              "ok": true,
+              "token": "c783fe55-1cbe-4113-b08d-1f9f2044618d",
+              "pid": 3973,
+              "runtime": "재시도 대기",
+              "user_paused": false,
+              "pos_db_id": "096687da-62e6-4318-abd8-415f707443e1",
+              "rows": [
+                {
+                  "request_id": "04618456-814c-4088-b1f7-395c101979c0",
+                  "pos_db_id": "096687da-62e6-4318-abd8-415f707443e1",
+                  "item_code": "DEMO_COFFEE",
+                  "quantity": 1,
+                  "unit_price_krw": 3000,
+                  "status": "PENDING",
+                  "receipt_id": null
+                }
+              ]
+            },
+            "pos_rows": [
+              {
+                "request_id": "04618456-814c-4088-b1f7-395c101979c0",
+                "receipt_id": "82903112-e4bd-454b-95f5-856ad3218c1c",
+                "item_code": "DEMO_COFFEE",
+                "quantity": 1,
+                "unit_price_krw": 3000
+              }
+            ],
+            "submit_count": 1,
+            "released_acks": 0,
+            "final": false,
+            "paused_check": false,
+            "commit_window": null,
+            "violations": []
+          },
+          {
+            "phase": "recovery",
+            "at": "2026-10-28T05:42:46.823560+00:00",
+            "local": {
+              "ok": true,
+              "token": "1ec168c7-1104-44b4-8978-4a799f7d448f",
+              "pid": 3973,
+              "runtime": "재시도 대기",
+              "user_paused": false,
+              "pos_db_id": "096687da-62e6-4318-abd8-415f707443e1",
+              "rows": [
+                {
+                  "request_id": "04618456-814c-4088-b1f7-395c101979c0",
+                  "pos_db_id": "096687da-62e6-4318-abd8-415f707443e1",
+                  "item_code": "DEMO_COFFEE",
+                  "quantity": 1,
+                  "unit_price_krw": 3000,
+                  "status": "PENDING",
+                  "receipt_id": null
+                }
+              ]
+            },
+            "pos_rows": [
+              {
+                "request_id": "04618456-814c-4088-b1f7-395c101979c0",
+                "receipt_id": "82903112-e4bd-454b-95f5-856ad3218c1c",
+                "item_code": "DEMO_COFFEE",
+                "quantity": 1,
+                "unit_price_krw": 3000
+              }
+            ],
+            "submit_count": 1,
+            "released_acks": 0,
+            "final": false,
+            "paused_check": false,
+            "commit_window": null,
+            "violations": []
+          },
+          {
+            "phase": "recovery",
+            "at": "2026-10-28T05:42:47.014946+00:00",
+            "local": {
+              "ok": true,
+              "token": "a535dd29-6de1-4ccd-9750-0c1fd9e1ad03",
+              "pid": 3973,
+              "runtime": "재시도 대기",
+              "user_paused": false,
+              "pos_db_id": "096687da-62e6-4318-abd8-415f707443e1",
+              "rows": [
+                {
+                  "request_id": "04618456-814c-4088-b1f7-395c101979c0",
+                  "pos_db_id": "096687da-62e6-4318-abd8-415f707443e1",
+                  "item_code": "DEMO_COFFEE",
+                  "quantity": 1,
+                  "unit_price_krw": 3000,
+                  "status": "PENDING",
+                  "receipt_id": null
+                }
+              ]
+            },
+            "pos_rows": [
+              {
+                "request_id": "04618456-814c-4088-b1f7-395c101979c0",
+                "receipt_id": "82903112-e4bd-454b-95f5-856ad3218c1c",
+                "item_code": "DEMO_COFFEE",
+                "quantity": 1,
+                "unit_price_krw": 3000
+              }
+            ],
+            "submit_count": 1,
+            "released_acks": 0,
+            "final": false,
+            "paused_check": false,
+            "commit_window": null,
+            "violations": []
+          },
+          {
+            "phase": "recovery",
+            "at": "2026-10-28T05:42:47.207400+00:00",
+            "local": {
+              "ok": true,
+              "token": "28cd02d8-7426-4210-a725-b312a557528e",
+              "pid": 3973,
+              "runtime": "대기 중",
+              "user_paused": false,
+              "pos_db_id": "096687da-62e6-4318-abd8-415f707443e1",
+              "rows": [
+                {
+                  "request_id": "04618456-814c-4088-b1f7-395c101979c0",
+                  "pos_db_id": "096687da-62e6-4318-abd8-415f707443e1",
+                  "item_code": "DEMO_COFFEE",
+                  "quantity": 1,
+                  "unit_price_krw": 3000,
+                  "status": "ACKNOWLEDGED",
+                  "receipt_id": "82903112-e4bd-454b-95f5-856ad3218c1c"
+                }
+              ]
+            },
+            "pos_rows": [
+              {
+                "request_id": "04618456-814c-4088-b1f7-395c101979c0",
+                "receipt_id": "82903112-e4bd-454b-95f5-856ad3218c1c",
+                "item_code": "DEMO_COFFEE",
+                "quantity": 1,
+                "unit_price_krw": 3000
+              }
+            ],
+            "submit_count": 2,
+            "released_acks": 1,
+            "final": false,
+            "paused_check": false,
+            "commit_window": null,
+            "violations": []
+          },
+          {
+            "phase": "final",
+            "at": "2026-10-28T05:42:47.248695+00:00",
+            "local": {
+              "ok": true,
+              "token": "3beaa61d-10a7-4fb3-bd92-a9215430f03b",
+              "pid": 3973,
+              "runtime": "대기 중",
+              "user_paused": false,
+              "pos_db_id": "096687da-62e6-4318-abd8-415f707443e1",
+              "rows": [
+                {
+                  "request_id": "04618456-814c-4088-b1f7-395c101979c0",
+                  "pos_db_id": "096687da-62e6-4318-abd8-415f707443e1",
+                  "item_code": "DEMO_COFFEE",
+                  "quantity": 1,
+                  "unit_price_krw": 3000,
+                  "status": "ACKNOWLEDGED",
+                  "receipt_id": "82903112-e4bd-454b-95f5-856ad3218c1c"
+                }
+              ]
+            },
+            "pos_rows": [
+              {
+                "request_id": "04618456-814c-4088-b1f7-395c101979c0",
+                "receipt_id": "82903112-e4bd-454b-95f5-856ad3218c1c",
+                "item_code": "DEMO_COFFEE",
+                "quantity": 1,
+                "unit_price_krw": 3000
+              }
+            ],
+            "submit_count": 2,
+            "released_acks": 1,
+            "final": true,
+            "paused_check": false,
+            "commit_window": null,
+            "violations": []
+          }
+        ],
+        "android_api": "29",
+        "android_model": "Android SDK built for x86_64",
+        "final_pos_rows": [
+          {
+            "request_id": "04618456-814c-4088-b1f7-395c101979c0",
+            "receipt_id": "82903112-e4bd-454b-95f5-856ad3218c1c",
+            "item_code": "DEMO_COFFEE",
+            "quantity": 1,
+            "unit_price_krw": 3000
+          }
+        ],
+        "original_receipts": {
+          "04618456-814c-4088-b1f7-395c101979c0": "82903112-e4bd-454b-95f5-856ad3218c1c"
+        },
+        "finished_at": "2026-10-28T05:42:47.249041+00:00"
+      },
+      "rechecked_observations": 9
+    },
+    {
+      "baseline": [
+        {
+          "request_id": "20c6f609-4095-4b29-b502-2b1726c85262",
+          "pos_db_id": "3c4c8c49-4c48-40e1-a05b-c9f0481c9ac1",
+          "item_code": "DEMO_COFFEE",
+          "quantity": 1,
+          "unit_price_krw": 3000
+        }
+      ],
+      "pos_db_id": "3c4c8c49-4c48-40e1-a05b-c9f0481c9ac1",
+      "result": {
+        "scenario_id": "S03_am_kill",
+        "source_commit": "7efeb5746b99780f3fc52a26c2aac28e60a9f611",
+        "harness_version": 2,
+        "execution_level": "ANDROID_EXTERNAL",
+        "network_path": "emulator-nat",
+        "started_at": "2026-10-28T05:42:47.249676+00:00",
+        "verdict": "PASS",
+        "events": [
+          {
+            "event": "LOCAL_COMMITTED",
+            "at": "2026-10-28T05:42:49.257421+00:00",
+            "request_id": "20c6f609-4095-4b29-b502-2b1726c85262"
+          },
+          {
+            "event": "OLD_PROCESS_TERMINATED",
+            "at": "2026-10-28T05:42:50.195082+00:00",
+            "pid": "4152",
+            "method": "kill"
+          },
+          {
+            "event": "EXPLICIT_RELAUNCH",
+            "at": "2026-10-28T05:42:51.715030+00:00",
+            "pid": "4300"
+          },
+          {
+            "event": "SUBMIT_RECEIVED",
+            "at": "2026-10-28T05:42:51.923122+00:00",
+            "request_id": "20c6f609-4095-4b29-b502-2b1726c85262",
+            "count": 1
+          },
+          {
+            "event": "POS_COMMITTED",
+            "at": "2026-10-28T05:42:51.928077+00:00",
+            "request_id": "20c6f609-4095-4b29-b502-2b1726c85262",
+            "receipt_id": "55a60b4f-892d-4f47-8c7c-ddc7f39675db"
+          },
+          {
+            "event": "ACK_RELEASED",
+            "at": "2026-10-28T05:42:51.928090+00:00",
+            "request_id": "20c6f609-4095-4b29-b502-2b1726c85262"
+          }
+        ],
+        "violations": [],
+        "observations": [
+          {
+            "phase": "accepted_paused",
+            "at": "2026-10-28T05:42:49.299266+00:00",
+            "local": {
+              "ok": true,
+              "token": "f8956314-d379-4947-b3e3-8692216505e5",
+              "pid": 4152,
+              "runtime": "사용자가 전송을 일시 중지함",
+              "user_paused": true,
+              "pos_db_id": "3c4c8c49-4c48-40e1-a05b-c9f0481c9ac1",
+              "rows": [
+                {
+                  "request_id": "20c6f609-4095-4b29-b502-2b1726c85262",
+                  "pos_db_id": "3c4c8c49-4c48-40e1-a05b-c9f0481c9ac1",
+                  "item_code": "DEMO_COFFEE",
+                  "quantity": 1,
+                  "unit_price_krw": 3000,
+                  "status": "PENDING",
+                  "receipt_id": null
+                }
+              ]
+            },
+            "pos_rows": [],
+            "submit_count": 0,
+            "released_acks": 0,
+            "final": false,
+            "paused_check": true,
+            "commit_window": null,
+            "violations": []
+          },
+          {
+            "phase": "restored_pending",
+            "at": "2026-10-28T05:42:51.835811+00:00",
+            "local": {
+              "ok": true,
+              "token": "e265fb92-2c48-46ed-a1f7-002a0d05a1eb",
+              "pid": 4300,
+              "runtime": "사용자가 전송을 일시 중지함",
+              "user_paused": true,
+              "pos_db_id": "3c4c8c49-4c48-40e1-a05b-c9f0481c9ac1",
+              "rows": [
+                {
+                  "request_id": "20c6f609-4095-4b29-b502-2b1726c85262",
+                  "pos_db_id": "3c4c8c49-4c48-40e1-a05b-c9f0481c9ac1",
+                  "item_code": "DEMO_COFFEE",
+                  "quantity": 1,
+                  "unit_price_krw": 3000,
+                  "status": "PENDING",
+                  "receipt_id": null
+                }
+              ]
+            },
+            "pos_rows": [],
+            "submit_count": 0,
+            "released_acks": 0,
+            "final": false,
+            "paused_check": true,
+            "commit_window": null,
+            "violations": []
+          },
+          {
+            "phase": "recovery",
+            "at": "2026-10-28T05:42:52.030096+00:00",
+            "local": {
+              "ok": true,
+              "token": "da681bfe-6fc6-43d1-a62f-62f9002bd599",
+              "pid": 4300,
+              "runtime": "대기 중",
+              "user_paused": false,
+              "pos_db_id": "3c4c8c49-4c48-40e1-a05b-c9f0481c9ac1",
+              "rows": [
+                {
+                  "request_id": "20c6f609-4095-4b29-b502-2b1726c85262",
+                  "pos_db_id": "3c4c8c49-4c48-40e1-a05b-c9f0481c9ac1",
+                  "item_code": "DEMO_COFFEE",
+                  "quantity": 1,
+                  "unit_price_krw": 3000,
+                  "status": "ACKNOWLEDGED",
+                  "receipt_id": "55a60b4f-892d-4f47-8c7c-ddc7f39675db"
+                }
+              ]
+            },
+            "pos_rows": [
+              {
+                "request_id": "20c6f609-4095-4b29-b502-2b1726c85262",
+                "receipt_id": "55a60b4f-892d-4f47-8c7c-ddc7f39675db",
+                "item_code": "DEMO_COFFEE",
+                "quantity": 1,
+                "unit_price_krw": 3000
+              }
+            ],
+            "submit_count": 1,
+            "released_acks": 1,
+            "final": false,
+            "paused_check": false,
+            "commit_window": null,
+            "violations": []
+          },
+          {
+            "phase": "final",
+            "at": "2026-10-28T05:42:52.071475+00:00",
+            "local": {
+              "ok": true,
+              "token": "886a0183-97c9-4a08-8bcc-9507cd8e5c2d",
+              "pid": 4300,
+              "runtime": "대기 중",
+              "user_paused": false,
+              "pos_db_id": "3c4c8c49-4c48-40e1-a05b-c9f0481c9ac1",
+              "rows": [
+                {
+                  "request_id": "20c6f609-4095-4b29-b502-2b1726c85262",
+                  "pos_db_id": "3c4c8c49-4c48-40e1-a05b-c9f0481c9ac1",
+                  "item_code": "DEMO_COFFEE",
+                  "quantity": 1,
+                  "unit_price_krw": 3000,
+                  "status": "ACKNOWLEDGED",
+                  "receipt_id": "55a60b4f-892d-4f47-8c7c-ddc7f39675db"
+                }
+              ]
+            },
+            "pos_rows": [
+              {
+                "request_id": "20c6f609-4095-4b29-b502-2b1726c85262",
+                "receipt_id": "55a60b4f-892d-4f47-8c7c-ddc7f39675db",
+                "item_code": "DEMO_COFFEE",
+                "quantity": 1,
+                "unit_price_krw": 3000
+              }
+            ],
+            "submit_count": 1,
+            "released_acks": 1,
+            "final": true,
+            "paused_check": false,
+            "commit_window": null,
+            "violations": []
+          }
+        ],
+        "android_api": "29",
+        "android_model": "Android SDK built for x86_64",
+        "final_pos_rows": [
+          {
+            "request_id": "20c6f609-4095-4b29-b502-2b1726c85262",
+            "receipt_id": "55a60b4f-892d-4f47-8c7c-ddc7f39675db",
+            "item_code": "DEMO_COFFEE",
+            "quantity": 1,
+            "unit_price_krw": 3000
+          }
+        ],
+        "original_receipts": {
+          "20c6f609-4095-4b29-b502-2b1726c85262": "55a60b4f-892d-4f47-8c7c-ddc7f39675db"
+        },
+        "finished_at": "2026-10-28T05:42:52.071895+00:00"
+      },
+      "rechecked_observations": 4
+    },
+    {
+      "baseline": [
+        {
+          "request_id": "bd06084e-a89e-4dd6-83b0-1b6c57aeeded",
+          "pos_db_id": "e2b8e695-e628-4c95-858d-7975b78da8f0",
+          "item_code": "DEMO_COFFEE",
+          "quantity": 1,
+          "unit_price_krw": 3000
+        }
+      ],
+      "pos_db_id": "e2b8e695-e628-4c95-858d-7975b78da8f0",
+      "result": {
+        "scenario_id": "S03_force_stop",
+        "source_commit": "7efeb5746b99780f3fc52a26c2aac28e60a9f611",
+        "harness_version": 2,
+        "execution_level": "ANDROID_EXTERNAL",
+        "network_path": "emulator-nat",
+        "started_at": "2026-10-28T05:42:52.072454+00:00",
+        "verdict": "PASS",
+        "events": [
+          {
+            "event": "LOCAL_COMMITTED",
+            "at": "2026-10-28T05:42:54.264937+00:00",
+            "request_id": "bd06084e-a89e-4dd6-83b0-1b6c57aeeded"
+          },
+          {
+            "event": "OLD_PROCESS_TERMINATED",
+            "at": "2026-10-28T05:42:54.394179+00:00",
+            "pid": "4391",
+            "method": "force-stop"
+          },
+          {
+            "event": "EXPLICIT_RELAUNCH",
+            "at": "2026-10-28T05:42:56.039737+00:00",
+            "pid": "4475"
+          },
+          {
+            "event": "SUBMIT_RECEIVED",
+            "at": "2026-10-28T05:42:56.284661+00:00",
+            "request_id": "bd06084e-a89e-4dd6-83b0-1b6c57aeeded",
+            "count": 1
+          },
+          {
+            "event": "POS_COMMITTED",
+            "at": "2026-10-28T05:42:56.286872+00:00",
+            "request_id": "bd06084e-a89e-4dd6-83b0-1b6c57aeeded",
+            "receipt_id": "16210c60-6660-499c-a95f-f7d55270d585"
+          },
+          {
+            "event": "ACK_RELEASED",
+            "at": "2026-10-28T05:42:56.286885+00:00",
+            "request_id": "bd06084e-a89e-4dd6-83b0-1b6c57aeeded"
+          }
+        ],
+        "violations": [],
+        "observations": [
+          {
+            "phase": "accepted_paused",
+            "at": "2026-10-28T05:42:54.326297+00:00",
+            "local": {
+              "ok": true,
+              "token": "0f6037da-800a-4039-b8b9-cb06f67c98cb",
+              "pid": 4391,
+              "runtime": "사용자가 전송을 일시 중지함",
+              "user_paused": true,
+              "pos_db_id": "e2b8e695-e628-4c95-858d-7975b78da8f0",
+              "rows": [
+                {
+                  "request_id": "bd06084e-a89e-4dd6-83b0-1b6c57aeeded",
+                  "pos_db_id": "e2b8e695-e628-4c95-858d-7975b78da8f0",
+                  "item_code": "DEMO_COFFEE",
+                  "quantity": 1,
+                  "unit_price_krw": 3000,
+                  "status": "PENDING",
+                  "receipt_id": null
+                }
+              ]
+            },
+            "pos_rows": [],
+            "submit_count": 0,
+            "released_acks": 0,
+            "final": false,
+            "paused_check": true,
+            "commit_window": null,
+            "violations": []
+          },
+          {
+            "phase": "restored_pending",
+            "at": "2026-10-28T05:42:56.197159+00:00",
+            "local": {
+              "ok": true,
+              "token": "08fba0e9-66b3-4b0f-b68e-077ecce08ac9",
+              "pid": 4475,
+              "runtime": "사용자가 전송을 일시 중지함",
+              "user_paused": true,
+              "pos_db_id": "e2b8e695-e628-4c95-858d-7975b78da8f0",
+              "rows": [
+                {
+                  "request_id": "bd06084e-a89e-4dd6-83b0-1b6c57aeeded",
+                  "pos_db_id": "e2b8e695-e628-4c95-858d-7975b78da8f0",
+                  "item_code": "DEMO_COFFEE",
+                  "quantity": 1,
+                  "unit_price_krw": 3000,
+                  "status": "PENDING",
+                  "receipt_id": null
+                }
+              ]
+            },
+            "pos_rows": [],
+            "submit_count": 0,
+            "released_acks": 0,
+            "final": false,
+            "paused_check": true,
+            "commit_window": null,
+            "violations": []
+          },
+          {
+            "phase": "recovery",
+            "at": "2026-10-28T05:42:56.376695+00:00",
+            "local": {
+              "ok": true,
+              "token": "109319ec-e893-4af1-8ce9-be2bc80efa08",
+              "pid": 4475,
+              "runtime": "대기 중",
+              "user_paused": false,
+              "pos_db_id": "e2b8e695-e628-4c95-858d-7975b78da8f0",
+              "rows": [
+                {
+                  "request_id": "bd06084e-a89e-4dd6-83b0-1b6c57aeeded",
+                  "pos_db_id": "e2b8e695-e628-4c95-858d-7975b78da8f0",
+                  "item_code": "DEMO_COFFEE",
+                  "quantity": 1,
+                  "unit_price_krw": 3000,
+                  "status": "ACKNOWLEDGED",
+                  "receipt_id": "16210c60-6660-499c-a95f-f7d55270d585"
+                }
+              ]
+            },
+            "pos_rows": [
+              {
+                "request_id": "bd06084e-a89e-4dd6-83b0-1b6c57aeeded",
+                "receipt_id": "16210c60-6660-499c-a95f-f7d55270d585",
+                "item_code": "DEMO_COFFEE",
+                "quantity": 1,
+                "unit_price_krw": 3000
+              }
+            ],
+            "submit_count": 1,
+            "released_acks": 1,
+            "final": false,
+            "paused_check": false,
+            "commit_window": null,
+            "violations": []
+          },
+          {
+            "phase": "final",
+            "at": "2026-10-28T05:42:56.415607+00:00",
+            "local": {
+              "ok": true,
+              "token": "77ccdfa6-21fb-4a63-bdb2-ff1b3e406dd6",
+              "pid": 4475,
+              "runtime": "대기 중",
+              "user_paused": false,
+              "pos_db_id": "e2b8e695-e628-4c95-858d-7975b78da8f0",
+              "rows": [
+                {
+                  "request_id": "bd06084e-a89e-4dd6-83b0-1b6c57aeeded",
+                  "pos_db_id": "e2b8e695-e628-4c95-858d-7975b78da8f0",
+                  "item_code": "DEMO_COFFEE",
+                  "quantity": 1,
+                  "unit_price_krw": 3000,
+                  "status": "ACKNOWLEDGED",
+                  "receipt_id": "16210c60-6660-499c-a95f-f7d55270d585"
+                }
+              ]
+            },
+            "pos_rows": [
+              {
+                "request_id": "bd06084e-a89e-4dd6-83b0-1b6c57aeeded",
+                "receipt_id": "16210c60-6660-499c-a95f-f7d55270d585",
+                "item_code": "DEMO_COFFEE",
+                "quantity": 1,
+                "unit_price_krw": 3000
+              }
+            ],
+            "submit_count": 1,
+            "released_acks": 1,
+            "final": true,
+            "paused_check": false,
+            "commit_window": null,
+            "violations": []
+          }
+        ],
+        "android_api": "29",
+        "android_model": "Android SDK built for x86_64",
+        "final_pos_rows": [
+          {
+            "request_id": "bd06084e-a89e-4dd6-83b0-1b6c57aeeded",
+            "receipt_id": "16210c60-6660-499c-a95f-f7d55270d585",
+            "item_code": "DEMO_COFFEE",
+            "quantity": 1,
+            "unit_price_krw": 3000
+          }
+        ],
+        "original_receipts": {
+          "bd06084e-a89e-4dd6-83b0-1b6c57aeeded": "16210c60-6660-499c-a95f-f7d55270d585"
+        },
+        "finished_at": "2026-10-28T05:42:56.415912+00:00"
+      },
+      "rechecked_observations": 4
+    },
+    {
+      "baseline": [
+        {
+          "request_id": "03e61045-10b1-4767-8797-47a51fea4fa5",
+          "pos_db_id": "e3b3440c-b00e-4490-aecc-84f52c4f40f2",
+          "item_code": "DEMO_COFFEE",
+          "quantity": 1,
+          "unit_price_krw": 3000
+        }
+      ],
+      "pos_db_id": "e3b3440c-b00e-4490-aecc-84f52c4f40f2",
+      "result": {
+        "scenario_id": "S03_after_pos_commit",
+        "source_commit": "7efeb5746b99780f3fc52a26c2aac28e60a9f611",
+        "harness_version": 2,
+        "execution_level": "ANDROID_EXTERNAL",
+        "network_path": "emulator-nat",
+        "started_at": "2026-10-28T05:42:56.416383+00:00",
+        "verdict": "PASS",
+        "events": [
+          {
+            "event": "LOCAL_COMMITTED",
+            "at": "2026-10-28T05:42:58.668878+00:00",
+            "request_id": "03e61045-10b1-4767-8797-47a51fea4fa5"
+          },
+          {
+            "event": "SUBMIT_RECEIVED",
+            "at": "2026-10-28T05:42:58.756116+00:00",
+            "request_id": "03e61045-10b1-4767-8797-47a51fea4fa5",
+            "count": 1
+          },
+          {
+            "event": "POS_COMMITTED",
+            "at": "2026-10-28T05:42:58.758656+00:00",
+            "request_id": "03e61045-10b1-4767-8797-47a51fea4fa5",
+            "receipt_id": "12a1dd5b-d5c2-4f24-9e43-d3849600ab45"
+          },
+          {
+            "event": "ACK_HELD",
+            "at": "2026-10-28T05:42:58.758672+00:00",
+            "request_id": "03e61045-10b1-4767-8797-47a51fea4fa5"
+          },
+          {
+            "event": "OLD_PROCESS_TERMINATED",
+            "at": "2026-10-28T05:42:58.918857+00:00",
+            "pid": "4565",
+            "method": "force-stop"
+          },
+          {
+            "event": "EXPLICIT_RELAUNCH",
+            "at": "2026-10-28T05:43:00.618892+00:00",
+            "pid": "4669"
+          },
+          {
+            "event": "SUBMIT_RECEIVED",
+            "at": "2026-10-28T05:43:00.739873+00:00",
+            "request_id": "03e61045-10b1-4767-8797-47a51fea4fa5",
+            "count": 2
+          },
+          {
+            "event": "ACK_HELD",
+            "at": "2026-10-28T05:43:00.740647+00:00",
+            "request_id": "03e61045-10b1-4767-8797-47a51fea4fa5"
+          },
+          {
+            "event": "ACK_BARRIER_RELEASED",
+            "at": "2026-10-28T05:43:00.848736+00:00"
+          },
+          {
+            "event": "ACK_RELEASED",
+            "at": "2026-10-28T05:43:00.849395+00:00",
+            "request_id": "03e61045-10b1-4767-8797-47a51fea4fa5"
+          },
+          {
+            "event": "ACK_RELEASED",
+            "at": "2026-10-28T05:43:00.849593+00:00",
+            "request_id": "03e61045-10b1-4767-8797-47a51fea4fa5"
+          }
+        ],
+        "violations": [],
+        "observations": [
+          {
+            "phase": "accepted_paused",
+            "at": "2026-10-28T05:42:58.716215+00:00",
+            "local": {
+              "ok": true,
+              "token": "cb74da7c-fe08-4062-b739-b0dbf19b992b",
+              "pid": 4565,
+              "runtime": "사용자가 전송을 일시 중지함",
+              "user_paused": true,
+              "pos_db_id": "e3b3440c-b00e-4490-aecc-84f52c4f40f2",
+              "rows": [
+                {
+                  "request_id": "03e61045-10b1-4767-8797-47a51fea4fa5",
+                  "pos_db_id": "e3b3440c-b00e-4490-aecc-84f52c4f40f2",
+                  "item_code": "DEMO_COFFEE",
+                  "quantity": 1,
+                  "unit_price_krw": 3000,
+                  "status": "PENDING",
+                  "receipt_id": null
+                }
+              ]
+            },
+            "pos_rows": [],
+            "submit_count": 0,
+            "released_acks": 0,
+            "final": false,
+            "paused_check": true,
+            "commit_window": null,
+            "violations": []
+          },
+          {
+            "phase": "committed_ack_held",
+            "at": "2026-10-28T05:42:58.830501+00:00",
+            "local": {
+              "ok": true,
+              "token": "1d90b9d0-ac00-4426-b13d-15d17acbb7de",
+              "pid": 4565,
+              "runtime": "전송 중 (1/5)",
+              "user_paused": false,
+              "pos_db_id": "e3b3440c-b00e-4490-aecc-84f52c4f40f2",
+              "rows": [
+                {
+                  "request_id": "03e61045-10b1-4767-8797-47a51fea4fa5",
+                  "pos_db_id": "e3b3440c-b00e-4490-aecc-84f52c4f40f2",
+                  "item_code": "DEMO_COFFEE",
+                  "quantity": 1,
+                  "unit_price_krw": 3000,
+                  "status": "PENDING",
+                  "receipt_id": null
+                }
+              ]
+            },
+            "pos_rows": [
+              {
+                "request_id": "03e61045-10b1-4767-8797-47a51fea4fa5",
+                "receipt_id": "12a1dd5b-d5c2-4f24-9e43-d3849600ab45",
+                "item_code": "DEMO_COFFEE",
+                "quantity": 1,
+                "unit_price_krw": 3000
+              }
+            ],
+            "submit_count": 1,
+            "released_acks": 0,
+            "final": false,
+            "paused_check": false,
+            "commit_window": true,
+            "violations": []
+          },
+          {
+            "phase": "restored_ack_held",
+            "at": "2026-10-28T05:43:00.848704+00:00",
+            "local": {
+              "ok": true,
+              "token": "d71196cf-c390-40ef-91f5-85127b91fcfc",
+              "pid": 4669,
+              "runtime": "POS 대상 확인 중 (1/5)",
+              "user_paused": false,
+              "pos_db_id": "e3b3440c-b00e-4490-aecc-84f52c4f40f2",
+              "rows": [
+                {
+                  "request_id": "03e61045-10b1-4767-8797-47a51fea4fa5",
+                  "pos_db_id": "e3b3440c-b00e-4490-aecc-84f52c4f40f2",
+                  "item_code": "DEMO_COFFEE",
+                  "quantity": 1,
+                  "unit_price_krw": 3000,
+                  "status": "PENDING",
+                  "receipt_id": null
+                }
+              ]
+            },
+            "pos_rows": [
+              {
+                "request_id": "03e61045-10b1-4767-8797-47a51fea4fa5",
+                "receipt_id": "12a1dd5b-d5c2-4f24-9e43-d3849600ab45",
+                "item_code": "DEMO_COFFEE",
+                "quantity": 1,
+                "unit_price_krw": 3000
+              }
+            ],
+            "submit_count": 2,
+            "released_acks": 0,
+            "final": false,
+            "paused_check": false,
+            "commit_window": true,
+            "violations": []
+          },
+          {
+            "phase": "recovery",
+            "at": "2026-10-28T05:43:00.942468+00:00",
+            "local": {
+              "ok": true,
+              "token": "f411a7ef-2df6-45e2-8fd4-aa00f8fb8c62",
+              "pid": 4669,
+              "runtime": "전송 중 (1/5)",
+              "user_paused": false,
+              "pos_db_id": "e3b3440c-b00e-4490-aecc-84f52c4f40f2",
+              "rows": [
+                {
+                  "request_id": "03e61045-10b1-4767-8797-47a51fea4fa5",
+                  "pos_db_id": "e3b3440c-b00e-4490-aecc-84f52c4f40f2",
+                  "item_code": "DEMO_COFFEE",
+                  "quantity": 1,
+                  "unit_price_krw": 3000,
+                  "status": "ACKNOWLEDGED",
+                  "receipt_id": "12a1dd5b-d5c2-4f24-9e43-d3849600ab45"
+                }
+              ]
+            },
+            "pos_rows": [
+              {
+                "request_id": "03e61045-10b1-4767-8797-47a51fea4fa5",
+                "receipt_id": "12a1dd5b-d5c2-4f24-9e43-d3849600ab45",
+                "item_code": "DEMO_COFFEE",
+                "quantity": 1,
+                "unit_price_krw": 3000
+              }
+            ],
+            "submit_count": 2,
+            "released_acks": 2,
+            "final": false,
+            "paused_check": false,
+            "commit_window": null,
+            "violations": []
+          },
+          {
+            "phase": "final",
+            "at": "2026-10-28T05:43:00.987694+00:00",
+            "local": {
+              "ok": true,
+              "token": "6fb4f7bd-36cd-41d0-9cbb-34f868eef517",
+              "pid": 4669,
+              "runtime": "대기 중",
+              "user_paused": false,
+              "pos_db_id": "e3b3440c-b00e-4490-aecc-84f52c4f40f2",
+              "rows": [
+                {
+                  "request_id": "03e61045-10b1-4767-8797-47a51fea4fa5",
+                  "pos_db_id": "e3b3440c-b00e-4490-aecc-84f52c4f40f2",
+                  "item_code": "DEMO_COFFEE",
+                  "quantity": 1,
+                  "unit_price_krw": 3000,
+                  "status": "ACKNOWLEDGED",
+                  "receipt_id": "12a1dd5b-d5c2-4f24-9e43-d3849600ab45"
+                }
+              ]
+            },
+            "pos_rows": [
+              {
+                "request_id": "03e61045-10b1-4767-8797-47a51fea4fa5",
+                "receipt_id": "12a1dd5b-d5c2-4f24-9e43-d3849600ab45",
+                "item_code": "DEMO_COFFEE",
+                "quantity": 1,
+                "unit_price_krw": 3000
+              }
+            ],
+            "submit_count": 2,
+            "released_acks": 2,
+            "final": true,
+            "paused_check": false,
+            "commit_window": null,
+            "violations": []
+          }
+        ],
+        "android_api": "29",
+        "android_model": "Android SDK built for x86_64",
+        "final_pos_rows": [
+          {
+            "request_id": "03e61045-10b1-4767-8797-47a51fea4fa5",
+            "receipt_id": "12a1dd5b-d5c2-4f24-9e43-d3849600ab45",
+            "item_code": "DEMO_COFFEE",
+            "quantity": 1,
+            "unit_price_krw": 3000
+          }
+        ],
+        "original_receipts": {
+          "03e61045-10b1-4767-8797-47a51fea4fa5": "12a1dd5b-d5c2-4f24-9e43-d3849600ab45"
+        },
+        "finished_at": "2026-10-28T05:43:00.988014+00:00"
+      },
+      "rechecked_observations": 5
+    },
+    {
+      "baseline": [
+        {
+          "request_id": "0b7d2954-d14c-4816-956c-54d499b5f9b3",
+          "pos_db_id": "87a57fb1-d880-4b63-82bf-045e7f883331",
+          "item_code": "DEMO_COFFEE",
+          "quantity": 1,
+          "unit_price_krw": 3000
+        }
+      ],
+      "pos_db_id": "87a57fb1-d880-4b63-82bf-045e7f883331",
+      "result": {
+        "scenario_id": "C07_resume",
+        "source_commit": "7efeb5746b99780f3fc52a26c2aac28e60a9f611",
+        "harness_version": 2,
+        "execution_level": "ANDROID_EXTERNAL",
+        "network_path": "emulator-nat",
+        "started_at": "2026-10-28T05:43:00.988561+00:00",
+        "verdict": "PASS",
+        "events": [
+          {
+            "event": "LOCAL_COMMITTED",
+            "at": "2026-10-28T05:43:03.516434+00:00",
+            "request_id": "0b7d2954-d14c-4816-956c-54d499b5f9b3"
+          },
+          {
+            "event": "OTHER_DB_BOUND",
+            "at": "2026-10-28T05:43:03.595055+00:00",
+            "pos_db_id": "110a1510-159a-4cce-8232-75e49d67455a"
+          },
+          {
+            "event": "DESTINATION_MISMATCH_STOPPED",
+            "at": "2026-10-28T05:43:03.741722+00:00",
+            "other_submits": 0,
+            "other_rows": []
+          },
+          {
+            "event": "ORIGINAL_DB_RESTORED",
+            "at": "2026-10-28T05:43:03.817302+00:00"
+          },
+          {
+            "event": "SUBMIT_RECEIVED",
+            "at": "2026-10-28T05:43:03.862138+00:00",
+            "request_id": "0b7d2954-d14c-4816-956c-54d499b5f9b3",
+            "count": 1
+          },
+          {
+            "event": "POS_COMMITTED",
+            "at": "2026-10-28T05:43:03.865115+00:00",
+            "request_id": "0b7d2954-d14c-4816-956c-54d499b5f9b3",
+            "receipt_id": "3fad816f-14d2-4e3d-900c-0a4f71568c0c"
+          },
+          {
+            "event": "ACK_RELEASED",
+            "at": "2026-10-28T05:43:03.865128+00:00",
+            "request_id": "0b7d2954-d14c-4816-956c-54d499b5f9b3"
+          }
+        ],
+        "violations": [],
+        "observations": [
+          {
+            "phase": "accepted_paused",
+            "at": "2026-10-28T05:43:03.594646+00:00",
+            "local": {
+              "ok": true,
+              "token": "3fc5876d-b1bb-4e42-ac2f-be00ae1926af",
+              "pid": 4748,
+              "runtime": "사용자가 전송을 일시 중지함",
+              "user_paused": true,
+              "pos_db_id": "87a57fb1-d880-4b63-82bf-045e7f883331",
+              "rows": [
+                {
+                  "request_id": "0b7d2954-d14c-4816-956c-54d499b5f9b3",
+                  "pos_db_id": "87a57fb1-d880-4b63-82bf-045e7f883331",
+                  "item_code": "DEMO_COFFEE",
+                  "quantity": 1,
+                  "unit_price_krw": 3000,
+                  "status": "PENDING",
+                  "receipt_id": null
+                }
+              ]
+            },
+            "pos_rows": [],
+            "submit_count": 0,
+            "released_acks": 0,
+            "final": false,
+            "paused_check": true,
+            "commit_window": null,
+            "violations": []
+          },
+          {
+            "phase": "identity_mismatch",
+            "at": "2026-10-28T05:43:03.817276+00:00",
+            "local": {
+              "ok": true,
+              "token": "414830ca-1847-45e1-9c2f-81c7bca74331",
+              "pid": 4748,
+              "runtime": "POS DB가 달라 전송을 중지했습니다. 연결 주소를 다시 확인하세요.",
+              "user_paused": false,
+              "pos_db_id": "87a57fb1-d880-4b63-82bf-045e7f883331",
+              "rows": [
+                {
+                  "request_id": "0b7d2954-d14c-4816-956c-54d499b5f9b3",
+                  "pos_db_id": "87a57fb1-d880-4b63-82bf-045e7f883331",
+                  "item_code": "DEMO_COFFEE",
+                  "quantity": 1,
+                  "unit_price_krw": 3000,
+                  "status": "PENDING",
+                  "receipt_id": null
+                }
+              ]
+            },
+            "pos_rows": [],
+            "submit_count": 0,
+            "released_acks": 0,
+            "final": false,
+            "paused_check": false,
+            "commit_window": null,
+            "violations": []
+          },
+          {
+            "phase": "recovery",
+            "at": "2026-10-28T05:43:04.016831+00:00",
+            "local": {
+              "ok": true,
+              "token": "a53bc8b6-7245-4b65-be68-845878566623",
+              "pid": 4748,
+              "runtime": "대기 중",
+              "user_paused": false,
+              "pos_db_id": "87a57fb1-d880-4b63-82bf-045e7f883331",
+              "rows": [
+                {
+                  "request_id": "0b7d2954-d14c-4816-956c-54d499b5f9b3",
+                  "pos_db_id": "87a57fb1-d880-4b63-82bf-045e7f883331",
+                  "item_code": "DEMO_COFFEE",
+                  "quantity": 1,
+                  "unit_price_krw": 3000,
+                  "status": "ACKNOWLEDGED",
+                  "receipt_id": "3fad816f-14d2-4e3d-900c-0a4f71568c0c"
+                }
+              ]
+            },
+            "pos_rows": [
+              {
+                "request_id": "0b7d2954-d14c-4816-956c-54d499b5f9b3",
+                "receipt_id": "3fad816f-14d2-4e3d-900c-0a4f71568c0c",
+                "item_code": "DEMO_COFFEE",
+                "quantity": 1,
+                "unit_price_krw": 3000
+              }
+            ],
+            "submit_count": 1,
+            "released_acks": 1,
+            "final": false,
+            "paused_check": false,
+            "commit_window": null,
+            "violations": []
+          },
+          {
+            "phase": "final",
+            "at": "2026-10-28T05:43:04.073921+00:00",
+            "local": {
+              "ok": true,
+              "token": "9d2cbdcd-3148-428a-8abe-16fece236bd8",
+              "pid": 4748,
+              "runtime": "대기 중",
+              "user_paused": false,
+              "pos_db_id": "87a57fb1-d880-4b63-82bf-045e7f883331",
+              "rows": [
+                {
+                  "request_id": "0b7d2954-d14c-4816-956c-54d499b5f9b3",
+                  "pos_db_id": "87a57fb1-d880-4b63-82bf-045e7f883331",
+                  "item_code": "DEMO_COFFEE",
+                  "quantity": 1,
+                  "unit_price_krw": 3000,
+                  "status": "ACKNOWLEDGED",
+                  "receipt_id": "3fad816f-14d2-4e3d-900c-0a4f71568c0c"
+                }
+              ]
+            },
+            "pos_rows": [
+              {
+                "request_id": "0b7d2954-d14c-4816-956c-54d499b5f9b3",
+                "receipt_id": "3fad816f-14d2-4e3d-900c-0a4f71568c0c",
+                "item_code": "DEMO_COFFEE",
+                "quantity": 1,
+                "unit_price_krw": 3000
+              }
+            ],
+            "submit_count": 1,
+            "released_acks": 1,
+            "final": true,
+            "paused_check": false,
+            "commit_window": null,
+            "violations": []
+          }
+        ],
+        "android_api": "29",
+        "android_model": "Android SDK built for x86_64",
+        "final_pos_rows": [
+          {
+            "request_id": "0b7d2954-d14c-4816-956c-54d499b5f9b3",
+            "receipt_id": "3fad816f-14d2-4e3d-900c-0a4f71568c0c",
+            "item_code": "DEMO_COFFEE",
+            "quantity": 1,
+            "unit_price_krw": 3000
+          }
+        ],
+        "original_receipts": {
+          "0b7d2954-d14c-4816-956c-54d499b5f9b3": "3fad816f-14d2-4e3d-900c-0a4f71568c0c"
+        },
+        "finished_at": "2026-10-28T05:43:04.074470+00:00"
+      },
+      "rechecked_observations": 4
+    }
+  ],
+  "mutations": [
+    {
+      "mutation": "MUT01",
+      "base_commit": "7efeb5746b99780f3fc52a26c2aac28e60a9f611",
+      "scenario": "S02",
+      "expected_violation": "POS_EXTRA_ID",
+      "verdict": "KILLED",
+      "patch_sha256": "01c370fd792c9042386aed78f04037fed2fe8bbe1fb66d4cde72138cb980b609",
+      "build_exit": 0,
+      "apk_sha256": "cc76e7bd629a35aaa1008369ca66aede179a811dcfa256660ebd8f83bb9b20db",
+      "install_exit": 0,
+      "scenario_exit": 1,
+      "execution_identity": {
+        "source_commit": "7efeb5746b99780f3fc52a26c2aac28e60a9f611",
+        "source_clean": true,
+        "harness_version": 2,
+        "apk_identity": {
+          "package_path": "/data/app/dev.locallinklab.app-jqZzkBIy3bmShTEfWNh5rQ==/base.apk",
+          "installed_sha256": "cc76e7bd629a35aaa1008369ca66aede179a811dcfa256660ebd8f83bb9b20db",
+          "build_sha256": "cc76e7bd629a35aaa1008369ca66aede179a811dcfa256660ebd8f83bb9b20db"
+        },
+        "final_apk_identity": {
+          "package_path": "/data/app/dev.locallinklab.app-jqZzkBIy3bmShTEfWNh5rQ==/base.apk",
+          "installed_sha256": "cc76e7bd629a35aaa1008369ca66aede179a811dcfa256660ebd8f83bb9b20db",
+          "build_sha256": "cc76e7bd629a35aaa1008369ca66aede179a811dcfa256660ebd8f83bb9b20db"
+        },
+        "required": [
+          "S02"
+        ],
+        "verdict": "FAIL",
+        "results": [
+          {
+            "scenario_id": "S02",
+            "verdict": "FAIL",
+            "violations": [
+              "LOCAL_NOT_ACKNOWLEDGED",
+              "POS_EXTRA_ID",
+              "POS_ID_SET"
+            ]
+          }
+        ]
+      },
+      "violations": [
+        "LOCAL_NOT_ACKNOWLEDGED",
+        "POS_EXTRA_ID",
+        "POS_ID_SET"
+      ],
+      "observation": {
+        "baseline": [
+          {
+            "request_id": "ea18032d-cd52-4b9d-809b-dcbdaf53e24b",
+            "pos_db_id": "8df95bfc-6810-43ca-a2d2-06350118226b",
+            "item_code": "DEMO_COFFEE",
+            "quantity": 1,
+            "unit_price_krw": 3000
+          }
+        ],
+        "pos_db_id": "8df95bfc-6810-43ca-a2d2-06350118226b",
+        "result": {
+          "scenario_id": "S02",
+          "source_commit": "7efeb5746b99780f3fc52a26c2aac28e60a9f611",
+          "harness_version": 2,
+          "execution_level": "ANDROID_EXTERNAL",
+          "network_path": "emulator-nat",
+          "started_at": "2026-10-28T05:43:24.602991+00:00",
+          "verdict": "FAIL",
+          "events": [
+            {
+              "event": "LOCAL_COMMITTED",
+              "at": "2026-10-28T05:43:26.638221+00:00",
+              "request_id": "ea18032d-cd52-4b9d-809b-dcbdaf53e24b"
+            },
+            {
+              "event": "SUBMIT_RECEIVED",
+              "at": "2026-10-28T05:43:26.779456+00:00",
+              "request_id": "ea18032d-cd52-4b9d-809b-dcbdaf53e24b",
+              "count": 1
+            },
+            {
+              "event": "POS_COMMITTED",
+              "at": "2026-10-28T05:43:26.782016+00:00",
+              "request_id": "ea18032d-cd52-4b9d-809b-dcbdaf53e24b",
+              "receipt_id": "38ce4fba-69a1-4595-ae14-66419fbc2b7d"
+            },
+            {
+              "event": "ACK_DROPPED",
+              "at": "2026-10-28T05:43:26.782032+00:00",
+              "request_id": "ea18032d-cd52-4b9d-809b-dcbdaf53e24b"
+            },
+            {
+              "event": "SUBMIT_RECEIVED",
+              "at": "2026-10-28T05:43:27.977569+00:00",
+              "request_id": "7e877bc1-38ca-4e41-ba19-5e5666cfd376",
+              "count": 2
+            },
+            {
+              "event": "POS_COMMITTED",
+              "at": "2026-10-28T05:43:27.979686+00:00",
+              "request_id": "7e877bc1-38ca-4e41-ba19-5e5666cfd376",
+              "receipt_id": "e33fc652-3a29-4ca6-86ba-cf60a524e4a8"
+            },
+            {
+              "event": "ACK_RELEASED",
+              "at": "2026-10-28T05:43:27.979700+00:00",
+              "request_id": "7e877bc1-38ca-4e41-ba19-5e5666cfd376"
+            }
+          ],
+          "violations": [
+            "LOCAL_NOT_ACKNOWLEDGED",
+            "POS_EXTRA_ID",
+            "POS_ID_SET"
+          ],
+          "observations": [
+            {
+              "phase": "accepted_paused",
+              "at": "2026-10-28T05:43:26.677954+00:00",
+              "local": {
+                "ok": true,
+                "token": "949865f8-6314-497a-9b12-aa3bbedb2faf",
+                "pid": 4935,
+                "runtime": "사용자가 전송을 일시 중지함",
+                "user_paused": true,
+                "pos_db_id": "8df95bfc-6810-43ca-a2d2-06350118226b",
+                "rows": [
+                  {
+                    "request_id": "ea18032d-cd52-4b9d-809b-dcbdaf53e24b",
+                    "pos_db_id": "8df95bfc-6810-43ca-a2d2-06350118226b",
+                    "item_code": "DEMO_COFFEE",
+                    "quantity": 1,
+                    "unit_price_krw": 3000,
+                    "status": "PENDING",
+                    "receipt_id": null
+                  }
+                ]
+              },
+              "pos_rows": [],
+              "submit_count": 0,
+              "released_acks": 0,
+              "final": false,
+              "paused_check": true,
+              "commit_window": null,
+              "violations": []
+            },
+            {
+              "phase": "recovery",
+              "at": "2026-10-28T05:43:26.867906+00:00",
+              "local": {
+                "ok": true,
+                "token": "6a5187e6-9e0e-41d2-ab41-d8528fd28f09",
+                "pid": 4935,
+                "runtime": "재시도 대기",
+                "user_paused": false,
+                "pos_db_id": "8df95bfc-6810-43ca-a2d2-06350118226b",
+                "rows": [
+                  {
+                    "request_id": "ea18032d-cd52-4b9d-809b-dcbdaf53e24b",
+                    "pos_db_id": "8df95bfc-6810-43ca-a2d2-06350118226b",
+                    "item_code": "DEMO_COFFEE",
+                    "quantity": 1,
+                    "unit_price_krw": 3000,
+                    "status": "PENDING",
+                    "receipt_id": null
+                  }
+                ]
+              },
+              "pos_rows": [
+                {
+                  "request_id": "ea18032d-cd52-4b9d-809b-dcbdaf53e24b",
+                  "receipt_id": "38ce4fba-69a1-4595-ae14-66419fbc2b7d",
+                  "item_code": "DEMO_COFFEE",
+                  "quantity": 1,
+                  "unit_price_krw": 3000
+                }
+              ],
+              "submit_count": 1,
+              "released_acks": 0,
+              "final": false,
+              "paused_check": false,
+              "commit_window": null,
+              "violations": []
+            },
+            {
+              "phase": "recovery",
+              "at": "2026-10-28T05:43:27.055472+00:00",
+              "local": {
+                "ok": true,
+                "token": "cb369919-b864-4800-afdc-dfeaa8611c79",
+                "pid": 4935,
+                "runtime": "재시도 대기",
+                "user_paused": false,
+                "pos_db_id": "8df95bfc-6810-43ca-a2d2-06350118226b",
+                "rows": [
+                  {
+                    "request_id": "ea18032d-cd52-4b9d-809b-dcbdaf53e24b",
+                    "pos_db_id": "8df95bfc-6810-43ca-a2d2-06350118226b",
+                    "item_code": "DEMO_COFFEE",
+                    "quantity": 1,
+                    "unit_price_krw": 3000,
+                    "status": "PENDING",
+                    "receipt_id": null
+                  }
+                ]
+              },
+              "pos_rows": [
+                {
+                  "request_id": "ea18032d-cd52-4b9d-809b-dcbdaf53e24b",
+                  "receipt_id": "38ce4fba-69a1-4595-ae14-66419fbc2b7d",
+                  "item_code": "DEMO_COFFEE",
+                  "quantity": 1,
+                  "unit_price_krw": 3000
+                }
+              ],
+              "submit_count": 1,
+              "released_acks": 0,
+              "final": false,
+              "paused_check": false,
+              "commit_window": null,
+              "violations": []
+            },
+            {
+              "phase": "recovery",
+              "at": "2026-10-28T05:43:27.245151+00:00",
+              "local": {
+                "ok": true,
+                "token": "704a0015-7a1d-41eb-82fa-c10f8d418475",
+                "pid": 4935,
+                "runtime": "재시도 대기",
+                "user_paused": false,
+                "pos_db_id": "8df95bfc-6810-43ca-a2d2-06350118226b",
+                "rows": [
+                  {
+                    "request_id": "ea18032d-cd52-4b9d-809b-dcbdaf53e24b",
+                    "pos_db_id": "8df95bfc-6810-43ca-a2d2-06350118226b",
+                    "item_code": "DEMO_COFFEE",
+                    "quantity": 1,
+                    "unit_price_krw": 3000,
+                    "status": "PENDING",
+                    "receipt_id": null
+                  }
+                ]
+              },
+              "pos_rows": [
+                {
+                  "request_id": "ea18032d-cd52-4b9d-809b-dcbdaf53e24b",
+                  "receipt_id": "38ce4fba-69a1-4595-ae14-66419fbc2b7d",
+                  "item_code": "DEMO_COFFEE",
+                  "quantity": 1,
+                  "unit_price_krw": 3000
+                }
+              ],
+              "submit_count": 1,
+              "released_acks": 0,
+              "final": false,
+              "paused_check": false,
+              "commit_window": null,
+              "violations": []
+            },
+            {
+              "phase": "recovery",
+              "at": "2026-10-28T05:43:27.434621+00:00",
+              "local": {
+                "ok": true,
+                "token": "2db6b042-7d80-4200-9842-d7f9a91d564b",
+                "pid": 4935,
+                "runtime": "재시도 대기",
+                "user_paused": false,
+                "pos_db_id": "8df95bfc-6810-43ca-a2d2-06350118226b",
+                "rows": [
+                  {
+                    "request_id": "ea18032d-cd52-4b9d-809b-dcbdaf53e24b",
+                    "pos_db_id": "8df95bfc-6810-43ca-a2d2-06350118226b",
+                    "item_code": "DEMO_COFFEE",
+                    "quantity": 1,
+                    "unit_price_krw": 3000,
+                    "status": "PENDING",
+                    "receipt_id": null
+                  }
+                ]
+              },
+              "pos_rows": [
+                {
+                  "request_id": "ea18032d-cd52-4b9d-809b-dcbdaf53e24b",
+                  "receipt_id": "38ce4fba-69a1-4595-ae14-66419fbc2b7d",
+                  "item_code": "DEMO_COFFEE",
+                  "quantity": 1,
+                  "unit_price_krw": 3000
+                }
+              ],
+              "submit_count": 1,
+              "released_acks": 0,
+              "final": false,
+              "paused_check": false,
+              "commit_window": null,
+              "violations": []
+            },
+            {
+              "phase": "recovery",
+              "at": "2026-10-28T05:43:27.625058+00:00",
+              "local": {
+                "ok": true,
+                "token": "46030db0-8ba0-4e53-8079-b8ce7ffad148",
+                "pid": 4935,
+                "runtime": "재시도 대기",
+                "user_paused": false,
+                "pos_db_id": "8df95bfc-6810-43ca-a2d2-06350118226b",
+                "rows": [
+                  {
+                    "request_id": "ea18032d-cd52-4b9d-809b-dcbdaf53e24b",
+                    "pos_db_id": "8df95bfc-6810-43ca-a2d2-06350118226b",
+                    "item_code": "DEMO_COFFEE",
+                    "quantity": 1,
+                    "unit_price_krw": 3000,
+                    "status": "PENDING",
+                    "receipt_id": null
+                  }
+                ]
+              },
+              "pos_rows": [
+                {
+                  "request_id": "ea18032d-cd52-4b9d-809b-dcbdaf53e24b",
+                  "receipt_id": "38ce4fba-69a1-4595-ae14-66419fbc2b7d",
+                  "item_code": "DEMO_COFFEE",
+                  "quantity": 1,
+                  "unit_price_krw": 3000
+                }
+              ],
+              "submit_count": 1,
+              "released_acks": 0,
+              "final": false,
+              "paused_check": false,
+              "commit_window": null,
+              "violations": []
+            },
+            {
+              "phase": "recovery",
+              "at": "2026-10-28T05:43:27.816285+00:00",
+              "local": {
+                "ok": true,
+                "token": "56877864-29cc-4d49-8db9-571b29124a0d",
+                "pid": 4935,
+                "runtime": "재시도 대기",
+                "user_paused": false,
+                "pos_db_id": "8df95bfc-6810-43ca-a2d2-06350118226b",
+                "rows": [
+                  {
+                    "request_id": "ea18032d-cd52-4b9d-809b-dcbdaf53e24b",
+                    "pos_db_id": "8df95bfc-6810-43ca-a2d2-06350118226b",
+                    "item_code": "DEMO_COFFEE",
+                    "quantity": 1,
+                    "unit_price_krw": 3000,
+                    "status": "PENDING",
+                    "receipt_id": null
+                  }
+                ]
+              },
+              "pos_rows": [
+                {
+                  "request_id": "ea18032d-cd52-4b9d-809b-dcbdaf53e24b",
+                  "receipt_id": "38ce4fba-69a1-4595-ae14-66419fbc2b7d",
+                  "item_code": "DEMO_COFFEE",
+                  "quantity": 1,
+                  "unit_price_krw": 3000
+                }
+              ],
+              "submit_count": 1,
+              "released_acks": 0,
+              "final": false,
+              "paused_check": false,
+              "commit_window": null,
+              "violations": []
+            },
+            {
+              "phase": "recovery",
+              "at": "2026-10-28T05:43:28.034627+00:00",
+              "local": {
+                "ok": true,
+                "token": "9bba50c6-d7c2-4e5c-836c-9b29c7fc793f",
+                "pid": 4935,
+                "runtime": "전송 중 (2/5)",
+                "user_paused": false,
+                "pos_db_id": "8df95bfc-6810-43ca-a2d2-06350118226b",
+                "rows": [
+                  {
+                    "request_id": "ea18032d-cd52-4b9d-809b-dcbdaf53e24b",
+                    "pos_db_id": "8df95bfc-6810-43ca-a2d2-06350118226b",
+                    "item_code": "DEMO_COFFEE",
+                    "quantity": 1,
+                    "unit_price_krw": 3000,
+                    "status": "PENDING",
+                    "receipt_id": null
+                  }
+                ]
+              },
+              "pos_rows": [
+                {
+                  "request_id": "7e877bc1-38ca-4e41-ba19-5e5666cfd376",
+                  "receipt_id": "e33fc652-3a29-4ca6-86ba-cf60a524e4a8",
+                  "item_code": "DEMO_COFFEE",
+                  "quantity": 1,
+                  "unit_price_krw": 3000
+                },
+                {
+                  "request_id": "ea18032d-cd52-4b9d-809b-dcbdaf53e24b",
+                  "receipt_id": "38ce4fba-69a1-4595-ae14-66419fbc2b7d",
+                  "item_code": "DEMO_COFFEE",
+                  "quantity": 1,
+                  "unit_price_krw": 3000
+                }
+              ],
+              "submit_count": 2,
+              "released_acks": 1,
+              "final": false,
+              "paused_check": false,
+              "commit_window": null,
+              "violations": [
+                "POS_EXTRA_ID"
+              ]
+            },
+            {
+              "phase": "final",
+              "at": "2026-10-28T05:43:28.077437+00:00",
+              "local": {
+                "ok": true,
+                "token": "21023136-0377-4fd9-ae30-61355acf1ec6",
+                "pid": 4935,
+                "runtime": "재시도 대기",
+                "user_paused": false,
+                "pos_db_id": "8df95bfc-6810-43ca-a2d2-06350118226b",
+                "rows": [
+                  {
+                    "request_id": "ea18032d-cd52-4b9d-809b-dcbdaf53e24b",
+                    "pos_db_id": "8df95bfc-6810-43ca-a2d2-06350118226b",
+                    "item_code": "DEMO_COFFEE",
+                    "quantity": 1,
+                    "unit_price_krw": 3000,
+                    "status": "PENDING",
+                    "receipt_id": null
+                  }
+                ]
+              },
+              "pos_rows": [
+                {
+                  "request_id": "7e877bc1-38ca-4e41-ba19-5e5666cfd376",
+                  "receipt_id": "e33fc652-3a29-4ca6-86ba-cf60a524e4a8",
+                  "item_code": "DEMO_COFFEE",
+                  "quantity": 1,
+                  "unit_price_krw": 3000
+                },
+                {
+                  "request_id": "ea18032d-cd52-4b9d-809b-dcbdaf53e24b",
+                  "receipt_id": "38ce4fba-69a1-4595-ae14-66419fbc2b7d",
+                  "item_code": "DEMO_COFFEE",
+                  "quantity": 1,
+                  "unit_price_krw": 3000
+                }
+              ],
+              "submit_count": 2,
+              "released_acks": 1,
+              "final": true,
+              "paused_check": false,
+              "commit_window": null,
+              "violations": [
+                "LOCAL_NOT_ACKNOWLEDGED",
+                "POS_EXTRA_ID",
+                "POS_ID_SET"
+              ]
+            }
+          ],
+          "android_api": "29",
+          "android_model": "Android SDK built for x86_64",
+          "final_pos_rows": [
+            {
+              "request_id": "7e877bc1-38ca-4e41-ba19-5e5666cfd376",
+              "receipt_id": "e33fc652-3a29-4ca6-86ba-cf60a524e4a8",
+              "item_code": "DEMO_COFFEE",
+              "quantity": 1,
+              "unit_price_krw": 3000
+            },
+            {
+              "request_id": "ea18032d-cd52-4b9d-809b-dcbdaf53e24b",
+              "receipt_id": "38ce4fba-69a1-4595-ae14-66419fbc2b7d",
+              "item_code": "DEMO_COFFEE",
+              "quantity": 1,
+              "unit_price_krw": 3000
+            }
+          ],
+          "original_receipts": {
+            "ea18032d-cd52-4b9d-809b-dcbdaf53e24b": "38ce4fba-69a1-4595-ae14-66419fbc2b7d",
+            "7e877bc1-38ca-4e41-ba19-5e5666cfd376": "e33fc652-3a29-4ca6-86ba-cf60a524e4a8"
+          },
+          "finished_at": "2026-10-28T05:43:28.077787+00:00"
+        },
+        "rechecked_observations": 9
+      },
+      "patch": "--- core/src/main/kotlin/dev/locallinklab/core/DeliveryEngine.kt\n+++ core/src/main/kotlin/dev/locallinklab/core/DeliveryEngine.kt\n@@ -24,10 +24,11 @@\n     suspend fun drain(endpoint: Endpoint, event: (String) -> Unit = {}): StopReason {\n         while (true) {\n             currentCoroutineContext().ensureActive()\n-            val pending = outbox.nextPending() ?: return StopReason.EMPTY\n+            var pending = outbox.nextPending() ?: return StopReason.EMPTY\n             var resolved = false\n             for (attempt in 0 until attempts) {\n                 currentCoroutineContext().ensureActive()\n+                if (attempt > 0) pending = pending.copy(requestId = java.util.UUID.randomUUID().toString())\n                 event(\"전송 중 (${attempt + 1}/$attempts)\")\n                 try {\n                     when (val response = transport.exchange(endpoint, Message.Submit(pending))) {\n"
+    },
+    {
+      "mutation": "MUT02",
+      "base_commit": "7efeb5746b99780f3fc52a26c2aac28e60a9f611",
+      "scenario": "S01",
+      "expected_violation": "ACK_WITHOUT_POS",
+      "verdict": "KILLED",
+      "patch_sha256": "87d4d939bdbadd9e362dd4646a19dc7439c95586fca8a3381e20aa97bd00fd73",
+      "build_exit": 0,
+      "apk_sha256": "4261e137db7cd219ee3194f4680bc081644f8dcec7b0c6c7c9b4d165de5c5c54",
+      "install_exit": 0,
+      "scenario_exit": 1,
+      "execution_identity": {
+        "source_commit": "7efeb5746b99780f3fc52a26c2aac28e60a9f611",
+        "source_clean": true,
+        "harness_version": 2,
+        "apk_identity": {
+          "package_path": "/data/app/dev.locallinklab.app-A5JteudYrW9Kgoet2RZc0A==/base.apk",
+          "installed_sha256": "4261e137db7cd219ee3194f4680bc081644f8dcec7b0c6c7c9b4d165de5c5c54",
+          "build_sha256": "4261e137db7cd219ee3194f4680bc081644f8dcec7b0c6c7c9b4d165de5c5c54"
+        },
+        "final_apk_identity": {
+          "package_path": "/data/app/dev.locallinklab.app-A5JteudYrW9Kgoet2RZc0A==/base.apk",
+          "installed_sha256": "4261e137db7cd219ee3194f4680bc081644f8dcec7b0c6c7c9b4d165de5c5c54",
+          "build_sha256": "4261e137db7cd219ee3194f4680bc081644f8dcec7b0c6c7c9b4d165de5c5c54"
+        },
+        "required": [
+          "S01"
+        ],
+        "verdict": "FAIL",
+        "results": [
+          {
+            "scenario_id": "S01",
+            "verdict": "FAIL",
+            "violations": [
+              "ACK_WITHOUT_POS",
+              "POS_ID_SET"
+            ]
+          }
+        ]
+      },
+      "violations": [
+        "ACK_WITHOUT_POS",
+        "POS_ID_SET"
+      ],
+      "observation": {
+        "baseline": [
+          {
+            "request_id": "0ede3d7d-8029-43d4-a657-eb36c3e57dc7",
+            "pos_db_id": "a06f9e0a-3b4c-40a2-a26e-8049cf50e7fa",
+            "item_code": "DEMO_COFFEE",
+            "quantity": 1,
+            "unit_price_krw": 3000
+          }
+        ],
+        "pos_db_id": "a06f9e0a-3b4c-40a2-a26e-8049cf50e7fa",
+        "result": {
+          "scenario_id": "S01",
+          "source_commit": "7efeb5746b99780f3fc52a26c2aac28e60a9f611",
+          "harness_version": 2,
+          "execution_level": "ANDROID_EXTERNAL",
+          "network_path": "emulator-nat",
+          "started_at": "2026-10-28T05:43:50.951599+00:00",
+          "verdict": "FAIL",
+          "events": [
+            {
+              "event": "LOCAL_COMMITTED",
+              "at": "2026-10-28T05:43:53.161173+00:00",
+              "request_id": "0ede3d7d-8029-43d4-a657-eb36c3e57dc7"
+            },
+            {
+              "event": "SUBMIT_RECEIVED",
+              "at": "2026-10-28T05:43:53.272177+00:00",
+              "request_id": "0ede3d7d-8029-43d4-a657-eb36c3e57dc7",
+              "count": 1
+            },
+            {
+              "event": "REQUEST_BLOCKED_BEFORE_POS_WRITE",
+              "at": "2026-10-28T05:43:53.272193+00:00",
+              "request_id": "0ede3d7d-8029-43d4-a657-eb36c3e57dc7"
+            },
+            {
+              "event": "CONNECTION_DELIVERY_RESTORED",
+              "at": "2026-10-28T05:43:53.356866+00:00"
+            },
+            {
+              "event": "RECOVERY_BUDGET_RESTARTED",
+              "at": "2026-10-28T05:43:53.418776+00:00"
+            }
+          ],
+          "violations": [
+            "ACK_WITHOUT_POS",
+            "POS_ID_SET"
+          ],
+          "observations": [
+            {
+              "phase": "accepted_paused",
+              "at": "2026-10-28T05:43:53.208349+00:00",
+              "local": {
+                "ok": true,
+                "token": "4d1c2fa6-dfb4-4a8d-a903-0507ac815128",
+                "pid": 5136,
+                "runtime": "사용자가 전송을 일시 중지함",
+                "user_paused": true,
+                "pos_db_id": "a06f9e0a-3b4c-40a2-a26e-8049cf50e7fa",
+                "rows": [
+                  {
+                    "request_id": "0ede3d7d-8029-43d4-a657-eb36c3e57dc7",
+                    "pos_db_id": "a06f9e0a-3b4c-40a2-a26e-8049cf50e7fa",
+                    "item_code": "DEMO_COFFEE",
+                    "quantity": 1,
+                    "unit_price_krw": 3000,
+                    "status": "PENDING",
+                    "receipt_id": null
+                  }
+                ]
+              },
+              "pos_rows": [],
+              "submit_count": 0,
+              "released_acks": 0,
+              "final": false,
+              "paused_check": true,
+              "commit_window": null,
+              "violations": []
+            },
+            {
+              "phase": "request_blocked",
+              "at": "2026-10-28T05:43:53.356848+00:00",
+              "local": {
+                "ok": true,
+                "token": "fcbee8c8-66b9-48b5-ae6a-b244e5bb3b4c",
+                "pid": 5136,
+                "runtime": "재시도 대기",
+                "user_paused": false,
+                "pos_db_id": "a06f9e0a-3b4c-40a2-a26e-8049cf50e7fa",
+                "rows": [
+                  {
+                    "request_id": "0ede3d7d-8029-43d4-a657-eb36c3e57dc7",
+                    "pos_db_id": "a06f9e0a-3b4c-40a2-a26e-8049cf50e7fa",
+                    "item_code": "DEMO_COFFEE",
+                    "quantity": 1,
+                    "unit_price_krw": 3000,
+                    "status": "ACKNOWLEDGED",
+                    "receipt_id": "b5730d07-abff-4082-8fca-7d6f114a93d6"
+                  }
+                ]
+              },
+              "pos_rows": [],
+              "submit_count": 1,
+              "released_acks": 0,
+              "final": false,
+              "paused_check": false,
+              "commit_window": null,
+              "violations": [
+                "ACK_WITHOUT_POS"
+              ]
+            },
+            {
+              "phase": "final",
+              "at": "2026-10-28T05:43:53.465244+00:00",
+              "local": {
+                "ok": true,
+                "token": "7d910ac8-4e75-4e26-8bed-5d5c9c30b7a5",
+                "pid": 5136,
+                "runtime": "대기 중",
+                "user_paused": false,
+                "pos_db_id": "a06f9e0a-3b4c-40a2-a26e-8049cf50e7fa",
+                "rows": [
+                  {
+                    "request_id": "0ede3d7d-8029-43d4-a657-eb36c3e57dc7",
+                    "pos_db_id": "a06f9e0a-3b4c-40a2-a26e-8049cf50e7fa",
+                    "item_code": "DEMO_COFFEE",
+                    "quantity": 1,
+                    "unit_price_krw": 3000,
+                    "status": "ACKNOWLEDGED",
+                    "receipt_id": "b5730d07-abff-4082-8fca-7d6f114a93d6"
+                  }
+                ]
+              },
+              "pos_rows": [],
+              "submit_count": 1,
+              "released_acks": 0,
+              "final": true,
+              "paused_check": false,
+              "commit_window": null,
+              "violations": [
+                "ACK_WITHOUT_POS",
+                "POS_ID_SET"
+              ]
+            }
+          ],
+          "android_api": "29",
+          "android_model": "Android SDK built for x86_64",
+          "final_pos_rows": [],
+          "original_receipts": {},
+          "finished_at": "2026-10-28T05:43:53.465618+00:00"
+        },
+        "rechecked_observations": 3
+      },
+      "patch": "--- core/src/main/kotlin/dev/locallinklab/core/DeliveryEngine.kt\n+++ core/src/main/kotlin/dev/locallinklab/core/DeliveryEngine.kt\n@@ -30,6 +30,7 @@\n                 currentCoroutineContext().ensureActive()\n                 event(\"전송 중 (${attempt + 1}/$attempts)\")\n                 try {\n+                    outbox.acknowledge(pending.requestId, java.util.UUID.randomUUID().toString())\n                     when (val response = transport.exchange(endpoint, Message.Submit(pending))) {\n                         is Message.Ack -> {\n                             if (response.requestId != pending.requestId || response.dbId != pending.dbId) throw WireException(\"Unrelated ACK\")\n"
+    },
+    {
+      "mutation": "MUT03",
+      "base_commit": "7efeb5746b99780f3fc52a26c2aac28e60a9f611",
+      "scenario": "S03_am_kill",
+      "expected_violation": "SENT_WHILE_PAUSED",
+      "verdict": "KILLED",
+      "patch_sha256": "2289faf5b7483c84f623577b43930450b47b116cd8d7031203197bdcfa4b0e3b",
+      "build_exit": 0,
+      "apk_sha256": "e4a4bb53437a887ab0ba0cabf50613aa61dbf7df1075142c6e52f6077c5d1ea4",
+      "install_exit": 0,
+      "scenario_exit": 1,
+      "execution_identity": {
+        "source_commit": "7efeb5746b99780f3fc52a26c2aac28e60a9f611",
+        "source_clean": true,
+        "harness_version": 2,
+        "apk_identity": {
+          "package_path": "/data/app/dev.locallinklab.app-K6EhCyrbYQUrAdbYVFLL0g==/base.apk",
+          "installed_sha256": "e4a4bb53437a887ab0ba0cabf50613aa61dbf7df1075142c6e52f6077c5d1ea4",
+          "build_sha256": "e4a4bb53437a887ab0ba0cabf50613aa61dbf7df1075142c6e52f6077c5d1ea4"
+        },
+        "final_apk_identity": {
+          "package_path": "/data/app/dev.locallinklab.app-K6EhCyrbYQUrAdbYVFLL0g==/base.apk",
+          "installed_sha256": "e4a4bb53437a887ab0ba0cabf50613aa61dbf7df1075142c6e52f6077c5d1ea4",
+          "build_sha256": "e4a4bb53437a887ab0ba0cabf50613aa61dbf7df1075142c6e52f6077c5d1ea4"
+        },
+        "required": [
+          "S03_am_kill"
+        ],
+        "verdict": "FAIL",
+        "results": [
+          {
+            "scenario_id": "S03_am_kill",
+            "verdict": "FAIL",
+            "violations": [
+              "SENT_WHILE_PAUSED"
+            ]
+          }
+        ]
+      },
+      "violations": [
+        "SENT_WHILE_PAUSED"
+      ],
+      "observation": {
+        "baseline": [
+          {
+            "request_id": "d8ecf8f2-ace8-4229-8240-d2aeae6ccc80",
+            "pos_db_id": "f7f36449-22fc-4476-82d1-f4a566962640",
+            "item_code": "DEMO_COFFEE",
+            "quantity": 1,
+            "unit_price_krw": 3000
+          }
+        ],
+        "pos_db_id": "f7f36449-22fc-4476-82d1-f4a566962640",
+        "result": {
+          "scenario_id": "S03_am_kill",
+          "source_commit": "7efeb5746b99780f3fc52a26c2aac28e60a9f611",
+          "harness_version": 2,
+          "execution_level": "ANDROID_EXTERNAL",
+          "network_path": "emulator-nat",
+          "started_at": "2026-10-28T05:44:15.559284+00:00",
+          "verdict": "FAIL",
+          "events": [
+            {
+              "event": "SUBMIT_RECEIVED",
+              "at": "2026-10-28T05:44:17.553805+00:00",
+              "request_id": "d8ecf8f2-ace8-4229-8240-d2aeae6ccc80",
+              "count": 1
+            },
+            {
+              "event": "POS_COMMITTED",
+              "at": "2026-10-28T05:44:17.556191+00:00",
+              "request_id": "d8ecf8f2-ace8-4229-8240-d2aeae6ccc80",
+              "receipt_id": "f6763921-a64f-4730-a818-575fefb59434"
+            },
+            {
+              "event": "ACK_RELEASED",
+              "at": "2026-10-28T05:44:17.556206+00:00",
+              "request_id": "d8ecf8f2-ace8-4229-8240-d2aeae6ccc80"
+            },
+            {
+              "event": "LOCAL_COMMITTED",
+              "at": "2026-10-28T05:44:17.634472+00:00",
+              "request_id": "d8ecf8f2-ace8-4229-8240-d2aeae6ccc80"
+            }
+          ],
+          "violations": [
+            "SENT_WHILE_PAUSED"
+          ],
+          "observations": [
+            {
+              "phase": "accepted_paused",
+              "at": "2026-10-28T05:44:17.680392+00:00",
+              "local": {
+                "ok": true,
+                "token": "b8506e87-872b-4b7d-94f6-1ea53312e864",
+                "pid": 5289,
+                "runtime": "대기 중",
+                "user_paused": true,
+                "pos_db_id": "f7f36449-22fc-4476-82d1-f4a566962640",
+                "rows": [
+                  {
+                    "request_id": "d8ecf8f2-ace8-4229-8240-d2aeae6ccc80",
+                    "pos_db_id": "f7f36449-22fc-4476-82d1-f4a566962640",
+                    "item_code": "DEMO_COFFEE",
+                    "quantity": 1,
+                    "unit_price_krw": 3000,
+                    "status": "ACKNOWLEDGED",
+                    "receipt_id": "f6763921-a64f-4730-a818-575fefb59434"
+                  }
+                ]
+              },
+              "pos_rows": [
+                {
+                  "request_id": "d8ecf8f2-ace8-4229-8240-d2aeae6ccc80",
+                  "receipt_id": "f6763921-a64f-4730-a818-575fefb59434",
+                  "item_code": "DEMO_COFFEE",
+                  "quantity": 1,
+                  "unit_price_krw": 3000
+                }
+              ],
+              "submit_count": 1,
+              "released_acks": 1,
+              "final": false,
+              "paused_check": true,
+              "commit_window": null,
+              "violations": [
+                "SENT_WHILE_PAUSED"
+              ]
+            },
+            {
+              "phase": "final",
+              "at": "2026-10-28T05:44:17.723291+00:00",
+              "local": {
+                "ok": true,
+                "token": "8b9df5e6-71ff-4281-9a74-e319c78c192d",
+                "pid": 5289,
+                "runtime": "대기 중",
+                "user_paused": true,
+                "pos_db_id": "f7f36449-22fc-4476-82d1-f4a566962640",
+                "rows": [
+                  {
+                    "request_id": "d8ecf8f2-ace8-4229-8240-d2aeae6ccc80",
+                    "pos_db_id": "f7f36449-22fc-4476-82d1-f4a566962640",
+                    "item_code": "DEMO_COFFEE",
+                    "quantity": 1,
+                    "unit_price_krw": 3000,
+                    "status": "ACKNOWLEDGED",
+                    "receipt_id": "f6763921-a64f-4730-a818-575fefb59434"
+                  }
+                ]
+              },
+              "pos_rows": [
+                {
+                  "request_id": "d8ecf8f2-ace8-4229-8240-d2aeae6ccc80",
+                  "receipt_id": "f6763921-a64f-4730-a818-575fefb59434",
+                  "item_code": "DEMO_COFFEE",
+                  "quantity": 1,
+                  "unit_price_krw": 3000
+                }
+              ],
+              "submit_count": 1,
+              "released_acks": 1,
+              "final": true,
+              "paused_check": false,
+              "commit_window": null,
+              "violations": []
+            }
+          ],
+          "android_api": "29",
+          "android_model": "Android SDK built for x86_64",
+          "final_pos_rows": [
+            {
+              "request_id": "d8ecf8f2-ace8-4229-8240-d2aeae6ccc80",
+              "receipt_id": "f6763921-a64f-4730-a818-575fefb59434",
+              "item_code": "DEMO_COFFEE",
+              "quantity": 1,
+              "unit_price_krw": 3000
+            }
+          ],
+          "original_receipts": {
+            "d8ecf8f2-ace8-4229-8240-d2aeae6ccc80": "f6763921-a64f-4730-a818-575fefb59434"
+          },
+          "finished_at": "2026-10-28T05:44:17.723665+00:00"
+        },
+        "rechecked_observations": 2
+      },
+      "patch": "--- app/src/main/java/dev/locallinklab/app/LinkApplication.kt\n+++ app/src/main/java/dev/locallinklab/app/LinkApplication.kt\n@@ -68,7 +68,6 @@\n                         _runtime.value = \"POS 주소를 입력하고 연결을 확인하세요.\"\n                         return@collectLatest\n                     }\n-                    if (config.userPaused) { _runtime.value = \"사용자가 전송을 일시 중지함\"; return@collectLatest }\n                     val endpoint = Endpoint(config.host, config.port)\n                     when (DestinationVerifier(transport).verify(endpoint, config.posDbId) { _runtime.value = it }) {\n                         DestinationResult.VERIFIED -> Unit\n"
+    }
+  ],
+  "head_commit": "6c7187d021ab5390ab5c3388dfd99b24327a15f3",
+  "identical_tree": "c12de6f48fe86707b293f221448e390e5d4c5737",
+  "ci_run": 40639032749,
+  "artifact_id": 12794997080,
+  "artifact_sha256": "6d4b481f1e4d6da6a4437020c162dce0668fdd7d4891aecf61b9db6764747f5d",
+  "counts": {
+    "python_each_windows_linux": 26,
+    "core_jvm": 19,
+    "controller_jvm": 7,
+    "android_normal": 4,
+    "android_recovery": 2,
+    "fault_cases": 6,
+    "mutations_killed": 3
+  },
+  "review_status": "OPUS conditional approval of 127ea32; these fixes have not received independent reapproval",
+  "physical_device": "NOT_RUN"
+}
