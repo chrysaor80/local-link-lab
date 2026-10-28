@@ -11,9 +11,11 @@
 | S04 | 응답 없는 상대 | 요청을 읽은 서버가 응답도 연결 종료도 하지 않음. 시도 전체 제한 시간에 종료, 상한 후 일시 중지 |
 | C01 | 저장·용량 실패 | 한도 경계 및 트랜잭션 실패. 접수 완료 표시·전송 없음, 기존 주문 보존 |
 | C02 | 동시 중복·ID 충돌 | 독립 연결로 같은 요청을 동시에 전송, 이후 같은 ID의 다른 본문. 1건·같은 receipt, 충돌은 거부 |
-| C03 | ACK 경계와 순서 | ACK 전 완료 금지, ACK 후 로컬 기록 실패 시 재전송, 뒤 주문 대기 |
+| C03 | ACK 경계와 순서 | ACK 전 완료 금지, ACK 후 로컬 기록 실패 시 재전송, NEEDS_ATTENTION은 보존하고 다음 PENDING 진행 |
 | C04 | 전송 취소 | 재시도 대기/읽기 중 worker 취소. 소켓과 작업 종료, 주문 보존, 새 worker는 하나 |
 | C05 | 메시지 경계 | 분할 read, UTF-8·길이·타입 오류, 다른 ID 응답. 정당한 프레임만 처리 |
+| C06 | 침묵 클라이언트 | POS에 연결 후 완전한 프레임을 보내지 않음. 다른 요청 정상 처리, 전체 수신 제한 뒤 연결 해제 |
+| C07 | 주소 변경 | 미확인 주문이 있어도 같은 DB의 새 주소 허용. 다른 DB·hello 이후 DB 교체는 주문 쓰기 없이 거부 |
 
 ## 실행 수준
 
@@ -26,11 +28,15 @@
 
 `LOCAL_COMMITTED`, `POS_COMMITTED`, `ACK_RECEIVED`, `LOCAL_ACK_COMMITTED`를 요청 ID와 함께 관측한다. S02는 시뮬레이터의 POS commit 직후 hook에서 ACK를 한 번 버린다. 임의 sleep으로 저장 시점을 추측하지 않는다. 실패 실행도 DB와 이벤트 순서를 남긴다.
 
-앱·POS 로그만으로 판정하지 않는다. 접수한 ID·본문 집합과 실제 POS 행·receipt_id, 로컬 상태를 대조한다. 개수만 같고 주문이 바뀐 경우를 통과시키지 않는다.
+앱·POS 로그만으로 판정하지 않는다. 시나리오마다 새 POS DB와 별도의 불변 접수 기준 집합을 만든다. 앱 DB의 ID를 나중에 바꾸어도 기준 집합은 바뀌지 않는다. 복구 완료 후 POS 전체 행의 (request_id, 본문) 집합이 기준 집합과 양방향으로 같고 총 행 수도 같아야 한다. receipt와 로컬 commit 상태도 대조한다. 추가된 고아 주문·누락·ID 변조를 모두 잡는다.
 
 ## 프로세스 종료 구분
 
-S03은 `am kill`과 `am force-stop`을 별도 실행으로 기록한다. `am kill`은 앱을 백그라운드로 보낸 뒤 실행하고 실제 PID 종료를 확인한다. 종료되지 않았다면 해당 검증은 BLOCKED다. `force-stop`도 명시적 재실행 후 복원을 확인하며 OS 메모리 회수와 동일하다고 표기하지 않는다. 두 경우 모두 실행 중이던 작업이 자동으로 살아난다고 기대하지 않는다.
+S03의 `am kill` 변형은 백그라운드 전환으로 worker를 멈춘 뒤의 유휴 PENDING 복원 시험이다. 실제 PID 종료가 없으면 BLOCKED다. 일반 force-stop 재실행과 구분한다.
+
+`force_stop_after_pos_commit` 변형은 POS의 commit hook이 ACK를 보류하고 외부 Windows 실행기에 사건을 알린 뒤, 실행기가 adb force-stop과 PID 종료를 확인한다. 서버 자체가 임의 셸 명령을 실행하는 기능은 넣지 않는다. 앱 재실행 후 같은 ID·최초 receipt·POS 전체 1건·로컬 확인을 검증한다. OS 저메모리 회수나 전원 차단과 같다고 표기하지 않는다.
+
+C01 실기기는 debug 전용 한도 축소/저장 실패 주입으로 재현하고 release 변형에서 제외한다. C04는 사용자 중지가 프로세스 재실행에도 유지되는지 확인한다.
 
 DB close/open은 저장소 재개 테스트다. 프로세스 종료 증거가 아니다. 자세한 절차는 [Windows 실행 준비](WINDOWS.md)에 있다.
 
@@ -43,7 +49,7 @@ DB close/open은 저장소 재개 테스트다. 프로세스 종료 증거가 �
 
 ## 결과 형식과 배포 조건
 
-각 실행은 source_commit, scenario_id, execution_level, OS/기기, 시작·종료 시각, 실제 실행 명령, 주입 사건, 관측 결과, 판정, 로그/DB 증거 위치를 남긴다.
+각 실행은 source_commit, scenario_id, execution_level, network_path(loopback/emulator/adb-reverse/lan-wifi), OS/기기, 시작·종료 시각, 실제 실행 명령, 주입 사건, 관측 결과, 판정, 로그/DB 증거 위치를 남긴다. 에뮬레이터·adb reverse 통과를 실제 LAN/Windows 방화벽 검증으로 세지 않는다.
 
 판정은 PASS / FAIL / BLOCKED / NOT_RUN. 종료 코드 0만으로 전체 통과를 결정하지 않는다. 필수 관측이나 필수 실행이 없으면 전체 성공이 될 수 없다. 재실행 통과가 이전 실패를 지우지 않는다.
 

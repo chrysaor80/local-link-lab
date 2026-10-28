@@ -1,72 +1,268 @@
 {
   "schema_version": 1,
   "status": "planned",
-  "primary_demo_ids": ["S01", "S02", "S03"],
+  "primary_demo_ids": [
+    "S01",
+    "S02",
+    "S03"
+  ],
   "scenarios": [
     {
-      "id": "S00", "name": "normal_round_trip", "invariants": ["I01", "I02", "I04"],
-      "execution_levels": ["JVM_UNIT", "POS_INTEGRATION", "ANDROID_MANUAL"],
+      "id": "S00",
+      "name": "normal_round_trip",
+      "invariants": [
+        "I01",
+        "I02",
+        "I04"
+      ],
+      "execution_levels": [
+        "JVM_UNIT",
+        "POS_INTEGRATION",
+        "ANDROID_MANUAL"
+      ],
       "trigger": "LOCAL_COMMITTED",
-      "observations": ["same_request_id_and_payload", "one_pos_row", "receipt_matches", "local_ack_committed"]
+      "observations": [
+        "same_request_id_and_payload",
+        "one_pos_row",
+        "receipt_matches",
+        "local_ack_committed"
+      ]
     },
     {
-      "id": "S01", "name": "disconnect_before_delivery", "invariants": ["I01", "I04"],
-      "execution_levels": ["JVM_UNIT", "POS_INTEGRATION", "ANDROID_MANUAL"],
+      "id": "S01",
+      "name": "disconnect_before_delivery",
+      "invariants": [
+        "I01",
+        "I04"
+      ],
+      "execution_levels": [
+        "JVM_UNIT",
+        "POS_INTEGRATION",
+        "ANDROID_MANUAL"
+      ],
       "trigger": "LOCAL_COMMITTED_BEFORE_FIRST_SEND",
-      "observations": ["pending_preserved", "id_unchanged_on_retry", "one_pos_row_after_recovery", "local_ack_committed"]
+      "observations": [
+        "pending_preserved",
+        "id_unchanged_on_retry",
+        "one_pos_row_after_recovery",
+        "local_ack_committed"
+      ]
     },
     {
-      "id": "S02", "name": "drop_ack_after_commit", "invariants": ["I02", "I04"],
-      "execution_levels": ["JVM_UNIT", "POS_INTEGRATION", "ANDROID_MANUAL"],
+      "id": "S02",
+      "name": "drop_ack_after_commit",
+      "invariants": [
+        "I02",
+        "I04"
+      ],
+      "execution_levels": [
+        "JVM_UNIT",
+        "POS_INTEGRATION",
+        "ANDROID_MANUAL"
+      ],
       "trigger": "POS_COMMITTED_BEFORE_ACK",
-      "observations": ["one_pos_row", "same_payload", "original_receipt_returned", "id_unchanged_on_retry", "local_ack_committed"]
+      "observations": [
+        "one_pos_row",
+        "same_payload",
+        "original_receipt_returned",
+        "id_unchanged_on_retry",
+        "local_ack_committed",
+        "immutable_admission_baseline",
+        "full_pos_set_equals_accepted_set",
+        "same_total_row_count"
+      ]
     },
     {
-      "id": "S03", "name": "android_process_restart", "invariants": ["I01", "I05"],
-      "execution_levels": ["ANDROID_MANUAL"],
-      "variants": ["am_kill_background", "am_force_stop_explicit_relaunch"],
+      "id": "S03",
+      "name": "android_process_restart",
+      "invariants": [
+        "I01",
+        "I05"
+      ],
+      "execution_levels": [
+        "ANDROID_MANUAL"
+      ],
+      "variants": [
+        "am_kill_idle_pending",
+        "am_force_stop_explicit_relaunch",
+        "force_stop_after_pos_commit"
+      ],
       "trigger": "LOCAL_COMMITTED_AND_PENDING",
-      "observations": ["old_process_observed_terminated", "explicit_relaunch", "same_request_id_and_payload", "one_pos_row", "local_ack_committed"]
+      "observations": [
+        "old_process_observed_terminated",
+        "explicit_relaunch",
+        "same_request_id_and_payload",
+        "one_pos_row",
+        "local_ack_committed",
+        "original_receipt_after_commit_death"
+      ]
     },
     {
-      "id": "S04", "name": "silent_peer", "invariants": ["I03", "I04"],
-      "execution_levels": ["JVM_UNIT", "POS_INTEGRATION"],
+      "id": "S04",
+      "name": "silent_peer",
+      "invariants": [
+        "I03",
+        "I04"
+      ],
+      "execution_levels": [
+        "JVM_UNIT",
+        "POS_INTEGRATION"
+      ],
       "trigger": "SERVER_READ_REQUEST_WITHOUT_RESPONSE_OR_CLOSE",
-      "observations": ["attempt_deadline_respected", "socket_closed", "attempt_budget_respected", "pending_preserved"]
+      "observations": [
+        "attempt_deadline_respected",
+        "socket_closed",
+        "attempt_budget_respected",
+        "pending_preserved"
+      ]
     },
     {
-      "id": "C01", "name": "admission_failure", "invariants": ["I01"],
-      "execution_levels": ["JVM_UNIT", "ANDROID_MANUAL"],
+      "id": "C01",
+      "name": "admission_failure",
+      "invariants": [
+        "I01"
+      ],
+      "execution_levels": [
+        "JVM_UNIT",
+        "ANDROID_MANUAL"
+      ],
       "trigger": "QUEUE_LIMIT_OR_LOCAL_TRANSACTION_FAILURE",
-      "observations": ["no_acceptance_success", "no_network_send", "reason_visible", "existing_orders_preserved"]
+      "observations": [
+        "no_acceptance_success",
+        "no_network_send",
+        "reason_visible",
+        "existing_orders_preserved"
+      ]
     },
     {
-      "id": "C02", "name": "concurrent_duplicate_and_conflict", "invariants": ["I02"],
-      "execution_levels": ["POS_INTEGRATION"],
+      "id": "C02",
+      "name": "concurrent_duplicate_and_conflict",
+      "invariants": [
+        "I02"
+      ],
+      "execution_levels": [
+        "POS_INTEGRATION"
+      ],
       "trigger": "SAME_ID_FROM_INDEPENDENT_CONNECTIONS_THEN_CHANGED_PAYLOAD",
-      "observations": ["one_pos_row", "same_receipt_for_duplicates", "conflicting_payload_rejected", "original_payload_preserved"]
+      "observations": [
+        "one_pos_row",
+        "same_receipt_for_duplicates",
+        "conflicting_payload_rejected",
+        "original_payload_preserved"
+      ]
     },
     {
-      "id": "C03", "name": "ack_commit_boundary_and_fifo", "invariants": ["I01", "I04"],
-      "execution_levels": ["JVM_UNIT"],
+      "id": "C03",
+      "name": "ack_commit_boundary_and_fifo",
+      "invariants": [
+        "I01",
+        "I04"
+      ],
+      "execution_levels": [
+        "JVM_UNIT"
+      ],
       "trigger": "BEFORE_ACK_AND_LOCAL_ACK_TRANSACTION_FAILURE",
-      "observations": ["no_premature_completion", "pending_on_local_write_failure", "same_id_retry", "next_order_waits"]
+      "observations": [
+        "no_premature_completion",
+        "pending_on_local_write_failure",
+        "same_id_retry",
+        "next_order_waits",
+        "needs_attention_does_not_block_next_pending"
+      ]
     },
     {
-      "id": "C04", "name": "worker_cancellation", "invariants": ["I03", "I05"],
-      "execution_levels": ["JVM_UNIT", "ANDROID_MANUAL"],
+      "id": "C04",
+      "name": "worker_cancellation",
+      "invariants": [
+        "I03",
+        "I05"
+      ],
+      "execution_levels": [
+        "JVM_UNIT",
+        "ANDROID_MANUAL"
+      ],
       "trigger": "CANCEL_DURING_BACKOFF_OR_BLOCKING_READ",
-      "observations": ["socket_closed", "no_retry_after_cancel", "pending_preserved", "single_worker_on_resume"]
+      "observations": [
+        "socket_closed",
+        "no_retry_after_cancel",
+        "pending_preserved",
+        "single_worker_on_resume",
+        "user_pause_survives_process_restart"
+      ]
     },
     {
-      "id": "C05", "name": "frame_and_reply_validation", "invariants": ["I03", "I04"],
-      "execution_levels": ["JVM_UNIT", "POS_INTEGRATION"],
+      "id": "C05",
+      "name": "frame_and_reply_validation",
+      "invariants": [
+        "I03",
+        "I04"
+      ],
+      "execution_levels": [
+        "JVM_UNIT",
+        "POS_INTEGRATION"
+      ],
       "trigger": "SPLIT_MALFORMED_OVERSIZED_OR_UNRELATED_FRAME",
-      "observations": ["valid_split_frame_accepted", "invalid_input_rejected", "bounded_buffer", "unrelated_ack_not_applied"]
+      "observations": [
+        "valid_split_frame_accepted",
+        "invalid_input_rejected",
+        "bounded_buffer",
+        "unrelated_ack_not_applied"
+      ]
+    },
+    {
+      "id": "C06",
+      "name": "half_open_client",
+      "invariants": [
+        "I03"
+      ],
+      "execution_levels": [
+        "POS_INTEGRATION"
+      ],
+      "trigger": "ACCEPT_WITHOUT_FULL_FRAME",
+      "observations": [
+        "other_client_completes",
+        "server_absolute_deadline",
+        "connection_released"
+      ]
+    },
+    {
+      "id": "C07",
+      "name": "same_db_address_change",
+      "invariants": [
+        "I01",
+        "I06"
+      ],
+      "execution_levels": [
+        "JVM_UNIT",
+        "POS_INTEGRATION",
+        "ANDROID_MANUAL"
+      ],
+      "trigger": "PENDING_AND_CHANGED_ADDRESS",
+      "observations": [
+        "same_db_address_allowed",
+        "different_db_rejected",
+        "db_swap_after_hello_rejected",
+        "no_wrong_db_order"
+      ]
     }
   ],
   "mutations": [
-    {"id": "MUT01", "change": "fresh_request_id_on_retry", "detected_by": ["S02"], "expected_violation": "duplicate_business_effect"},
-    {"id": "MUT02", "change": "mark_complete_before_ack", "detected_by": ["S01", "C03"], "expected_violation": "lost_or_prematurely_completed_order"}
+    {
+      "id": "MUT01",
+      "change": "fresh_request_id_on_retry",
+      "detected_by": [
+        "S02"
+      ],
+      "expected_violation": "duplicate_business_effect"
+    },
+    {
+      "id": "MUT02",
+      "change": "mark_complete_before_ack",
+      "detected_by": [
+        "S01",
+        "C03"
+      ],
+      "expected_violation": "lost_or_prematurely_completed_order"
+    }
   ]
 }

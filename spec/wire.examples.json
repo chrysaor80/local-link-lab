@@ -2,61 +2,170 @@
   {
     "name": "normal_order",
     "expected_valid": true,
-    "message": {"version": 1, "type": "submit_order", "request_id": "123e4567-e89b-42d3-a456-426614174000", "order": {"item_code": "COFFEE", "quantity": 1, "unit_price_krw": 4500}}
+    "message": {
+      "version": 1,
+      "type": "submit_order",
+      "request_id": "123e4567-e89b-42d3-a456-426614174000",
+      "order": {
+        "item_code": "COFFEE",
+        "quantity": 1,
+        "unit_price_krw": 4500
+      },
+      "pos_db_id": "323e4567-e89b-42d3-a456-426614174000"
+    }
   },
   {
     "name": "committed_ack",
     "expected_valid": true,
-    "message": {"version": 1, "type": "ack", "request_id": "123e4567-e89b-42d3-a456-426614174000", "receipt_id": "223e4567-e89b-42d3-a456-426614174000"}
+    "message": {
+      "version": 1,
+      "type": "ack",
+      "request_id": "123e4567-e89b-42d3-a456-426614174000",
+      "receipt_id": "223e4567-e89b-42d3-a456-426614174000",
+      "pos_db_id": "323e4567-e89b-42d3-a456-426614174000"
+    }
   },
   {
     "name": "conflict_error",
     "expected_valid": true,
-    "message": {"version": 1, "type": "error", "request_id": "123e4567-e89b-42d3-a456-426614174000", "code": "ID_CONFLICT"}
+    "message": {
+      "version": 1,
+      "type": "error",
+      "request_id": "123e4567-e89b-42d3-a456-426614174000",
+      "code": "ID_CONFLICT",
+      "pos_db_id": "323e4567-e89b-42d3-a456-426614174000"
+    }
   },
   {
     "name": "malformed_request_error",
     "expected_valid": true,
-    "message": {"version": 1, "type": "error", "request_id": null, "code": "INVALID_REQUEST"}
+    "message": {
+      "version": 1,
+      "type": "error",
+      "request_id": null,
+      "code": "INVALID_REQUEST",
+      "pos_db_id": "323e4567-e89b-42d3-a456-426614174000"
+    }
   },
   {
     "name": "zero_quantity",
     "expected_valid": false,
-    "message": {"version": 1, "type": "submit_order", "request_id": "123e4567-e89b-42d3-a456-426614174000", "order": {"item_code": "COFFEE", "quantity": 0, "unit_price_krw": 4500}}
+    "message": {
+      "version": 1,
+      "type": "submit_order",
+      "request_id": "123e4567-e89b-42d3-a456-426614174000",
+      "order": {
+        "item_code": "COFFEE",
+        "quantity": 0,
+        "unit_price_krw": 4500
+      },
+      "pos_db_id": "323e4567-e89b-42d3-a456-426614174000"
+    }
   },
   {
     "name": "negative_price",
     "expected_valid": false,
-    "message": {"version": 1, "type": "submit_order", "request_id": "123e4567-e89b-42d3-a456-426614174000", "order": {"item_code": "COFFEE", "quantity": 1, "unit_price_krw": -1}}
+    "message": {
+      "version": 1,
+      "type": "submit_order",
+      "request_id": "123e4567-e89b-42d3-a456-426614174000",
+      "order": {
+        "item_code": "COFFEE",
+        "quantity": 1,
+        "unit_price_krw": -1
+      },
+      "pos_db_id": "323e4567-e89b-42d3-a456-426614174000"
+    }
   },
   {
     "name": "wrong_uuid",
     "expected_valid": false,
-    "message": {"version": 1, "type": "submit_order", "request_id": "new-id-on-each-retry", "order": {"item_code": "COFFEE", "quantity": 1, "unit_price_krw": 4500}}
+    "message": {
+      "version": 1,
+      "type": "submit_order",
+      "request_id": "new-id-on-each-retry",
+      "order": {
+        "item_code": "COFFEE",
+        "quantity": 1,
+        "unit_price_krw": 4500
+      },
+      "pos_db_id": "323e4567-e89b-42d3-a456-426614174000"
+    }
   },
   {
     "name": "missing_receipt",
     "expected_valid": false,
-    "message": {"version": 1, "type": "ack", "request_id": "123e4567-e89b-42d3-a456-426614174000"}
+    "message": {
+      "version": 1,
+      "type": "ack",
+      "request_id": "123e4567-e89b-42d3-a456-426614174000",
+      "pos_db_id": "323e4567-e89b-42d3-a456-426614174000"
+    }
   },
   {
     "name": "future_version",
     "expected_valid": false,
-    "message": {"version": 2, "type": "ack", "request_id": "123e4567-e89b-42d3-a456-426614174000", "receipt_id": "223e4567-e89b-42d3-a456-426614174000"}
+    "message": {
+      "version": 2,
+      "type": "ack",
+      "request_id": "123e4567-e89b-42d3-a456-426614174000",
+      "receipt_id": "223e4567-e89b-42d3-a456-426614174000",
+      "pos_db_id": "323e4567-e89b-42d3-a456-426614174000"
+    }
   },
   {
     "name": "unknown_error",
     "expected_valid": false,
-    "message": {"version": 1, "type": "error", "request_id": null, "code": "SOMETHING_HAPPENED"}
+    "message": {
+      "version": 1,
+      "type": "error",
+      "request_id": null,
+      "code": "SOMETHING_HAPPENED",
+      "pos_db_id": "323e4567-e89b-42d3-a456-426614174000"
+    }
   },
   {
     "name": "extra_field",
     "expected_valid": false,
-    "message": {"version": 1, "type": "ack", "request_id": "123e4567-e89b-42d3-a456-426614174000", "receipt_id": "223e4567-e89b-42d3-a456-426614174000", "accepted": true}
+    "message": {
+      "version": 1,
+      "type": "ack",
+      "request_id": "123e4567-e89b-42d3-a456-426614174000",
+      "receipt_id": "223e4567-e89b-42d3-a456-426614174000",
+      "accepted": true,
+      "pos_db_id": "323e4567-e89b-42d3-a456-426614174000"
+    }
   },
   {
     "name": "boolean_quantity",
     "expected_valid": false,
-    "message": {"version": 1, "type": "submit_order", "request_id": "123e4567-e89b-42d3-a456-426614174000", "order": {"item_code": "COFFEE", "quantity": true, "unit_price_krw": 4500}}
+    "message": {
+      "version": 1,
+      "type": "submit_order",
+      "request_id": "123e4567-e89b-42d3-a456-426614174000",
+      "order": {
+        "item_code": "COFFEE",
+        "quantity": true,
+        "unit_price_krw": 4500
+      },
+      "pos_db_id": "323e4567-e89b-42d3-a456-426614174000"
+    }
+  },
+  {
+    "name": "hello",
+    "expected_valid": true,
+    "message": {
+      "version": 1,
+      "type": "hello"
+    }
+  },
+  {
+    "name": "hello_ack",
+    "expected_valid": true,
+    "message": {
+      "version": 1,
+      "type": "hello_ack",
+      "pos_db_id": "323e4567-e89b-42d3-a456-426614174000"
+    }
   }
 ]

@@ -2,56 +2,183 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Local Link Lab v1 message",
   "oneOf": [
-    {"$ref": "#/$defs/submitOrder"},
-    {"$ref": "#/$defs/ack"},
-    {"$ref": "#/$defs/error"}
+    {
+      "$ref": "#/$defs/submitOrder"
+    },
+    {
+      "$ref": "#/$defs/ack"
+    },
+    {
+      "$ref": "#/$defs/error"
+    },
+    {
+      "$ref": "#/$defs/hello"
+    },
+    {
+      "$ref": "#/$defs/helloAck"
+    }
   ],
   "$defs": {
     "uuid": {
       "type": "string",
-      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}(?![\\s\\S])"
     },
     "order": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["item_code", "quantity", "unit_price_krw"],
+      "required": [
+        "item_code",
+        "quantity",
+        "unit_price_krw"
+      ],
       "properties": {
-        "item_code": {"type": "string", "pattern": "^[A-Z0-9_-]{1,32}$"},
-        "quantity": {"type": "integer", "minimum": 1, "maximum": 99},
-        "unit_price_krw": {"type": "integer", "minimum": 0, "maximum": 1000000000}
+        "item_code": {
+          "type": "string",
+          "pattern": "^[A-Z0-9_-]{1,32}(?![\\s\\S])"
+        },
+        "quantity": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 99
+        },
+        "unit_price_krw": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000
+        }
       }
     },
     "submitOrder": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["version", "type", "request_id", "order"],
+      "required": [
+        "version",
+        "type",
+        "request_id",
+        "order",
+        "pos_db_id"
+      ],
       "properties": {
-        "version": {"const": 1},
-        "type": {"const": "submit_order"},
-        "request_id": {"$ref": "#/$defs/uuid"},
-        "order": {"$ref": "#/$defs/order"}
+        "version": {
+          "const": 1
+        },
+        "type": {
+          "const": "submit_order"
+        },
+        "request_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "order": {
+          "$ref": "#/$defs/order"
+        },
+        "pos_db_id": {
+          "$ref": "#/$defs/uuid"
+        }
       }
     },
     "ack": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["version", "type", "request_id", "receipt_id"],
+      "required": [
+        "version",
+        "type",
+        "request_id",
+        "receipt_id",
+        "pos_db_id"
+      ],
       "properties": {
-        "version": {"const": 1},
-        "type": {"const": "ack"},
-        "request_id": {"$ref": "#/$defs/uuid"},
-        "receipt_id": {"$ref": "#/$defs/uuid"}
+        "version": {
+          "const": 1
+        },
+        "type": {
+          "const": "ack"
+        },
+        "request_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "receipt_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "pos_db_id": {
+          "$ref": "#/$defs/uuid"
+        }
       }
     },
     "error": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["version", "type", "request_id", "code"],
+      "required": [
+        "version",
+        "type",
+        "request_id",
+        "code",
+        "pos_db_id"
+      ],
       "properties": {
-        "version": {"const": 1},
-        "type": {"const": "error"},
-        "request_id": {"oneOf": [{"$ref": "#/$defs/uuid"}, {"type": "null"}]},
-        "code": {"enum": ["INVALID_REQUEST", "UNSUPPORTED_VERSION", "ID_CONFLICT", "TEMPORARY_UNAVAILABLE"]}
+        "version": {
+          "const": 1
+        },
+        "type": {
+          "const": "error"
+        },
+        "request_id": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "code": {
+          "enum": [
+            "INVALID_REQUEST",
+            "UNSUPPORTED_VERSION",
+            "ID_CONFLICT",
+            "TEMPORARY_UNAVAILABLE",
+            "POS_MISMATCH"
+          ]
+        },
+        "pos_db_id": {
+          "$ref": "#/$defs/uuid"
+        }
+      }
+    },
+    "hello": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "type"
+      ],
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "type": {
+          "const": "hello"
+        }
+      }
+    },
+    "helloAck": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "type",
+        "pos_db_id"
+      ],
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "type": {
+          "const": "hello_ack"
+        },
+        "pos_db_id": {
+          "$ref": "#/$defs/uuid"
+        }
       }
     }
   }

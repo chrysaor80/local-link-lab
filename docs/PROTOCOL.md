@@ -1,69 +1,84 @@
 # 통신 및 저장 규칙 v1
 
-M0 검토본. 아래 MUST 수준 규칙을 구현·테스트의 기준으로 사용한다. 구조 검사는 [wire.schema.json](../spec/wire.schema.json), 예제는 [wire.examples.json](../spec/wire.examples.json)에 있다.
+M0 검토 반영본. 구조는 [wire.schema.json](../spec/wire.schema.json), 원문 바이트 계약은 [wire.raw-examples.json](../spec/wire.raw-examples.json)을 따른다. JSON Schema만으로 숫자 표기·중복 키·UTF-8·프레임 경계를 검증했다고 주장하지 않는다.
 
 ## I01 로컬 접수와 ID
 
-- 사용자 접수 동작 하나에 UUID v4 하나를 배정한다. ID를 트랜잭션 밖에서 생성해도 되지만, ID·불변 주문 본문·로컬 증가 순번은 같은 DB 트랜잭션으로 저장한다.
-- commit 전에는 전송하거나 접수 완료를 표시하지 않는다. 저장 실패는 `접수되지 않음`과 이유로 표시한다.
-- commit 후 UI 갱신 전에 앱이 죽어도 재실행 시 DB에서 기존 접수를 복원한다. 재전송은 그 ID를 그대로 사용한다.
-- 미확인 주문은 최대 1,000건. 한도 확인과 새 주문 삽입은 같은 트랜잭션에서 직렬화한다. 초과 시 새 접수를 거부한다. 기존 접수 데이터는 삭제하지 않는다.
-- 별도 접수 동작은 별도 주문이다. v1은 서로 다른 ID로 접수된 두 주문의 의미상 중복까지 판정하지 않는다.
+- 주문 초안마다 UUID v4 하나를 배정해 재사용하고 저장 중 중복 접수를 막는다. ID 생성은 트랜잭션 밖이어도 되지만 ID·불변 본문·대상 pos_db_id·로컬 증가 순번은 함께 commit한다. 로컬 request_id는 UNIQUE다.
+- commit 전에는 전송하거나 `기기에 접수됨`을 표시하지 않는다. 저장 실패는 `접수되지 않음`과 이유를 표시한다. commit 결과가 불분명하면 같은 ID로 조회/재시도하고 본문 일치를 확인한다. 다른 내용이면 성공이 아니다.
+- commit 후 UI 갱신 전에 죽어도 기존 접수를 DB에서 복원한다. 새 접수 동작 없이 자동으로 새 주문을 생성하지 않는다.
+- PENDING + NEEDS_ATTENTION 합계 최대 1,000건. 기존 초안 행 확인 → 한도 확인 → 삽입을 같은 트랜잭션에서 직렬화한다. 초과·저장 오류는 새 접수만 거부하고 기존 행을 삭제하지 않는다.
+- 첫 접수 전에는 주문을 생성하지 않는 hello로 POS를 확인하고 DB ID를 저장한다. 이후 해당 DB에 묶인 주문은 오프라인 접수가 가능하다.
 
 ## I02 POS 원자성과 중복 방지
 
-- POS 주문 테이블의 `request_id`에 UNIQUE 또는 PRIMARY KEY 제약을 둔다. 주문 행 자체가 중복 방지 기록이다.
-- 주문 ID, 본문, 최초 `receipt_id`를 한 트랜잭션으로 저장한다. 응답은 commit 성공 이후에만 내보낸다.
-- 동시에 같은 요청이 와도 DB 제약과 트랜잭션으로 단일 행만 남긴다. 사전 SELECT만으로 중복 여부를 결정하지 않는다.
-- 같은 ID·같은 본문이면 기존 `receipt_id`의 ACK를 반환한다. 동일성은 파싱한 `item_code`, `quantity`, `unit_price_krw` 값으로 비교한다. JSON 키 순서에는 의존하지 않는다.
-- 같은 ID·다른 본문이면 `ID_CONFLICT`. 저장된 주문을 덮어쓰지 않는다.
-- POS의 주문·ID·영수증은 DB 존속 기간 동안 삭제하지 않는다. 보장은 동일 POS DB가 보존되는 범위다. DB 초기화·손상·복원으로 이력이 사라진 경우까지 보장하지 않는다.
-- 요청 전달은 반복될 수 있다. 이 계약의 목표는 동일 ID가 POS 주문 테이블에 미치는 효과를 한 건으로 제한하는 것이다. 외부 결제·인쇄 등 별도 효과의 exactly-once를 주장하지 않는다.
+- POS 초기화 시 UUID v4인 pos_db_id를 metadata에 commit한다. 재시작해도 동일하다. 주문 request_id는 PRIMARY KEY, receipt_id는 UNIQUE다.
+- SQLite WAL, synchronous=FULL, busy_timeout=1,000ms를 기본으로 기록한다. BEGIN IMMEDIATE로 시작해 같은 트랜잭션에서 대상 DB ID 확인·기존 행 확인·주문과 receipt 저장을 수행한다.
+- 같은 ID·같은 파싱된 본문이면 최초 receipt의 ACK. 같은 ID·다른 본문이면 ID_CONFLICT이며 기존 행을 보존한다. 본문 동일성은 item_code·quantity·unit_price_krw로 판단하고 JSON 키 순서에는 의존하지 않는다.
+- 동시 연결도 고유 제약과 트랜잭션으로 처리한다. 모든 IntegrityError를 중복 성공으로 취급하지 않는다. 실제 기존 request_id 행·본문·receipt를 확인한다.
+- ACK는 commit 성공 뒤에만 가능하다. 주문·ID·receipt는 DB 존속 동안 보존한다. DB 삭제·손상·과거 백업 복원·복제 DB의 분기는 보장 밖이다. pos_db_id는 인증 수단이 아니다.
+- 동일 ID의 주문 저장 효과를 한 건으로 제한한다. 외부 결제·인쇄 등의 exactly-once를 주장하지 않는다.
 
-## I03 메시지와 연결
+## I03 원문 프레임과 연결
 
-- UTF-8 JSON 객체 + LF 한 바이트로 프레임을 끝낸다. 프레임 전체는 LF 포함 8,192바이트 이하다. 한 소켓 read를 한 메시지로 간주하지 않는다.
-- 중복 JSON 키, 잘못된 UTF-8, 규격 밖 필드·타입·범위, LF 이전 EOF, 초과 길이는 거부한다. 파서는 크기 제한 후 JSON을 해석한다.
-- v1은 **요청 한 번의 시도마다 TCP 연결 하나를 열고 요청 한 프레임·응답 한 프레임 후 닫는다**. 동시에 진행하는 주문은 하나다. 긴 유휴 연결과 주기적 heartbeat는 도입하지 않는다.
-- 포트 기본값은 8765이며 설정 가능하다. 서버 기본 bind는 loopback, LAN 데모는 사용자가 선택한 NIC 주소로 명시적으로 bind한다.
-- 접속 제한 2초, 연결·쓰기·응답 읽기를 포함한 시도 전체 제한 5초. 단조 시계를 사용하고, 바이트가 조금 도착했다고 전체 제한 시간을 다시 시작하지 않는다.
-- 코루틴 취소/제한 시간에는 소켓을 닫아 blocking I/O도 끝나게 한다. `withTimeout`만으로 blocking read가 취소된다고 가정하지 않는다.
-- TCP 접속 성공만으로 상대의 업무 처리가 정상이라고 표시하지 않는다. UI는 `전송 중`, `응답 확인 중`, `재시도 대기`, `최근 POS 응답 시각`을 표시한다.
+- 송신은 바이너리 I/O로 정확히 UTF-8 JSON 객체 + 0x0A. LF 포함 최대 8,192바이트. CRLF·BOM, 중복 JSON 키, 잘못된 UTF-8, NaN/Infinity, 추가 필드, 잘못된 타입/범위, LF 이전 EOF, 초과 길이는 거부한다.
+- 정수는 소수점·지수 없는 JSON 정수 리터럴만 허용한다. 1.0·1e0·boolean을 거부한다. UUID와 item_code는 전체 문자열이 패턴과 일치해야 하며 이스케이프된 후행 LF도 거부한다.
+- 한 시도마다 TCP 연결 하나를 열고 요청 한 프레임·응답 한 프레임 후 닫는다. 단말 worker와 진행 주문은 각각 하나다. 주기적 heartbeat는 없다. 한 read를 한 메시지로 가정하지 않는다.
+- 기본 포트 8765(변경 가능). loopback·에뮬레이터·adb reverse는 127.0.0.1 bind, LAN Wi-Fi는 실제 NIC IPv4 bind. network_path를 따로 기록한다.
+- 클라이언트 접속 제한 2초, 연결·쓰기·읽기 전체 5초. 단조 시계를 쓰고 부분 수신으로 시간을 연장하지 않는다.
+- POS는 동시 연결을 처리하되 최대 활성 연결 32개. 수락부터 첫 LF까지 전체 5초, 응답 쓰기 1초 제한. 초과 시 닫고 자원을 해제한다. 침묵 연결 하나가 다른 요청을 막으면 안 된다.
+- SQLite busy/locked는 클라이언트 제한보다 짧게 종료하고 TEMPORARY_UNAVAILABLE 또는 연결 종료로 처리한다.
+- 취소·제한 시간에는 실제 소켓을 닫는다. SocketException이어도 job 취소가 원인이면 재시도하지 않는다. withTimeout만으로 blocking I/O가 끝난다고 가정하지 않는다.
 
-정상 요청:
+## I06 목적지 확인과 주소 변경
 
-```json
-{"version":1,"type":"submit_order","request_id":"123e4567-e89b-42d3-a456-426614174000","order":{"item_code":"COFFEE","quantity":1,"unit_price_krw":4500}}
-```
-
-ACK:
+hello는 주문을 만들지 않는 첫 설정·주소 변경 진단이다.
 
 ```json
-{"version":1,"type":"ack","request_id":"123e4567-e89b-42d3-a456-426614174000","receipt_id":"223e4567-e89b-42d3-a456-426614174000"}
+{"version":1,"type":"hello"}
 ```
 
-ERROR는 `version`, `type:error`, `request_id`, `code`만 가진다. ID를 안전하게 해석할 수 없으면 `request_id:null`이다. 오류 코드: `INVALID_REQUEST`, `UNSUPPORTED_VERSION`, `ID_CONFLICT`, `TEMPORARY_UNAVAILABLE`.
+```json
+{"version":1,"type":"hello_ack","pos_db_id":"323e4567-e89b-42d3-a456-426614174000"}
+```
 
-## I04 재시도와 상태
+같은 pos_db_id가 확인되면 미확인 주문이 있어도 IP/포트 변경을 허용한다. 다른 DB면 미확인(PENDING+NEEDS_ATTENTION) 주문이 있을 때 변경을 거부한다. worker를 중지·종료한 뒤 목적지와 DB ID를 원자적으로 저장하고 재개한다.
 
-- 영속 업무 상태는 `PENDING`, `ACKNOWLEDGED`, `NEEDS_ATTENTION`. `SENDING`은 실행 중 표시이며 완료의 근거가 아니다.
-- ACK의 version·type·request_id·receipt_id를 검사한 뒤 상태와 receipt_id를 같은 로컬 트랜잭션으로 기록한다. 기록 실패 시 PENDING을 유지하고 동일 요청을 재시도한다.
-- 연결 실패, 응답 미수신·불완전, 제한 시간 초과, `TEMPORARY_UNAVAILABLE`은 미확인 상태로 유지한다. **타임아웃은 주문 실패 확정이 아니다.**
-- 같은 요청 ID에 대한 유효한 `INVALID_REQUEST`, `UNSUPPORTED_VERSION`, `ID_CONFLICT`는 NEEDS_ATTENTION으로 저장하고 자동 전송을 중지한다. 오류 응답도 해당 요청의 ID와 대응해야 한다.
-- 손상된 응답이나 ID가 다른 응답은 완료·거부 판정에 쓰지 않는다. 제한된 재시도 후 진단 가능하게 남긴다.
-- 한 번의 전송 실행에서 최대 5회 시도한다. 재시도 지연은 1, 2, 4, 8초 + 각 지연의 0~20% jitter. 테스트는 시간과 난수원을 주입해 순서를 재현한다.
-- 상한 도달 시 요청을 보존하고 일시 중지한다. 사용자의 재개 또는 다음 전경 실행에서 같은 ID로 새 전송 실행을 시작한다. 이 상한은 주문의 평생 시도 횟수 제한이 아니다.
-- 로컬 접수 순서대로 처리하고 맨 앞 미확인 주문의 ACK 전에는 다음 주문을 보내지 않는다. 지연과 NEEDS_ATTENTION이 뒤 주문을 막는다는 비용을 받아들인다. 단말 사이 전역 순서는 범위 밖이다.
+hello 뒤 DB가 교체되는 경쟁도 막도록 모든 주문에 대상 pos_db_id를 포함한다. POS는 주문 트랜잭션에서 이를 확인하고 불일치 시 POS_MISMATCH, 쓰기 없음. 앱은 PENDING을 유지하고 목적지 재확인까지 자동 시도를 중지한다.
 
-## I05 취소·저장 대상·수명
+```json
+{"version":1,"type":"submit_order","pos_db_id":"323e4567-e89b-42d3-a456-426614174000","request_id":"123e4567-e89b-42d3-a456-426614174000","order":{"item_code":"COFFEE","quantity":1,"unit_price_krw":4500}}
+```
 
-- v1에는 접수 후 주문 취소·수정·삭제가 없다. 사용자는 전송을 일시 중지할 수 있지만 이는 주문 취소가 아니다. 이미 POS에 저장됐을 수 있다는 안내를 한다.
-- 앱이 백그라운드로 가면 worker를 취소하고 소켓을 닫는다. 새 전경 worker는 이전 worker 종료를 확인하고 하나만 시작한다. 취소를 일반 통신 실패로 잡아 재시도를 계속하지 않는다.
-- 회전 시 worker가 중복 생성되지 않아야 한다. 프로세스 종료 후에는 DB에서 복원하고 사용자가 앱을 다시 열었을 때 전송을 재개한다. 자동 앱 재실행은 보장하지 않는다.
-- 미확인 주문이 있으면 목적지 변경을 막는다. v1은 동일 POS DB 한 곳에 연결하는 데모다. 같은 IP의 서버 DB를 바꿔 끼우는 행위는 보장 범위 밖이며 미확인 주문이 있을 때 금지한다.
+```json
+{"version":1,"type":"ack","pos_db_id":"323e4567-e89b-42d3-a456-426614174000","request_id":"123e4567-e89b-42d3-a456-426614174000","receipt_id":"223e4567-e89b-42d3-a456-426614174000"}
+```
 
-## 저장 실패와 보장 범위
+## I04 응답 의미·재시도·순서
 
-로컬 저장 실패는 접수 전에 사용자에게 알린다. POS commit 실패는 ACK를 만들지 않는다. POS가 commit 여부를 확신하지 못하는 오류 역시 성공으로 표시하지 않고, 기존 ID의 재전송으로 결과를 확인한다. WAL 파일을 포함한 DB 파일을 임의 삭제하지 않는다.
+ERROR는 version=1, type=error, 서버 pos_db_id, request_id(해석 불가 시 null), code를 가진다.
 
-프로세스 종료 복구는 저장장치 고장·전원 차단 내구성과 별개다. M1에서 실제 journal/synchronous 설정을 기록하며, 전원 차단 시험을 하지 않고 내구성을 검증했다고 쓰지 않는다. [SQLite 원자적 commit 설명](https://www.sqlite.org/atomiccommit.html)은 WAL에서도 원자성이 제공됨을 설명하되 구체적인 메커니즘은 구분한다.
+| code | 서버의 이번 시도 | 클라이언트 |
+|---|---|---|
+| INVALID_REQUEST / UNSUPPORTED_VERSION | 입력 검증 중 쓰기 전 거부. 같은 ID의 과거 저장까지 없다는 뜻은 아님 | 일치하는 ID/DB 응답이면 NEEDS_ATTENTION |
+| ID_CONFLICT | 다른 본문의 기존 행이 있음, 기존 행 보존 | NEEDS_ATTENTION, 저장 없음으로 단정하지 않음 |
+| TEMPORARY_UNAVAILABLE | 저장 여부 불확실 가능, busy 포함 | 같은 ID로 제한된 재시도 |
+| POS_MISMATCH | 대상 DB 불일치, 이번 시도 쓰기 없음 | PENDING 유지, 목적지 재확인까지 중지 |
+
+commit 이후 예외나 commit 불확실성을 INVALID/UNSUPPORTED/CONFLICT로 바꾸지 않는다. TEMPORARY_UNAVAILABLE 또는 응답 없이 종료한다. null·다른 요청 ID·다른 DB 응답을 업무 결과에 적용하지 않는다(POS_MISMATCH의 목적지 중지 처리는 예외).
+
+- 영속 상태는 PENDING / ACKNOWLEDGED / NEEDS_ATTENTION. ACK의 요청 ID·대상 DB·receipt를 검증한 뒤 상태와 receipt를 함께 commit해야 `POS 저장 확인`을 표시한다. 기록 실패면 PENDING이다.
+- NEEDS_ATTENTION은 진단 목록에 보존하고 자동 전송 대상에서 제외한다. 다음 PENDING을 처리한다. 사용자의 `다시 확인`은 같은 ID·본문으로 PENDING 복귀다. 취소·삭제·미저장 확정이 아니다.
+- 선택 시 가장 오래된 PENDING부터 처리한다. 그 요청의 통신 오류 동안 뒤 요청은 기다리며, NEEDS_ATTENTION은 건너뛴다. 전체 주문의 POS 저장 순서는 보장하지 않는다.
+- 1회 실행 최대 5시도, 지연 1·2·4·8초 + 0~20% jitter. 시간·난수 주입. 상한 중지는 실행 중 상태이며 새 전경 실행/수동 재개로 같은 ID를 재시도한다.
+- 연결 실패·응답 불완전·제한 시간은 주문 실패 확정이 아니다. 요청을 보존한다.
+
+## I05 사용자 중지·수명·UI
+
+- 접수 후 주문 취소·수정·삭제는 제외한다. 전송 중지는 이미 처리된 주문을 되돌리지 않는다.
+- 사용자 중지는 영속 설정 user_paused로 저장하고 명시적 재개로만 해제한다. 재실행·전경 복귀가 해제하지 않는다. 시도 상한 중지와 구분한다.
+- 전경은 ProcessLifecycleOwner ON_START/ON_STOP 기준. STOP 시 worker 취소·소켓 닫기. START 시 이전 worker 종료 후 단일 worker 시작(user_paused면 시작 안 함). 회전은 중복 worker를 만들지 않는다.
+- 업무 UI는 Room의 commit된 상태에서 만든다. PENDING=`기기에 접수됨 · POS 확인 대기`, ACKNOWLEDGED=`POS 저장 확인`, NEEDS_ATTENTION=`확인 필요`. 전송 중·재시도 대기·사용자 중지는 별도 실행 상태다.
+- 프로세스 종료 후 명시적 재실행 때 DB로 복원한다. 자동 앱 재실행·백그라운드 지속 전송은 보장하지 않는다.
+
+프로세스 종료는 전원 차단·장치 고장 시험이 아니다. [SQLite 원자성](https://www.sqlite.org/atomiccommit.html)과 실제 journal/synchronous 설정을 구분해 기록한다.
