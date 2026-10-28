@@ -1,6 +1,6 @@
 # M2 작업 배정과 진행 순서
 
-M1 구현·증거의 고정 기준은 `ee67e2c62d844c538fd7cca26543ab3a103628fe`다. [OPUS 검토 요청](reviews/OPUS_M1_REDTEAM.md)은 이 기준을 읽는다. M2는 Codex가 담당한다. 이 문서는 착수 순서이며 장애 검증 완료 기록이 아니다.
+M1 구현·증거의 고정 기준은 `ee67e2c62d844c538fd7cca26543ab3a103628fe`다. [OPUS 검토 요청](reviews/OPUS_M1_REDTEAM.md)은 이 기준을 읽는다. M2는 Codex가 담당한다. 이 문서는 역할과 실행 도구의 설명이다. 완료한 검증의 고정 SHA와 실제 결과는 [M2 증거](evidence/M2.md)에 있다.
 
 | 담당 | 맡을 일 | 산출물 |
 |---|---|---|
