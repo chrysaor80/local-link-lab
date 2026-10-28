@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Local Link Lab v1 message",
+  "oneOf": [
+    {"$ref": "#/$defs/submitOrder"},
+    {"$ref": "#/$defs/ack"},
+    {"$ref": "#/$defs/error"}
+  ],
+  "$defs": {
+    "uuid": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "order": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["item_code", "quantity", "unit_price_krw"],
+      "properties": {
+        "item_code": {"type": "string", "pattern": "^[A-Z0-9_-]{1,32}$"},
+        "quantity": {"type": "integer", "minimum": 1, "maximum": 99},
+        "unit_price_krw": {"type": "integer", "minimum": 0, "maximum": 1000000000}
+      }
+    },
+    "submitOrder": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "type", "request_id", "order"],
+      "properties": {
+        "version": {"const": 1},
+        "type": {"const": "submit_order"},
+        "request_id": {"$ref": "#/$defs/uuid"},
+        "order": {"$ref": "#/$defs/order"}
+      }
+    },
+    "ack": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "type", "request_id", "receipt_id"],
+      "properties": {
+        "version": {"const": 1},
+        "type": {"const": "ack"},
+        "request_id": {"$ref": "#/$defs/uuid"},
+        "receipt_id": {"$ref": "#/$defs/uuid"}
+      }
+    },
+    "error": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "type", "request_id", "code"],
+      "properties": {
+        "version": {"const": 1},
+        "type": {"const": "error"},
+        "request_id": {"oneOf": [{"$ref": "#/$defs/uuid"}, {"type": "null"}]},
+        "code": {"enum": ["INVALID_REQUEST", "UNSUPPORTED_VERSION", "ID_CONFLICT", "TEMPORARY_UNAVAILABLE"]}
+      }
+    }
+  }
+}
