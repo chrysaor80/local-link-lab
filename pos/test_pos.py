@@ -13,14 +13,17 @@ from .wire import InvalidFrame, decode, encode
 
 class RawContractTest(unittest.TestCase):
     def test_shared_raw_corpus(self):
+        expected = json.loads((Path(__file__).parents[1] / "spec/wire.error-expectations.json").read_text())
         for example in json.loads((Path(__file__).parents[1] / "spec/wire.raw-examples.json").read_text()):
             with self.subTest(name=example["name"]):
                 frame = bytes.fromhex(example["frame_hex"])
                 if example["expected_valid"]:
                     decode(frame)
                 else:
-                    with self.assertRaises(InvalidFrame):
+                    with self.assertRaises(InvalidFrame) as caught:
                         decode(frame)
+                    self.assertEqual(caught.exception.code, expected[example["name"]]["code"])
+                    self.assertEqual(caught.exception.request_id, expected[example["name"]]["request_id"])
 
 
 class RealTcpTest(unittest.IsolatedAsyncioTestCase):
@@ -89,6 +92,29 @@ class RealTcpTest(unittest.IsolatedAsyncioTestCase):
     async def test_changed_database_is_rejected_before_write(self):
         changed = {**self.request, "pos_db_id": str(uuid.uuid4())}
         self.assertEqual((await self.send(changed))["code"], "POS_MISMATCH")
+        self.assertEqual(self.rows(), [])
+
+    async def test_error_code_and_correlation_over_tcp_without_writes(self):
+        root = Path(__file__).parents[1] / "spec"
+        expected = json.loads((root / "wire.error-expectations.json").read_text())
+        for example in json.loads((root / "wire.raw-examples.json").read_text()):
+            frame = bytes.fromhex(example["frame_hex"])
+            # Framing EOF/overflow and two concatenated frames have distinct connection semantics.
+            if example["expected_valid"] or example["name"] in {"missing_lf", "oversized", "two_frames"}:
+                continue
+            with self.subTest(name=example["name"]):
+                reader, writer = await asyncio.open_connection("127.0.0.1", self.server.port)
+                try:
+                    writer.write(frame)
+                    await writer.drain()
+                    reply = decode(await asyncio.wait_for(reader.readuntil(b"\n"), 2))
+                    self.assertEqual(reply["type"], "error")
+                    self.assertEqual(reply["pos_db_id"], self.store.db_id)
+                    self.assertEqual(reply["code"], expected[example["name"]]["code"])
+                    self.assertEqual(reply["request_id"], expected[example["name"]]["request_id"])
+                finally:
+                    writer.close()
+                    await writer.wait_closed()
         self.assertEqual(self.rows(), [])
 
     async def test_binary_lf_response_and_split_request(self):

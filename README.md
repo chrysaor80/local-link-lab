@@ -2,7 +2,7 @@
 
 Android 단말과 PC의 POS 시뮬레이터 사이에서 주문 요청을 보존하고, 통신 장애 후 같은 요청을 다시 처리하는 과정을 검증하는 포트폴리오 프로젝트입니다. 실제 결제 승인 기능은 포함하지 않습니다.
 
-현재 단계는 **M1 정상 왕복 검증 완료·독립 검토 대기**입니다. Android 앱, Kotlin 연결 코어, Python POS를 구현했습니다. APK 빌드·JVM 테스트·Windows/Linux POS 테스트와 API 29 Android 에뮬레이터의 UI·Room·POS 전체 DB 대조를 통과했습니다. [진행 기록](docs/CONTROL.md)에 커밋·실행 근거와 미검증 범위를 표시합니다. `scripts/check_spec.py`는 명세의 일관성만 검사합니다.
+현재 단계는 **M1 정상 왕복 검증 완료·독립 검토 지적 수정 중**입니다. Android 앱, Kotlin 연결 코어, Python POS를 구현했습니다. APK 빌드·JVM 테스트·Windows/Linux POS 테스트와 API 29 Android 에뮬레이터의 UI·Room·POS 전체 DB 대조를 통과했습니다. [진행 기록](docs/CONTROL.md)에 커밋·실행 근거와 미검증 범위를 표시합니다. `scripts/check_spec.py`는 명세의 일관성만 검사합니다.
 
 ## 읽는 순서
 
@@ -30,9 +30,10 @@ Linux에서는 `py` 대신 `python3`를 사용합니다.
 JDK 17, Android SDK 35, Python 3.10 이상이 필요합니다. `local.properties`에 로컬 SDK 경로를 설정하거나 `ANDROID_HOME`을 지정합니다. Gradle Wrapper가 고정 버전을 다운로드합니다. Windows PowerShell에서:
 
 ```powershell
-py -m unittest pos.test_pos -v
+py -m unittest discover -s pos -t . -v
 .\gradlew.bat :core:test :app:assembleDebug
-py -m pos.server --db artifacts/pos.db --host 192.168.0.10 --port 8765
+New-Item -ItemType Directory -Force artifacts | Out-Null
+py -u -m pos.server --db artifacts/pos.db --host 192.168.0.10 --port 8765 > artifacts/pos.log 2>&1
 ```
 
 `app/build/outputs/apk/debug/app-debug.apk`를 설치하고, 앱에서 PC의 LAN IPv4와 포트 `8765`를 입력해 **연결 확인 → 기기에 주문 접수**를 실행합니다. 두 번째 주문은 **새 주문 준비**로 별도 ID를 만듭니다. `POS 저장 확인`은 서버 영수증을 Android DB에도 저장한 뒤 표시됩니다. 주소·방화벽·USB 확인 절차는 [Windows 안내](docs/WINDOWS.md)를 참고하세요.
@@ -43,9 +44,9 @@ py -m pos.server --db artifacts/pos.db --host 192.168.0.10 --port 8765
 
 ## 구성과 검사
 
-- `core`: 엄격한 메시지 파서, 취소 가능한 TCP, 재시도와 주문 확인 정책. JVM 테스트 9개.
+- `core`: 엄격한 메시지 파서, 취소 가능한 TCP, 재시도와 주문 확인 정책. JVM 회귀 테스트 포함.
 - `app`: Compose 화면, Room 주문 보관, 프로세스 전경 수명에 맞춘 단일 전송 작업.
-- `pos`: SQLite 트랜잭션과 중복 방지, 바이너리 TCP 서버. Python 테스트 7개.
+- `pos`: SQLite 트랜잭션과 중복 방지, 바이너리 TCP 서버. Python 회귀 테스트 포함.
 - `spec`: 두 언어가 공유하는 원문 메시지 31개와 장애 시나리오 정의.
 - `.github/workflows/m1.yml`: Linux/Windows POS 검사, APK/JVM 검사, Android 에뮬레이터에서 UI·Room·POS 전체 DB 대조. 실행 결과는 Actions에서 확인합니다.
 

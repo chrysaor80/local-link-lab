@@ -52,3 +52,9 @@ JSON Schema의 integer는 1.0도 허용한다. 전송 계약에서는 소수·�
 전송 작업은 Application의 Controller 하나가 소유하며 ProcessLifecycleOwner로 전경 여부를 받는다. 화면 회전으로 전송 소유자를 새로 만들지 않는다. 명령 변경은 collectLatest가 이전 작업을 취소하고 기다린 뒤 처리하고, 새 주문은 conflated 채널로 알린다. 한도 초과 이후 새 주문 접수만으로 재시도 예산을 초기화하지 않는다. 화면 초안 ID는 rememberSaveable, 업무 상태와 사용자 중지는 Room에 둔다. 현재 단일 화면에는 별도 ViewModel을 추가하지 않았다.
 
 JDK 17 / Gradle 8.11.1 / AGP 8.9.2 / Kotlin 2.1.20 / Room 2.7.1 / SDK 35 조합을 빌드로 확인했다. minSdk 23은 잠정 하한이다. CI의 API 29 에뮬레이터 결과도 삼성 실기기 검증과 구분한다. M1 APK는 디버그 검증 산출물이며 M3 배포 후보가 아니다.
+
+## D11 독립 검토 후 연결 진단과 전송 수명 분리
+
+OPUS M1-01 재현에서 연결 확인 실패가 기존 worker를 없앴다. 확인 실패는 저장된 목적지를 변경하지 않으므로 같은 설정으로 worker를 다시 실행하며, 실패 결과는 별도 StateFlow로 유지한다. 사용자 중지는 유지한다. 전송 자체 timeout은 SocketTimeoutException으로 변환하고 상위 취소는 전파한다. 잘못된 IPv4는 worker 취소 전에 거부한다.
+
+M1-02는 hello의 시작 시점 캐시를 없애고 현재 metadata를 읽는다. DB를 여는 일반 경로는 mode=rw로 한정한다. M1-03 판정은 Python assert가 아닌 명시적 실패 조건을 사용한다. M1-07은 테스트용 Application/새 DB와 별도 POS를 사용해 사용자의 접수 내역을 테스트에서 읽지 않는다. 원본 보고와 변경 이유는 M1_RESPONSE에 기록한다.

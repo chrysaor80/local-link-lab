@@ -1,0 +1,102 @@
+{
+  "zero_quantity": {
+    "code": "INVALID_REQUEST",
+    "request_id": "123e4567-e89b-42d3-a456-426614174000"
+  },
+  "negative_price": {
+    "code": "INVALID_REQUEST",
+    "request_id": "123e4567-e89b-42d3-a456-426614174000"
+  },
+  "wrong_uuid": {
+    "code": "INVALID_REQUEST",
+    "request_id": null
+  },
+  "missing_receipt": {
+    "code": "INVALID_REQUEST",
+    "request_id": "123e4567-e89b-42d3-a456-426614174000"
+  },
+  "future_version": {
+    "code": "UNSUPPORTED_VERSION",
+    "request_id": "123e4567-e89b-42d3-a456-426614174000"
+  },
+  "unknown_error": {
+    "code": "INVALID_REQUEST",
+    "request_id": null
+  },
+  "extra_field": {
+    "code": "INVALID_REQUEST",
+    "request_id": "123e4567-e89b-42d3-a456-426614174000"
+  },
+  "boolean_quantity": {
+    "code": "INVALID_REQUEST",
+    "request_id": "123e4567-e89b-42d3-a456-426614174000"
+  },
+  "decimal_quantity": {
+    "code": "INVALID_REQUEST",
+    "request_id": null
+  },
+  "exponent_quantity": {
+    "code": "INVALID_REQUEST",
+    "request_id": null
+  },
+  "decimal_version": {
+    "code": "INVALID_REQUEST",
+    "request_id": null
+  },
+  "decimal_price": {
+    "code": "INVALID_REQUEST",
+    "request_id": null
+  },
+  "nan": {
+    "code": "INVALID_REQUEST",
+    "request_id": null
+  },
+  "infinity": {
+    "code": "INVALID_REQUEST",
+    "request_id": null
+  },
+  "duplicate_key": {
+    "code": "INVALID_REQUEST",
+    "request_id": null
+  },
+  "duplicate_escaped_key": {
+    "code": "INVALID_REQUEST",
+    "request_id": null
+  },
+  "uuid_trailing_newline": {
+    "code": "INVALID_REQUEST",
+    "request_id": null
+  },
+  "item_trailing_newline": {
+    "code": "INVALID_REQUEST",
+    "request_id": "123e4567-e89b-42d3-a456-426614174000"
+  },
+  "receipt_trailing_newline": {
+    "code": "INVALID_REQUEST",
+    "request_id": "123e4567-e89b-42d3-a456-426614174000"
+  },
+  "crlf": {
+    "code": "INVALID_REQUEST",
+    "request_id": null
+  },
+  "missing_lf": {
+    "code": "INVALID_REQUEST",
+    "request_id": null
+  },
+  "invalid_utf8": {
+    "code": "INVALID_REQUEST",
+    "request_id": null
+  },
+  "bom": {
+    "code": "INVALID_REQUEST",
+    "request_id": null
+  },
+  "two_frames": {
+    "code": "INVALID_REQUEST",
+    "request_id": null
+  },
+  "oversized": {
+    "code": "INVALID_REQUEST",
+    "request_id": null
+  }
+}

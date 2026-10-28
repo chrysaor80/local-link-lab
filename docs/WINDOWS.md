@@ -48,6 +48,19 @@ Android INTERNET 권한이 필요하다. Android 17 이상 기기에서 targetSd
 
 adb 목록이 비어 있으면 케이블·USB 모드·삼성 OEM 드라이버를 확인하고, unauthorized이면 폰의 디버깅 승인 창을 확인한다. One UI 6 이상 기기는 Auto Blocker 정책도 확인한다. 해당 설정의 기본값이나 적용 여부를 모든 삼성 기기에 일반화하지 않는다. Android 11 이상이면 무선 디버깅을 대안으로 쓸 수 있다.
 
+## 콘솔과 테스트 데이터 분리
+
+서버 stdout/stderr는 파일로 돌린다. Windows의 콘솔 선택/QuickEdit가 출력을 막을 수 있다는 OPUS 지적에 따른 실행 지침이며 이 현상을 실제 Windows 콘솔에서 재현한 것은 아니다.
+
+```powershell
+New-Item -ItemType Directory -Force artifacts | Out-Null
+py -u -m pos.server --db artifacts/pos.db --host 192.168.0.10 --port 8765 > artifacts/pos.log 2>&1
+```
+
+주소는 실제 NIC 주소로 바꾼다. 별도 PowerShell에서 `Get-Content artifacts/pos.log -Wait`로 로그를 본다. 로그 출력 경로 변경이 디스크 정지까지 해결하는 비동기 로깅 보장은 아니다.
+
+Android 계측 테스트는 테스트 전용 Application과 매 실행마다 새 Room DB를 사용한다. 일반 앱의 `local-link.db`는 열지 않는다. 정상 왕복(8765)과 연결 복구 회귀(18766)는 서로 다른 **시험용 POS DB**로 실행한다. 실제 시연용 POS DB를 계측 테스트에 연결하지 않는다. JVM Controller 테스트는 별도 POS 포트 18765가 필요하다. CI의 명령과 순서를 참고한다.
+
 ## 프로세스 종료 기록
 
 M1 applicationId는 `dev.locallinklab.app`이다. 아래 종료 시험은 M2 검증 절차이며 현재 실행 완료를 의미하지 않는다. 테스트 시작 전 미확인 주문의 ID·본문과 `LOCAL_COMMITTED` 이벤트를 기록한다.

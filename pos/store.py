@@ -1,5 +1,6 @@
 """One durable database identity and one durable row per request."""
 from contextlib import closing
+from pathlib import Path
 import sqlite3
 import uuid
 
@@ -8,8 +9,9 @@ from .wire import error
 
 class Store:
     def __init__(self, path):
-        self.path = str(path)
-        with closing(self.connect()) as conn:
+        self.path = str(Path(path).resolve())
+        # Only explicit initialization may create a database file.
+        with closing(self.connect(create=True)) as conn:
             conn.execute("PRAGMA journal_mode=WAL")
             conn.executescript("""
                 CREATE TABLE IF NOT EXISTS metadata (singleton INTEGER PRIMARY KEY CHECK(singleton=1), db_id TEXT NOT NULL);
@@ -20,14 +22,22 @@ class Store:
             """)
             conn.execute("BEGIN IMMEDIATE")
             conn.execute("INSERT OR IGNORE INTO metadata VALUES(1,?)", (str(uuid.uuid4()),))
-            self.db_id = conn.execute("SELECT db_id FROM metadata WHERE singleton=1").fetchone()[0]
             conn.commit()
 
-    def connect(self):
-        conn = sqlite3.connect(self.path, timeout=1.0, isolation_level=None)
+    def connect(self, *, create=False):
+        uri = Path(self.path).as_uri() + ("?mode=rwc" if create else "?mode=rw")
+        conn = sqlite3.connect(uri, uri=True, timeout=1.0, isolation_level=None)
         conn.execute("PRAGMA synchronous=FULL")
         conn.execute("PRAGMA busy_timeout=1000")
         return conn
+
+    @property
+    def db_id(self):
+        with closing(self.connect()) as conn:
+            row = conn.execute("SELECT db_id FROM metadata WHERE singleton=1").fetchone()
+            if row is None:
+                raise sqlite3.DatabaseError("POS identity is missing")
+            return row[0]
 
     def submit(self, message):
         rid, body = message["request_id"], message["order"]

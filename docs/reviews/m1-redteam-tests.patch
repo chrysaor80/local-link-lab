@@ -1,0 +1,427 @@
+diff --git a/app/build.gradle.kts b/app/build.gradle.kts
+index 33a3c86..86451bb 100644
+--- a/app/build.gradle.kts
++++ b/app/build.gradle.kts
+@@ -21,6 +21,7 @@ android {
+     }
+     kotlinOptions { jvmTarget = "17" }
+     buildFeatures { compose = true }
++    testOptions { unitTests.isIncludeAndroidResources = true }
+ }
+ ksp { arg("room.schemaLocation", "$projectDir/schemas") }
+ dependencies {
+@@ -35,6 +36,9 @@ dependencies {
+     implementation("androidx.room:room-ktx:2.7.1")
+     ksp("androidx.room:room-compiler:2.7.1")
+     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
++    testImplementation("junit:junit:4.13.2")
++    testImplementation("org.robolectric:robolectric:4.14.1")
++    testImplementation("androidx.test:core:1.6.1")
+     androidTestImplementation(platform("androidx.compose:compose-bom:2025.04.01"))
+     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
+     androidTestImplementation("androidx.test.ext:junit:1.2.1")
+diff --git a/app/src/androidTest/java/dev/locallinklab/app/ControllerRecoveryTest.kt b/app/src/androidTest/java/dev/locallinklab/app/ControllerRecoveryTest.kt
+new file mode 100644
+index 0000000..ac52bb4
+--- /dev/null
++++ b/app/src/androidTest/java/dev/locallinklab/app/ControllerRecoveryTest.kt
+@@ -0,0 +1,46 @@
++package dev.locallinklab.app
++
++import androidx.compose.ui.test.junit4.createAndroidComposeRule
++import org.junit.Rule
++import org.junit.Test
++import java.net.InetAddress
++import java.net.ServerSocket
++import java.util.UUID
++import kotlin.concurrent.thread
++
++/**
++ * M1 red-team checks written by the reviewer against ee67e2c. Both are expected to FAIL there.
++ * Needs the host POS on 10.0.2.2:8765 like RoundTripTest, but with its OWN fresh POS DB:
++ * these tests add orders, so running them before verify_m1.py would break its one-row check.
++ */
++class ControllerRecoveryTest {
++    @get:Rule val compose = createAndroidComposeRule<MainActivity>()
++    private val controller get() = (compose.activity.application as LinkApplication).controller
++
++    private fun configureHostPos() {
++        compose.runOnUiThread { controller.connect("10.0.2.2", "8765") }
++        compose.waitUntil(15000) { controller.settings.value?.host == "10.0.2.2" && !controller.busy.value }
++    }
++
++    /** A failed "연결 확인" must not leave the foreground app without a delivery worker. */
++    @Test fun failedProbeKeepsDeliveringToConfiguredPos() {
++        configureHostPos()
++        val closedPort = ServerSocket(0).use { it.localPort }
++        compose.runOnUiThread { controller.connect("127.0.0.1", closedPort.toString()) }
++        compose.waitUntil(10000) { !controller.busy.value && controller.runtime.value.startsWith("확인 필요") }
++        val id = UUID.randomUUID().toString()
++        compose.runOnUiThread { controller.accept(id) }
++        compose.waitUntil(20000) { controller.orders.value.any { it.requestId == id && it.status == "ACKNOWLEDGED" } }
++    }
++
++    /** A hello that hits the 5 s attempt deadline must be reported, not left as "POS 연결 확인 중". */
++    @Test fun probeDeadlineIsReportedNotLeftAsChecking() {
++        configureHostPos()
++        ServerSocket(0, 1, InetAddress.getByName("127.0.0.1")).use { silent ->
++            thread { runCatching { silent.accept().use { Thread.sleep(8000) } } }
++            compose.runOnUiThread { controller.connect("127.0.0.1", silent.localPort.toString()) }
++            compose.waitUntil(3000) { controller.busy.value } // the probe has really started
++            compose.waitUntil(9000) { !controller.busy.value && controller.runtime.value != "POS 연결 확인 중" }
++        }
++    }
++}
+diff --git a/app/src/test/java/dev/locallinklab/app/ControllerRobolectricTest.kt b/app/src/test/java/dev/locallinklab/app/ControllerRobolectricTest.kt
+new file mode 100644
+index 0000000..c79c6d8
+--- /dev/null
++++ b/app/src/test/java/dev/locallinklab/app/ControllerRobolectricTest.kt
+@@ -0,0 +1,102 @@
++package dev.locallinklab.app
++
++import android.app.Application
++import android.os.Looper
++import androidx.lifecycle.Lifecycle
++import androidx.lifecycle.LifecycleOwner
++import androidx.lifecycle.LifecycleRegistry
++import androidx.room.Room
++import androidx.test.core.app.ApplicationProvider
++import org.junit.After
++import org.junit.Assert.*
++import org.junit.Before
++import org.junit.Test
++import org.junit.runner.RunWith
++import org.robolectric.RobolectricTestRunner
++import org.robolectric.Shadows.shadowOf
++import org.robolectric.annotation.Config
++import java.net.InetAddress
++import java.net.ServerSocket
++import java.time.Duration
++import java.util.UUID
++import kotlin.concurrent.thread
++
++/**
++ * Reviewer harness for M1-01: the real LinkController + Repository + Room + TcpTransport on the JVM
++ * (Robolectric), talking to a real POS process: python -m pos.server --port 18765 (fresh DB).
++ * No Activity/Compose/ProcessLifecycleOwner: onStart/onStop are called directly.
++ */
++@RunWith(RobolectricTestRunner::class)
++@Config(sdk = [34], application = Application::class)
++class ControllerRobolectricTest {
++    private val posPort = System.getProperty("pos.port") ?: "18765"
++    private lateinit var db: LinkDatabase
++    private lateinit var controller: LinkController
++    private val owner = object : LifecycleOwner {
++        private val registry = LifecycleRegistry(this)
++        override val lifecycle: Lifecycle get() = registry
++    }
++
++    @Before fun setUp() {
++        db = Room.inMemoryDatabaseBuilder(ApplicationProvider.getApplicationContext<Application>(), LinkDatabase::class.java).build()
++        controller = LinkController(Repository(db))
++        controller.onStart(owner)
++        controller.connect("127.0.0.1", posPort)
++        waitFor(10_000) { controller.settings.value != null && !controller.busy.value }
++        assertNotNull("harness: POS on $posPort must answer hello (${controller.runtime.value})", controller.settings.value)
++    }
++
++    @After fun tearDown() {
++        controller.onStop(owner)
++        pump(300)
++        db.close()
++    }
++
++    /** Main looper is paused under Robolectric: advance its clock roughly in step with wall time. */
++    private fun step() { shadowOf(Looper.getMainLooper()).idleFor(Duration.ofMillis(20)); Thread.sleep(20) }
++    private fun pump(ms: Long) { val end = System.nanoTime() + ms * 1_000_000; while (System.nanoTime() < end) step() }
++    private fun waitFor(ms: Long, condition: () -> Boolean): Boolean {
++        val end = System.nanoTime() + ms * 1_000_000
++        while (System.nanoTime() < end) { if (condition()) return true; step() }
++        return condition()
++    }
++    private fun acked(id: String) = controller.orders.value.any { it.requestId == id && it.status == "ACKNOWLEDGED" }
++
++    /** Control, expected PASS: the harness delivers a normal order end to end. */
++    @Test fun normalOrderIsAcknowledged() {
++        val id = UUID.randomUUID().toString()
++        controller.accept(id)
++        assertTrue(controller.runtime.value, waitFor(15_000) { acked(id) })
++    }
++
++    /** M1-01, expected FAIL at ee67e2c: a failed "연결 확인" leaves the foreground app without a worker. */
++    @Test fun failedProbeKeepsDeliveringToConfiguredPos() {
++        val closedPort = ServerSocket(0).use { it.localPort }
++        controller.connect("127.0.0.1", closedPort.toString())
++        waitFor(10_000) { !controller.busy.value && controller.runtime.value.startsWith("확인 필요") }
++        val afterProbe = controller.runtime.value
++        val id = UUID.randomUUID().toString()
++        controller.accept(id)
++        val deliveredInForeground = waitFor(15_000) { acked(id) }
++        val runtimeMeanwhile = controller.runtime.value
++        controller.pause(false) // the "전송 재개" button
++        val deliveredAfterResume = waitFor(10_000) { acked(id) }
++        assertTrue("afterProbe=[$afterProbe] runtime=[$runtimeMeanwhile] deliveredAfterResume=$deliveredAfterResume",
++            deliveredInForeground)
++    }
++
++    /** M1-01, expected FAIL at ee67e2c: a hello that hits the 5 s deadline must be reported. */
++    @Test fun probeDeadlineIsReportedNotLeftAsChecking() {
++        ServerSocket(0, 1, InetAddress.getByName("127.0.0.1")).use { silent ->
++            thread(isDaemon = true) { runCatching { silent.accept().use { Thread.sleep(9000) } } }
++            val started = System.nanoTime()
++            controller.connect("127.0.0.1", silent.localPort.toString())
++            assertTrue("probe must start", waitFor(3_000) { controller.busy.value })
++            assertTrue("probe must end", waitFor(9_000) { !controller.busy.value })
++            val endedAfterMs = (System.nanoTime() - started) / 1_000_000
++            pump(500)
++            assertNotEquals("runtime after the hello deadline (probe ended after $endedAfterMs ms)",
++                "POS 연결 확인 중", controller.runtime.value)
++        }
++    }
++}
+diff --git a/core/src/test/kotlin/dev/locallinklab/core/RedTeamTest.kt b/core/src/test/kotlin/dev/locallinklab/core/RedTeamTest.kt
+new file mode 100644
+index 0000000..411385e
+--- /dev/null
++++ b/core/src/test/kotlin/dev/locallinklab/core/RedTeamTest.kt
+@@ -0,0 +1,103 @@
++package dev.locallinklab.core
++
++import kotlinx.coroutines.CancellationException
++import kotlinx.coroutines.asCoroutineDispatcher
++import kotlinx.coroutines.runBlocking
++import kotlinx.coroutines.test.runTest
++import org.junit.Assert.*
++import org.junit.Test
++import java.net.ServerSocket
++import java.util.UUID
++import java.util.concurrent.Executors
++import kotlin.concurrent.thread
++
++/** M1 red-team checks written by the reviewer against ee67e2c. Expected outcome is stated per test. */
++class RedTeamTest {
++    private val dbId = UUID.randomUUID().toString()
++    private val endpoint = Endpoint("127.0.0.1", 8765)
++
++    /** Regression, expected PASS: trickled bytes without LF must not extend the attempt deadline. */
++    @Test fun trickledBytesDoNotExtendAttemptDeadline() {
++        ServerSocket(0).use { server ->
++            val peer = thread {
++                runCatching {
++                    server.accept().use { socket ->
++                        val input = socket.getInputStream()
++                        while (input.read() != 10) { }
++                        val out = socket.getOutputStream()
++                        for (i in 0 until 40) {
++                            if (runCatching { out.write(' '.code); out.flush() }.isFailure) break
++                            Thread.sleep(100)
++                        }
++                    }
++                }
++            }
++            val started = System.nanoTime()
++            val result = runCatching {
++                runBlocking { TcpTransport(attemptMs = 500).exchange(Endpoint("127.0.0.1", server.localPort), Message.Hello) }
++            }
++            val elapsedMs = (System.nanoTime() - started) / 1_000_000
++            assertTrue(result.isFailure)
++            assertTrue("elapsed=$elapsedMs ms", elapsedMs in 400..1500)
++            peer.join(5000)
++        }
++    }
++
++    private class OneOrder(private val order: PendingOrder) : Outbox {
++        var receipt: String? = null
++        var attention: String? = null
++        override suspend fun nextPending() = order.takeIf { receipt == null && attention == null }
++        override suspend fun acknowledge(requestId: String, receiptId: String) { receipt = receiptId }
++        override suspend fun needsAttention(requestId: String, reason: String) { attention = reason }
++    }
++
++    /** Regression, expected PASS: replies for another request or another DB never resolve the order. */
++    @Test fun unrelatedRepliesNeverResolveTheOrder() = runTest {
++        val pending = PendingOrder(UUID.randomUUID().toString(), dbId, Order("DEMO", 1, 3000))
++        val outbox = OneOrder(pending)
++        val receipt = UUID.randomUUID().toString()
++        val replies = ArrayDeque(listOf<Message>(
++            Message.Ack(dbId, UUID.randomUUID().toString(), UUID.randomUUID().toString()),
++            Message.Ack(UUID.randomUUID().toString(), pending.requestId, UUID.randomUUID().toString()),
++            Message.Error(UUID.randomUUID().toString(), pending.requestId, "ID_CONFLICT"),
++            Message.Error(dbId, null, "INVALID_REQUEST"),
++            Message.Ack(dbId, pending.requestId, receipt),
++        ))
++        val engine = DeliveryEngine(outbox, Transport { _, _ -> replies.removeFirst() }, jitter = { 0.0 })
++        assertEquals(StopReason.EMPTY, engine.drain(endpoint))
++        assertEquals(receipt, outbox.receipt)
++        assertNull(outbox.attention)
++    }
++
++    /**
++     * M1-01 root cause, expected FAIL at ee67e2c: on a real-time single-thread caller (like Android Main),
++     * the transport's own attempt deadline surfaces as TimeoutCancellationException, which the probe
++     * branch rethrows, leaving "POS 연결 확인 중" on screen. Robolectric's paused clock hides this.
++     */
++    @Test fun attemptDeadlineIsNotReportedAsCancellation() {
++        val main = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
++        try {
++            ServerSocket(0).use { silent ->
++                thread(isDaemon = true) { runCatching { silent.accept().use { Thread.sleep(3000) } } }
++                val error = runBlocking(main) {
++                    runCatching { TcpTransport(attemptMs = 300).exchange(Endpoint("127.0.0.1", silent.localPort), Message.Hello) }
++                        .exceptionOrNull()
++                }
++                assertFalse("deadline surfaced as $error", error is CancellationException)
++            }
++        } finally { main.close() }
++    }
++
++    /**
++     * Recommended behaviour, expected FAIL at ee67e2c: ambiguous IPv4 text (leading zeros) passes the
++     * validator and reaches the platform resolver. Desktop JDK 21 reads it as decimal; Android is unverified.
++     */
++    @Test fun ambiguousIpv4TextIsRejectedBeforeResolution() = runBlocking {
++        ServerSocket(0).use { server ->
++            val error = runCatching {
++                TcpTransport(attemptMs = 300).exchange(Endpoint("127.000.000.001", server.localPort), Message.Hello)
++            }.exceptionOrNull()
++            assertTrue("127.000.000.001 -> $error", error is IllegalArgumentException)
++        }
++    }
++}
+diff --git a/pos/test_m1_redteam.py b/pos/test_m1_redteam.py
+new file mode 100644
+index 0000000..2840785
+--- /dev/null
++++ b/pos/test_m1_redteam.py
+@@ -0,0 +1,130 @@
++"""M1 red-team reproductions written by the reviewer against ee67e2c.
++
++Each test states its expected outcome at that snapshot. "Regression" tests are expected to
++PASS and only lock in current behaviour; they are not failure reproductions.
++"""
++import asyncio
++from contextlib import closing, suppress
++import json
++import os
++from pathlib import Path
++import shutil
++import sqlite3
++import subprocess
++import sys
++import tempfile
++import time
++import unittest
++import uuid
++
++from .server import PosServer
++from .store import Store
++from .wire import decode, encode
++
++ROOT = Path(__file__).resolve().parents[1]
++
++
++class RedTeamPosTest(unittest.IsolatedAsyncioTestCase):
++    async def asyncSetUp(self):
++        self.directory = tempfile.TemporaryDirectory()
++        self.store = Store(Path(self.directory.name) / "pos.db")
++        self.server = await PosServer(self.store, read_timeout=0.5).start()
++
++    async def asyncTearDown(self):
++        await self.server.close()
++        self.directory.cleanup()
++
++    def submit(self, db_id=None):
++        return dict(version=1, type="submit_order", pos_db_id=db_id or self.store.db_id,
++                    request_id=str(uuid.uuid4()), order=dict(item_code="COFFEE", quantity=1, unit_price_krw=4500))
++
++    async def send(self, request, timeout=6.0):
++        reader, writer = await asyncio.open_connection("127.0.0.1", self.server.port)
++        try:
++            writer.write(encode(request)); await writer.drain()
++            return decode(await asyncio.wait_for(reader.readuntil(b"\n"), timeout))
++        finally:
++            writer.close(); await writer.wait_closed()
++
++    def rows(self):
++        with closing(self.store.connect()) as conn:
++            return conn.execute("SELECT request_id FROM orders").fetchall()
++
++    async def test_writer_lock_is_temporary_unavailable_within_client_budget(self):
++        """Regression, expected PASS: busy/locked answers before the 5 s client attempt budget."""
++        blocker = sqlite3.connect(self.store.path, isolation_level=None)
++        blocker.execute("BEGIN IMMEDIATE")
++        try:
++            started = time.monotonic()
++            reply = await self.send(self.submit())
++            elapsed = time.monotonic() - started
++        finally:
++            blocker.rollback(); blocker.close()
++        self.assertEqual(reply["code"], "TEMPORARY_UNAVAILABLE")
++        self.assertLess(elapsed, 2.5)
++        self.assertEqual(self.rows(), [])
++
++    async def test_trickled_whitespace_does_not_extend_read_deadline(self):
++        """Regression, expected PASS: bytes without LF do not restart the 0.5 s server deadline."""
++        reader, writer = await asyncio.open_connection("127.0.0.1", self.server.port)
++        started, closed_after = time.monotonic(), None
++        try:
++            for _ in range(60):
++                try:
++                    writer.write(b" "); await writer.drain()
++                    if await asyncio.wait_for(reader.read(1), 0.05) == b"":
++                        closed_after = time.monotonic() - started; break
++                except asyncio.TimeoutError:
++                    pass
++                except ConnectionError:
++                    closed_after = time.monotonic() - started; break
++        finally:
++            writer.close()
++            with suppress(Exception):
++                await writer.wait_closed()
++        self.assertIsNotNone(closed_after, "server kept a trickling connection open for 3 s")
++        self.assertLess(closed_after, 1.2)
++
++    async def test_hello_reports_the_database_that_handles_orders(self):
++        """Expected FAIL at ee67e2c: hello_ack uses Store.db_id cached at start-up,
++        while submit reads metadata inside its transaction. Safety still holds (POS_MISMATCH, no write)."""
++        other_dir = tempfile.TemporaryDirectory()
++        self.addCleanup(other_dir.cleanup)
++        other = Store(Path(other_dir.name) / "other.db")
++        for suffix in ("-wal", "-shm"):
++            with suppress(FileNotFoundError):
++                os.remove(self.store.path + suffix)
++        shutil.copyfile(other.path, self.store.path)  # the served file changes under a running POS
++        hello = await self.send(dict(version=1, type="hello"))
++        mismatch = await self.send(self.submit(db_id=hello["pos_db_id"]))
++        self.assertEqual(mismatch["code"], "POS_MISMATCH")
++        self.assertEqual(hello["pos_db_id"], mismatch["pos_db_id"],
++                         "hello certified a database that no longer serves orders")
++
++
++class VerifierFailClosedTest(unittest.TestCase):
++    def test_verify_m1_rejects_orphan_row_even_with_python_optimize(self):
++        """Expected FAIL at ee67e2c for flags=['-O']: verify_m1.py relies on assert,
++        which -O or PYTHONOPTIMIZE removes, so it prints 'M1 PASS' for an orphan POS row."""
++        with tempfile.TemporaryDirectory() as work:
++            artifacts = Path(work) / "artifacts"
++            artifacts.mkdir()
++            store = Store(artifacts / "m1-pos.db")
++            rid, receipt = str(uuid.uuid4()), str(uuid.uuid4())
++            baseline = dict(request_id=rid, pos_db_id=store.db_id, item_code="DEMO_COFFEE", quantity=1, unit_price_krw=3000)
++            (artifacts / "m1-baseline.json").write_text(json.dumps(baseline), encoding="utf-8")
++            (artifacts / "m1-result.json").write_text(
++                json.dumps({**baseline, "receipt_id": receipt, "status": "ACKNOWLEDGED"}), encoding="utf-8")
++            with closing(store.connect()) as conn:
++                conn.execute("INSERT INTO orders VALUES(?,?,?,?,?)", (rid, receipt, "DEMO_COFFEE", 1, 3000))
++                conn.execute("INSERT INTO orders VALUES(?,?,?,?,?)",
++                             (str(uuid.uuid4()), str(uuid.uuid4()), "DEMO_COFFEE", 1, 3000))  # orphan order
++            for flags in ([], ["-O"]):
++                with self.subTest(flags=flags):
++                    proc = subprocess.run([sys.executable, *flags, str(ROOT / "scripts" / "verify_m1.py")],
++                                          cwd=work, capture_output=True, text=True, timeout=30)
++                    self.assertNotEqual(proc.returncode, 0, proc.stdout)
++
++
++if __name__ == "__main__":
++    unittest.main()

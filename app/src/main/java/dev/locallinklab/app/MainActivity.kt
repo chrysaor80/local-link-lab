@@ -29,6 +29,7 @@ private fun LinkScreen(controller: LinkController) {
     val settings by controller.settings.collectAsStateWithLifecycle()
     val runtime by controller.runtime.collectAsStateWithLifecycle()
     val busy by controller.busy.collectAsStateWithLifecycle()
+    val probe by controller.probeResult.collectAsStateWithLifecycle()
     var host by rememberSaveable { mutableStateOf("") }
     var port by rememberSaveable { mutableStateOf("8765") }
     var draft by rememberSaveable { mutableStateOf(UUID.randomUUID().toString()) }
@@ -45,6 +46,7 @@ private fun LinkScreen(controller: LinkController) {
                 enabled = !busy, modifier = Modifier.fillMaxWidth().testTag("port"))
             Button({ controller.connect(host, port) }, enabled = !busy, modifier = Modifier.testTag("connect")) { Text("연결 확인") }
             settings?.let { Text("확인된 POS: ${it.host}:${it.port}", Modifier.testTag("configured")) }
+            probe?.takeIf { !it.succeeded }?.let { Text(it.message, Modifier.testTag("probe-error")) }
             Text(runtime, Modifier.testTag("runtime"))
         }
         item {
