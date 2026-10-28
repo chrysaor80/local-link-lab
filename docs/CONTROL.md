@@ -7,8 +7,8 @@
 | 단계 | 산출물 | 현재 상태 | 종료 기준 |
 |---|---|---|---|
 | M0 | 범위·프로토콜·시나리오·판단 기록·검토 요청 | OPUS 검토 반영, M1 진행 | 명세 자체 검사, OPUS의 범위·계약 검토 반영 |
-| M1 | Android → POS 실제 왕복 | OPUS 조건부 승인 수신, 수정 통합·재검증 중 | 실제 앱과 Room, 실제 TCP와 POS DB, UI 결과 대조 |
-| M2 | 장애 3종과 핵심 검증, 결함 사본 2종 | 기존 핵심 검증 완료, M1 수정 후 재검증 중 | 시나리오별 근거 확보, OPUS 검토 반영 |
+| M1 | Android → POS 실제 왕복 | OPUS 조건부 승인, 필수 수정·CI 재검증 완료 | 실제 앱과 Room, 실제 TCP와 POS DB, UI 결과 대조 |
+| M2 | 장애 3종과 핵심 검증, 결함 사본 2종 | M1 수정 통합 후 재검증 완료, OPUS 독립 검토 대기 | 시나리오별 근거 확보, OPUS 검토 반영 |
 | M3 | CI·APK·영상·공개 설명 | 예정 | 실행 증거와 한계가 일치하는 지원용 산출물 |
 
 ## 담당과 변경 관리
@@ -20,12 +20,15 @@
 
 ## 다음 작업
 
-1. [OPUS 보고서](reviews/OPUS_M1_REVIEW_REPORT.md)와 재현 패치를 수신해 [M1 처리 기록](reviews/M1_RESPONSE.md)에 따라 재현·수정했다. 수정본 CI를 확인한다.
-2. M1 수정본을 통합해 M2 정상 6개·결함 사본 2개를 다시 실행한다. 이전 검증 근거는 아래에 보존한다.
-3. M1 검토 결과를 반영한 고정 커밋으로 [M2 검토](reviews/M2_REQUEST.md)를 묶고 M3의 배포 후보 조건·시연 영상·최종 설명을 준비한다.
-4. 기기 확보 후 Windows와 삼성 기기 모델/API를 기록하고 실제 LAN을 확인한다.
+1. [OPUS M2 요청](reviews/M2_REQUEST.md)을 전달한다. 검토 코드는 `127ea3232bd6a6dc9b8c1b54eca78b3e092127d7`로 고정하고 M1 수정 확인과 M2 검증기 레드팀을 한 번에 요청한다.
+2. M3의 배포 후보 생성 조건·시연 영상·지원용 설명을 준비한다. OPUS가 새 결함을 보고하면 재현·회귀 수정을 우선한다.
+3. 기기 확보 후 Windows와 삼성 기기 모델/API를 기록하고 실제 LAN을 확인한다.
 
 ## 실행 근거
+
+최신 M2 통합 구현 `127ea32`: [CI 40629074288](https://github.com/chrysaor80/local-link-lab/actions/runs/40629074288) 전체 SUCCESS. Python 21개(Windows/Linux 각각), core JVM 19개, Controller JVM 6개, Android 정상 4개·복구 2개, 장애 6개 PASS·결함 사본 2개 KILLED. [최신 근거](evidence/M2_REVIEW.md)에 CI checkout SHA와 구현 tree 일치 및 내려받은 데이터 재대조를 기록했다.
+
+M1 검토 수정본 `b5501e6`: [CI 40628744795](https://github.com/chrysaor80/local-link-lab/actions/runs/40628744795) 전체 SUCCESS. Python 13개(Windows/Linux 각각), core JVM 14개, Controller JVM 6개, Android 정상 4개·복구 2개 PASS. [처리 기록](reviews/M1_RESPONSE.md)에 수정 전 재현과 원본 artifact 대조를 기록했다.
 
 - M0 검토 수정: `0b572af` (main). [처리 내역](reviews/M0_RESPONSE.md).
 - M1 작업 브랜치: `codex/m1-first-roundtrip`. [PR #1](https://github.com/chrysaor80/local-link-lab/pull/1).
