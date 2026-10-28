@@ -1,0 +1,57 @@
+{
+  "head_commit": "100cb23503a82a7d6ef2af9c45a714132371c9a1",
+  "ci_checkout_commit": "ca8f4e5d34e1edcca005a07112e0c0178e9d8682",
+  "identical_tree": "29e6ad497a202a8315896dc2f06fd53fc06e7d88",
+  "ci_run": 40635121568,
+  "candidate_artifact": 12793087568,
+  "diagnostic_artifact": 12793127342,
+  "ci_result": "SUCCESS",
+  "python_tests_each_os": 30,
+  "optimized_gate_tests_each_os": 9,
+  "manifest": {
+    "format_version": 1,
+    "kind": "controlled-demo-candidate",
+    "source_commit": "ca8f4e5d34e1edcca005a07112e0c0178e9d8682",
+    "build_variant": "debug",
+    "lab_control_included": true,
+    "evidence_level": "Android API 29 emulator / emulator-nat",
+    "physical_device": "NOT_RUN",
+    "independent_review": "See source repository review records; this gate does not grant approval",
+    "ci": {
+      "repository": "chrysaor80/local-link-lab",
+      "run_id": "40635121568",
+      "run_attempt": "1"
+    },
+    "verification": {
+      "junit_pass_counts": {
+        "core_jvm": 19,
+        "controller_jvm": 6,
+        "android_normal": 4,
+        "android_recovery": 2
+      },
+      "normal_scenarios": 6,
+      "mutations_killed": 2,
+      "apk_sha256": "ac4bb6f58c6b02a570157722e48a59c57b30efeff459916bcdf6fc05afd32f92"
+    },
+    "files": {
+      "LICENSE": "3fe7a63ffc5e816f4f4b12a5c56da30f72c8fb2ddd47488c683983f228df9f23",
+      "QUICKSTART.md": "c1aff6566134df3f4f212d1bb10211ca3466eac4fda721a2772e50e9f865b8ba",
+      "WINDOWS.md": "28a171436b6016282c8070b846d2e90a340aeb0213235283aaf12af9d4cb3ce4",
+      "local-link-lab-demo.apk": "ac4bb6f58c6b02a570157722e48a59c57b30efeff459916bcdf6fc05afd32f92",
+      "pos/__init__.py": "37e7ad93c81804ef202550ccdc2c6720dfa779a521be7e417efb6b36714ab74e",
+      "pos/server.py": "6b17af78aac9395bab67e034f4281c45f06be1186ee81bc8000e2831d0d30dc1",
+      "pos/store.py": "2736f437b4e09e208c08e8dc1163cae1c18cde72525c04b4661d6d167cfc7484",
+      "pos/wire.py": "038938285a49815bd2f59c2b7198f25f5956bccb5582ca97c69138d12573bc85"
+    }
+  },
+  "downloaded_bundle_recheck": "PASS",
+  "bundled_pos_smoke": {
+    "environment": "Linux / Python 3.12.14 / real loopback TCP",
+    "hello": "PASS",
+    "same_order_twice": "PASS",
+    "pos_rows": 1,
+    "same_receipt": true
+  },
+  "physical_device": "NOT_RUN",
+  "video_recording": "NOT_RUN"
+}

@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import asyncio
 import difflib
 import hashlib
 import json
@@ -12,8 +13,8 @@ import subprocess
 import sys
 import tempfile
 
-from .android_run import CASES
-from .identity import clean_source
+from .android_run import CASES, Adb, Blocked
+from .identity import STAMP, clean_source, check_stamp, write_build_stamp, installed_apk
 
 ENGINE = Path("core/src/main/kotlin/dev/locallinklab/core/DeliveryEngine.kt")
 CONTROLLER = Path("app/src/main/java/dev/locallinklab/app/LinkApplication.kt")
@@ -54,6 +55,21 @@ def run_logged(argv, *, cwd, log, timeout):
             return 124
 
 
+async def restore_normal(adb, apk, source, stamp_path):
+    result = {"verdict": "BLOCKED", "source_commit": source}
+    try:
+        result["build_stamp"] = check_stamp(stamp_path, source, apk)
+        await adb.run("install", "-r", str(apk), timeout=60)
+        result["identity"] = await installed_apk(adb, apk)
+        if clean_source() != source:
+            raise ValueError("Source changed during mutation execution")
+        result["verdict"] = "PASS"
+    except (ValueError, OSError, Blocked) as exc:
+        result["error"] = str(exc)
+    result["commands"] = adb.history
+    return result
+
+
 def main(args):
     root = Path.cwd()
     sha = clean_source()
@@ -66,6 +82,9 @@ def main(args):
     output.mkdir(parents=True, exist_ok=False)
     outcomes = []
     normal_apk = root / "app/build/outputs/apk/debug/app-debug.apk"
+    normal_stamp = check_stamp(args.stamp, sha, normal_apk)
+    if baseline.get("build_stamp") != normal_stamp:
+        raise RuntimeError("Normal run must use this source's post-build stamp")
     if baseline.get("harness_version") != 2 or baseline.get("apk_identity", {}).get("build_sha256") != hashlib.sha256(normal_apk.read_bytes()).hexdigest():
         raise RuntimeError("Normal evidence must bind the installed APK to the clean baseline build")
     try:
@@ -91,12 +110,17 @@ def main(args):
                 if build_code == 0:
                     apk = target / "app/build/outputs/apk/debug/app-debug.apk"
                     outcome["apk_sha256"] = hashlib.sha256(apk.read_bytes()).hexdigest()
+                    if clean_source() != sha:
+                        raise RuntimeError("Base source changed while building a mutation")
+                    mutation_stamp = folder / "build-input.json"
+                    write_build_stamp(mutation_stamp, sha, apk, mutation=name, patch_sha256=outcome["patch_sha256"])
                     install = run_logged(["adb", "-s", args.serial, "install", "-r", str(apk)], cwd=root, log=folder / "install.log", timeout=60)
                     outcome["install_exit"] = install
                     if install == 0:
                         # Run the ORIGINAL harness and verdict, not a copy altered by the mutation.
                         code = run_logged([sys.executable, "-m", "lab.android_run", "--out", str(folder / "execution"),
-                                           "--serial", args.serial, "--scenario", config["scenario"], "--source-commit", sha, "--apk", str(apk)],
+                                           "--serial", args.serial, "--scenario", config["scenario"], "--source-commit", sha,
+                                           "--apk", str(apk), "--stamp", str(mutation_stamp)],
                                           cwd=root, log=folder / "run.log", timeout=120)
                         outcome["scenario_exit"] = code
                         report = folder / "execution" / config["scenario"] / "result.json"
@@ -114,9 +138,11 @@ def main(args):
                 (folder / "result.json").write_text(json.dumps(outcome, indent=2) + "\n", encoding="utf-8")
                 print(json.dumps(outcome), flush=True)
     finally:
-        subprocess.run(["adb", "-s", args.serial, "install", "-r", str(normal_apk)], check=True, timeout=60)
-    passed = len(outcomes) == len(MUTANTS) and all(r["verdict"] == "KILLED" for r in outcomes)
-    (output / "summary.json").write_text(json.dumps({"source_commit": sha, "verdict": "PASS" if passed else "FAIL", "results": outcomes}, indent=2) + "\n", encoding="utf-8")
+        restored = asyncio.run(restore_normal(Adb(args.serial), normal_apk, sha, args.stamp))
+        (output / "restore.json").write_text(json.dumps(restored, indent=2) + "\n", encoding="utf-8")
+    passed = len(outcomes) == len(MUTANTS) and all(r["verdict"] == "KILLED" for r in outcomes) and restored["verdict"] == "PASS"
+    (output / "summary.json").write_text(json.dumps({"source_commit": sha, "verdict": "PASS" if passed else "FAIL", "results": outcomes,
+                                                    "restored_normal_apk": restored}, indent=2) + "\n", encoding="utf-8")
     return 0 if passed else 1
 
 
@@ -125,4 +151,5 @@ if __name__ == "__main__":
     parser.add_argument("--normal-summary", required=True)
     parser.add_argument("--out", required=True)
     parser.add_argument("--serial", default="emulator-5554")
+    parser.add_argument("--stamp", type=Path, default=STAMP)
     raise SystemExit(main(parser.parse_args()))

@@ -6,12 +6,29 @@ import subprocess
 import tempfile
 import unittest
 import uuid
+from unittest.mock import AsyncMock
 
 from pos.server import PosServer
 from pos.store import Store
 from pos.wire import encode, decode
 from .identity import clean_source, installed_apk
 from .phases import paused_violations, commit_window
+from .android_run import Adb, Blocked
+
+
+class RelaunchObservationTest(unittest.IsolatedAsyncioTestCase):
+    async def test_delayed_pid_visibility_waits_for_a_different_process(self):
+        adb = Adb("unused")
+        adb.pid = AsyncMock(side_effect=["", "222"])
+        self.assertEqual(await adb.wait_new("111"), "222")
+        self.assertEqual(adb.pid.await_count, 2)
+
+    async def test_missing_or_unchanged_pid_cannot_pass_after_waiting(self):
+        adb = Adb("unused")
+        for current in ("", "111"):
+            adb.pid = AsyncMock(return_value=current)
+            with self.assertRaises(Blocked):
+                await adb.wait_new("111", timeout=0.01)
 
 
 class PhaseTest(unittest.TestCase):

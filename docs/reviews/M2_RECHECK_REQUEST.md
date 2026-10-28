@@ -1,5 +1,7 @@
 # OPUS M2 수정본 집중 재확인
 
+완료: [OPUS 재확인 보고](OPUS_M2_RECHECK_REPORT.md)에서 M2 수정본 6c7187d 승인을 받았다. 아래는 당시 전달한 요청서이며 후속 P3 처리는 [처리 기록](M2_RECHECK_RESPONSE.md)에 있다.
+
 기존 검토의 M2-01~06을 [처리 기록](M2_RESPONSE.md)에 반영했다. 새 기능 확대 없이 검증 빈틈을 고쳤다. 아래 고정 코드와 실행 근거로 조건부 승인 항목이 해소됐는지 확인해 주세요. 변경 제안은 보고서와 최소 재현 테스트로 돌려주고, 구현 브랜치에는 직접 커밋하지 않아도 된다.
 
 - M2 구현: `6c7187d021ab5390ab5c3388dfd99b24327a15f3` ([고정 코드](https://github.com/chrysaor80/local-link-lab/tree/6c7187d021ab5390ab5c3388dfd99b24327a15f3)). 비교 기준은 `127ea3232bd6a6dc9b8c1b54eca78b3e092127d7`.

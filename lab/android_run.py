@@ -18,7 +18,7 @@ import uuid
 from pos.server import PosServer
 from pos.store import Store
 from .verdict import evaluate, summarize
-from .identity import APK, clean_source, installed_apk
+from .identity import APK, STAMP, clean_source, installed_apk, check_stamp
 from .phases import paused_violations, commit_window
 
 PACKAGE = "dev.locallinklab.app"
@@ -80,7 +80,10 @@ class Adb:
         raise Blocked(f"No completed debug command: {command}; last response: {raw[:150]}")
 
     async def launch(self):
-        await self.run("shell", "am", "start", "-W", "-n", f"{PACKAGE}/.MainActivity")
+        response = await self.run("shell", "am", "start", "-W", "-n", f"{PACKAGE}/.MainActivity")
+        self.history[-1]["response"] = response
+        if "Error:" in response or "Exception" in response:
+            raise Blocked(f"Android launch rejected: {response}")
 
     async def pid(self):
         return await self.run("shell", "pidof", PACKAGE, check=False)
@@ -96,6 +99,19 @@ class Adb:
             await asyncio.sleep(0.1)
         raise Blocked("Old Android PID did not terminate")
 
+    async def wait_new(self, old, *, timeout=5):
+        # ActivityManager completion and pidof visibility need not be simultaneous.
+        # Poll an actual new PID; never infer a successful restart from elapsed time.
+        deadline = time.monotonic() + timeout
+        while time.monotonic() < deadline:
+            current = await self.pid()
+            if current:
+                if current == old:
+                    raise Blocked("Explicit relaunch still reports the old Android PID")
+                return current
+            await asyncio.sleep(0.1)
+        raise Blocked("No new Android PID observed before relaunch deadline")
+
 
 def pos_rows(store):
     with closing(store.connect()) as conn:
@@ -106,7 +122,8 @@ def pos_rows(store):
 async def run_case(adb, scenario, folder, source_sha):
     folder.mkdir(parents=True, exist_ok=False)
     record = {"scenario_id": scenario, "source_commit": source_sha, "harness_version": 2, "execution_level": "ANDROID_EXTERNAL",
-              "network_path": "emulator-nat", "started_at": now(), "verdict": "BLOCKED", "events": [], "violations": []}
+              "network_path": "emulator-nat", "started_at": now(), "verdict": "BLOCKED", "events": [], "violations": [],
+              "recovered_by_resume": False}
     commands_start = len(adb.history)
     store = Store(folder / "pos.db")
     baseline = [dict(request_id=str(uuid.uuid4()), pos_db_id=store.db_id,
@@ -227,9 +244,7 @@ async def run_case(adb, scenario, folder, source_sha):
             await adb.wait_dead(old)
             event("OLD_PROCESS_TERMINATED", pid=old, method=method)
             await adb.launch()
-            new = await adb.pid()
-            if not new or new == old:
-                raise Blocked("No new Android PID after explicit relaunch")
+            new = await adb.wait_new(old)
             event("EXPLICIT_RELAUNCH", pid=new)
             record["violations"] += await observe_paused("restored_pending")
         if not record["violations"]:
@@ -261,6 +276,7 @@ async def run_case(adb, scenario, folder, source_sha):
                 # Observation latency must not consume the recovery attempt budget.
                 # Explicit recovery also works if a slow ADB host exhausted the old worker.
                 await adb.control("resume")
+                record["recovered_by_resume"] = True
                 event("RECOVERY_BUDGET_RESTARTED")
             elif scenario == "S02":
                 await asyncio.wait_for(committed.wait(), 8)
@@ -274,9 +290,7 @@ async def run_case(adb, scenario, folder, source_sha):
                 await adb.wait_dead(old)
                 event("OLD_PROCESS_TERMINATED", pid=old, method="force-stop")
                 await adb.launch()
-                new = await adb.pid()
-                if not new or new == old:
-                    raise Blocked("No new Android PID after explicit relaunch")
+                new = await adb.wait_new(old)
                 event("EXPLICIT_RELAUNCH", pid=new)
                 record["violations"] += await observe("restored_ack_held", require_window=True)
                 allow_ack.set()
@@ -302,6 +316,11 @@ async def run_case(adb, scenario, folder, source_sha):
     finally:
         allow_ack.set()
         await server.close()
+        if record["verdict"] in ("BLOCKED", "FAIL") and "android_api" in record:
+            try:
+                (folder / "logcat.txt").write_text(await adb.run("logcat", "-d"), encoding="utf-8")
+            except (Blocked, OSError) as exc:
+                record["diagnostics_error"] = str(exc)
         record["final_pos_rows"] = pos_rows(store)
         record["original_receipts"] = receipts
         record["commands"] = adb.history[commands_start:]
@@ -321,6 +340,8 @@ async def main(args):
         sha = clean_source()
         if args.source_commit and args.source_commit != sha:
             raise ValueError("Mutation base differs from the harness checkout")
+        kind = "mutation" if args.source_commit else "normal"
+        build_stamp = check_stamp(args.stamp, sha, args.apk, kind=kind)
         identity = await installed_apk(adb, args.apk)
     except (ValueError, OSError, Blocked) as exc:
         save(out / "summary.json", {"verdict": "BLOCKED", "error": str(exc), "results": []})
@@ -333,12 +354,15 @@ async def main(args):
     verdict = summarize(results, required)
     try:
         final_identity = await installed_apk(adb, args.apk)
+        if check_stamp(args.stamp, sha, args.apk, kind=kind) != build_stamp:
+            raise ValueError("Build stamp changed during verification")
         if clean_source() != sha:
             raise ValueError("Source changed during verification")
     except (ValueError, OSError, Blocked) as exc:
         final_identity = {"error": str(exc)}
         verdict = "BLOCKED"
     save(out / "summary.json", {"source_commit": sha, "source_clean": True, "harness_version": 2,
+                                "build_stamp": build_stamp,
                                 "apk_identity": identity, "final_apk_identity": final_identity,
                                 "required": required, "verdict": verdict,
                                 "results": [{key: r[key] for key in ("scenario_id", "verdict", "violations")} for r in results]})
@@ -352,4 +376,5 @@ if __name__ == "__main__":
     parser.add_argument("--scenario", action="append", choices=CASES)
     parser.add_argument("--source-commit", help="Base revision when executing an isolated mutation copy")
     parser.add_argument("--apk", type=Path, default=APK, help="Expected installed build artifact (normal or isolated mutant)")
+    parser.add_argument("--stamp", type=Path, default=STAMP, help="Record created immediately after a successful build")
     raise SystemExit(asyncio.run(main(parser.parse_args())))

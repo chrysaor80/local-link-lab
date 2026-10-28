@@ -1,6 +1,6 @@
 # M2 독립 검토 수정본 실행 증거
 
-2026-10-28 Asia/Seoul. 구현 `6c7187d021ab5390ab5c3388dfd99b24327a15f3`의 [CI 40639032749](https://github.com/chrysaor80/local-link-lab/actions/runs/40639032749)가 전체 성공했다. [OPUS 보고](../reviews/OPUS_M2_REVIEW_REPORT.md)의 M2-01~06 처리 후 실행이다. 독립 검토 판정은 기존 코드에 대한 조건부 승인이며, 이 수정본의 OPUS 재승인은 아직 없다.
+2026-10-28 Asia/Seoul. 구현 `6c7187d021ab5390ab5c3388dfd99b24327a15f3`의 [CI 40639032749](https://github.com/chrysaor80/local-link-lab/actions/runs/40639032749)가 전체 성공했다. [OPUS 보고](../reviews/OPUS_M2_REVIEW_REPORT.md)의 M2-01~06 처리 후 실행이다. 후속 [OPUS 재확인](../reviews/OPUS_M2_RECHECK_REPORT.md)에서 이 수정본 6c7187d를 승인했다.
 
 ## 실행 대상과 원본
 

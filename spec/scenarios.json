@@ -46,7 +46,8 @@
         "pending_preserved",
         "id_unchanged_on_retry",
         "one_pos_row_after_recovery",
-        "local_ack_committed"
+        "local_ack_committed",
+        "recovered_by_explicit_resume"
       ]
     },
     {

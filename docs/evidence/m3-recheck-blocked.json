@@ -1,0 +1,556 @@
+{
+  "head_commit": "412a448bf6f89d8ed8c236188e83d570a836eba6",
+  "source_commit": "39b45d2d27e478f8ec5c6730e7b847f0b8fe7e14",
+  "identical_tree": "b023607449c34bcbb2be5da74c71fcbd409d2294",
+  "ci_run": 40648061750,
+  "artifact_id": 12798404113,
+  "artifact_sha256": "209a64b1a8504c9e027d3303119fbd8e3b6a205f416bd08d041a2f11b74cdb6e",
+  "normal_summary": {
+    "source_commit": "39b45d2d27e478f8ec5c6730e7b847f0b8fe7e14",
+    "source_clean": true,
+    "harness_version": 2,
+    "build_stamp": {
+      "format_version": 1,
+      "source_commit": "39b45d2d27e478f8ec5c6730e7b847f0b8fe7e14",
+      "apk_sha256": "6075b8e84f15f7a96208aa8992e95a6dd0a21cfeec07e04d3c05f8c4d0eea16a",
+      "kind": "normal"
+    },
+    "apk_identity": {
+      "package_path": "/data/app/dev.locallinklab.app-wqQY4C1aaq-_N8wWQCLsgw==/base.apk",
+      "installed_sha256": "6075b8e84f15f7a96208aa8992e95a6dd0a21cfeec07e04d3c05f8c4d0eea16a",
+      "build_sha256": "6075b8e84f15f7a96208aa8992e95a6dd0a21cfeec07e04d3c05f8c4d0eea16a"
+    },
+    "final_apk_identity": {
+      "package_path": "/data/app/dev.locallinklab.app-wqQY4C1aaq-_N8wWQCLsgw==/base.apk",
+      "installed_sha256": "6075b8e84f15f7a96208aa8992e95a6dd0a21cfeec07e04d3c05f8c4d0eea16a",
+      "build_sha256": "6075b8e84f15f7a96208aa8992e95a6dd0a21cfeec07e04d3c05f8c4d0eea16a"
+    },
+    "required": [
+      "S01",
+      "S02",
+      "S03_am_kill",
+      "S03_force_stop",
+      "S03_after_pos_commit",
+      "C07_resume"
+    ],
+    "verdict": "FAIL",
+    "results": [
+      {
+        "scenario_id": "S01",
+        "verdict": "PASS",
+        "violations": []
+      },
+      {
+        "scenario_id": "S02",
+        "verdict": "PASS",
+        "violations": []
+      },
+      {
+        "scenario_id": "S03_am_kill",
+        "verdict": "PASS",
+        "violations": []
+      },
+      {
+        "scenario_id": "S03_force_stop",
+        "verdict": "PASS",
+        "violations": []
+      },
+      {
+        "scenario_id": "S03_after_pos_commit",
+        "verdict": "BLOCKED",
+        "violations": []
+      },
+      {
+        "scenario_id": "C07_resume",
+        "verdict": "PASS",
+        "violations": []
+      }
+    ]
+  },
+  "blocked_case": {
+    "scenario_id": "S03_after_pos_commit",
+    "source_commit": "39b45d2d27e478f8ec5c6730e7b847f0b8fe7e14",
+    "harness_version": 2,
+    "execution_level": "ANDROID_EXTERNAL",
+    "network_path": "emulator-nat",
+    "started_at": "2026-10-28T07:13:17.673653+00:00",
+    "verdict": "BLOCKED",
+    "events": [
+      {
+        "event": "LOCAL_COMMITTED",
+        "at": "2026-10-28T07:13:18.965007+00:00",
+        "request_id": "836c13a5-5c03-4d0b-b45e-3a289f19bc34"
+      },
+      {
+        "event": "SUBMIT_RECEIVED",
+        "at": "2026-10-28T07:13:19.056151+00:00",
+        "request_id": "836c13a5-5c03-4d0b-b45e-3a289f19bc34",
+        "count": 1
+      },
+      {
+        "event": "POS_COMMITTED",
+        "at": "2026-10-28T07:13:19.059382+00:00",
+        "request_id": "836c13a5-5c03-4d0b-b45e-3a289f19bc34",
+        "receipt_id": "41ea36ad-c003-4a3c-ab4a-289d31a31d6c"
+      },
+      {
+        "event": "ACK_HELD",
+        "at": "2026-10-28T07:13:19.059403+00:00",
+        "request_id": "836c13a5-5c03-4d0b-b45e-3a289f19bc34"
+      },
+      {
+        "event": "OLD_PROCESS_TERMINATED",
+        "at": "2026-10-28T07:13:19.174959+00:00",
+        "pid": "4562",
+        "method": "force-stop"
+      },
+      {
+        "event": "ACK_RELEASED",
+        "at": "2026-10-28T07:13:19.240599+00:00",
+        "request_id": "836c13a5-5c03-4d0b-b45e-3a289f19bc34"
+      }
+    ],
+    "violations": [],
+    "recovered_by_resume": false,
+    "observations": [
+      {
+        "phase": "accepted_paused",
+        "at": "2026-10-28T07:13:19.012919+00:00",
+        "local": {
+          "ok": true,
+          "token": "6e2bb1de-eb3e-4c75-a160-3a302838e45b",
+          "pid": 4562,
+          "runtime": "사용자가 전송을 일시 중지함",
+          "user_paused": true,
+          "pos_db_id": "b89163d6-5f13-48fd-a37a-fa236b14f8e9",
+          "rows": [
+            {
+              "request_id": "836c13a5-5c03-4d0b-b45e-3a289f19bc34",
+              "pos_db_id": "b89163d6-5f13-48fd-a37a-fa236b14f8e9",
+              "item_code": "DEMO_COFFEE",
+              "quantity": 1,
+              "unit_price_krw": 3000,
+              "status": "PENDING",
+              "receipt_id": null
+            }
+          ]
+        },
+        "pos_rows": [],
+        "submit_count": 0,
+        "released_acks": 0,
+        "final": false,
+        "paused_check": true,
+        "commit_window": null,
+        "violations": []
+      },
+      {
+        "phase": "committed_ack_held",
+        "at": "2026-10-28T07:13:19.124336+00:00",
+        "local": {
+          "ok": true,
+          "token": "d9475bfa-1104-410f-80b9-1e729490e595",
+          "pid": 4562,
+          "runtime": "전송 중 (1/5)",
+          "user_paused": false,
+          "pos_db_id": "b89163d6-5f13-48fd-a37a-fa236b14f8e9",
+          "rows": [
+            {
+              "request_id": "836c13a5-5c03-4d0b-b45e-3a289f19bc34",
+              "pos_db_id": "b89163d6-5f13-48fd-a37a-fa236b14f8e9",
+              "item_code": "DEMO_COFFEE",
+              "quantity": 1,
+              "unit_price_krw": 3000,
+              "status": "PENDING",
+              "receipt_id": null
+            }
+          ]
+        },
+        "pos_rows": [
+          {
+            "request_id": "836c13a5-5c03-4d0b-b45e-3a289f19bc34",
+            "receipt_id": "41ea36ad-c003-4a3c-ab4a-289d31a31d6c",
+            "item_code": "DEMO_COFFEE",
+            "quantity": 1,
+            "unit_price_krw": 3000
+          }
+        ],
+        "submit_count": 1,
+        "released_acks": 0,
+        "final": false,
+        "paused_check": false,
+        "commit_window": true,
+        "violations": []
+      }
+    ],
+    "android_api": "29",
+    "android_model": "Android SDK built for x86_64",
+    "error": "Blocked: No new Android PID after explicit relaunch",
+    "final_pos_rows": [
+      {
+        "request_id": "836c13a5-5c03-4d0b-b45e-3a289f19bc34",
+        "receipt_id": "41ea36ad-c003-4a3c-ab4a-289d31a31d6c",
+        "item_code": "DEMO_COFFEE",
+        "quantity": 1,
+        "unit_price_krw": 3000
+      }
+    ],
+    "original_receipts": {
+      "836c13a5-5c03-4d0b-b45e-3a289f19bc34": "41ea36ad-c003-4a3c-ab4a-289d31a31d6c"
+    },
+    "commands": [
+      {
+        "at": "2026-10-28T07:13:17.682511+00:00",
+        "command": [
+          "adb",
+          "shell",
+          "getprop",
+          "ro.kernel.qemu"
+        ]
+      },
+      {
+        "at": "2026-10-28T07:13:17.689884+00:00",
+        "command": [
+          "adb",
+          "shell",
+          "getprop",
+          "ro.build.version.sdk"
+        ]
+      },
+      {
+        "at": "2026-10-28T07:13:17.696982+00:00",
+        "command": [
+          "adb",
+          "shell",
+          "getprop",
+          "ro.product.model"
+        ]
+      },
+      {
+        "at": "2026-10-28T07:13:17.703447+00:00",
+        "command": [
+          "adb",
+          "shell",
+          "pm",
+          "clear",
+          "dev.locallinklab.app"
+        ]
+      },
+      {
+        "at": "2026-10-28T07:13:17.731766+00:00",
+        "command": [
+          "adb",
+          "shell",
+          "am",
+          "start",
+          "-W",
+          "-n",
+          "dev.locallinklab.app/.MainActivity"
+        ]
+      },
+      {
+        "at": "2026-10-28T07:13:17.776811+00:00",
+        "command": [
+          "adb",
+          "shell",
+          "am",
+          "broadcast",
+          "-n",
+          "dev.locallinklab.app/.LabControlReceiver",
+          "--es",
+          "token",
+          "e2cfe58d-a0b0-47b0-98e7-6ccc93669d90",
+          "--es",
+          "command",
+          "configure",
+          "--es",
+          "host",
+          "10.0.2.2",
+          "--es",
+          "port",
+          "42575"
+        ]
+      },
+      {
+        "at": "2026-10-28T07:13:18.791617+00:00",
+        "command": [
+          "adb",
+          "exec-out",
+          "run-as",
+          "dev.locallinklab.app",
+          "cat",
+          "files/lab-e2cfe58d-a0b0-47b0-98e7-6ccc93669d90.json"
+        ]
+      },
+      {
+        "at": "2026-10-28T07:13:18.819508+00:00",
+        "command": [
+          "adb",
+          "shell",
+          "run-as",
+          "dev.locallinklab.app",
+          "rm",
+          "files/lab-e2cfe58d-a0b0-47b0-98e7-6ccc93669d90.json"
+        ]
+      },
+      {
+        "at": "2026-10-28T07:13:18.834859+00:00",
+        "command": [
+          "adb",
+          "shell",
+          "am",
+          "broadcast",
+          "-n",
+          "dev.locallinklab.app/.LabControlReceiver",
+          "--es",
+          "token",
+          "e652ef91-cfbf-41e3-a46d-32e2c1166909",
+          "--es",
+          "command",
+          "pause"
+        ]
+      },
+      {
+        "at": "2026-10-28T07:13:18.861461+00:00",
+        "command": [
+          "adb",
+          "exec-out",
+          "run-as",
+          "dev.locallinklab.app",
+          "cat",
+          "files/lab-e652ef91-cfbf-41e3-a46d-32e2c1166909.json"
+        ]
+      },
+      {
+        "at": "2026-10-28T07:13:18.887428+00:00",
+        "command": [
+          "adb",
+          "shell",
+          "run-as",
+          "dev.locallinklab.app",
+          "rm",
+          "files/lab-e652ef91-cfbf-41e3-a46d-32e2c1166909.json"
+        ]
+      },
+      {
+        "at": "2026-10-28T07:13:18.901889+00:00",
+        "command": [
+          "adb",
+          "shell",
+          "am",
+          "broadcast",
+          "-n",
+          "dev.locallinklab.app/.LabControlReceiver",
+          "--es",
+          "token",
+          "e984e825-96ce-4de5-9116-f161828a2e6c",
+          "--es",
+          "command",
+          "accept",
+          "--es",
+          "request_id",
+          "836c13a5-5c03-4d0b-b45e-3a289f19bc34"
+        ]
+      },
+      {
+        "at": "2026-10-28T07:13:18.927024+00:00",
+        "command": [
+          "adb",
+          "exec-out",
+          "run-as",
+          "dev.locallinklab.app",
+          "cat",
+          "files/lab-e984e825-96ce-4de5-9116-f161828a2e6c.json"
+        ]
+      },
+      {
+        "at": "2026-10-28T07:13:18.951160+00:00",
+        "command": [
+          "adb",
+          "shell",
+          "run-as",
+          "dev.locallinklab.app",
+          "rm",
+          "files/lab-e984e825-96ce-4de5-9116-f161828a2e6c.json"
+        ]
+      },
+      {
+        "at": "2026-10-28T07:13:18.965296+00:00",
+        "command": [
+          "adb",
+          "shell",
+          "am",
+          "broadcast",
+          "-n",
+          "dev.locallinklab.app/.LabControlReceiver",
+          "--es",
+          "token",
+          "6e2bb1de-eb3e-4c75-a160-3a302838e45b",
+          "--es",
+          "command",
+          "snapshot"
+        ]
+      },
+      {
+        "at": "2026-10-28T07:13:18.991065+00:00",
+        "command": [
+          "adb",
+          "exec-out",
+          "run-as",
+          "dev.locallinklab.app",
+          "cat",
+          "files/lab-6e2bb1de-eb3e-4c75-a160-3a302838e45b.json"
+        ]
+      },
+      {
+        "at": "2026-10-28T07:13:19.002561+00:00",
+        "command": [
+          "adb",
+          "shell",
+          "run-as",
+          "dev.locallinklab.app",
+          "rm",
+          "files/lab-6e2bb1de-eb3e-4c75-a160-3a302838e45b.json"
+        ]
+      },
+      {
+        "at": "2026-10-28T07:13:19.012954+00:00",
+        "command": [
+          "adb",
+          "shell",
+          "am",
+          "broadcast",
+          "-n",
+          "dev.locallinklab.app/.LabControlReceiver",
+          "--es",
+          "token",
+          "460d8701-8887-4cab-912b-3321ab81f880",
+          "--es",
+          "command",
+          "resume"
+        ]
+      },
+      {
+        "at": "2026-10-28T07:13:19.045101+00:00",
+        "command": [
+          "adb",
+          "exec-out",
+          "run-as",
+          "dev.locallinklab.app",
+          "cat",
+          "files/lab-460d8701-8887-4cab-912b-3321ab81f880.json"
+        ]
+      },
+      {
+        "at": "2026-10-28T07:13:19.068042+00:00",
+        "command": [
+          "adb",
+          "shell",
+          "run-as",
+          "dev.locallinklab.app",
+          "rm",
+          "files/lab-460d8701-8887-4cab-912b-3321ab81f880.json"
+        ]
+      },
+      {
+        "at": "2026-10-28T07:13:19.079178+00:00",
+        "command": [
+          "adb",
+          "shell",
+          "am",
+          "broadcast",
+          "-n",
+          "dev.locallinklab.app/.LabControlReceiver",
+          "--es",
+          "token",
+          "d9475bfa-1104-410f-80b9-1e729490e595",
+          "--es",
+          "command",
+          "snapshot"
+        ]
+      },
+      {
+        "at": "2026-10-28T07:13:19.101262+00:00",
+        "command": [
+          "adb",
+          "exec-out",
+          "run-as",
+          "dev.locallinklab.app",
+          "cat",
+          "files/lab-d9475bfa-1104-410f-80b9-1e729490e595.json"
+        ]
+      },
+      {
+        "at": "2026-10-28T07:13:19.113510+00:00",
+        "command": [
+          "adb",
+          "shell",
+          "run-as",
+          "dev.locallinklab.app",
+          "rm",
+          "files/lab-d9475bfa-1104-410f-80b9-1e729490e595.json"
+        ]
+      },
+      {
+        "at": "2026-10-28T07:13:19.124350+00:00",
+        "command": [
+          "adb",
+          "shell",
+          "pidof",
+          "dev.locallinklab.app"
+        ]
+      },
+      {
+        "at": "2026-10-28T07:13:19.134490+00:00",
+        "command": [
+          "adb",
+          "shell",
+          "am",
+          "force-stop",
+          "dev.locallinklab.app"
+        ]
+      },
+      {
+        "at": "2026-10-28T07:13:19.161728+00:00",
+        "command": [
+          "adb",
+          "shell",
+          "pidof",
+          "dev.locallinklab.app"
+        ]
+      },
+      {
+        "at": "2026-10-28T07:13:19.174971+00:00",
+        "command": [
+          "adb",
+          "shell",
+          "am",
+          "start",
+          "-W",
+          "-n",
+          "dev.locallinklab.app/.MainActivity"
+        ]
+      },
+      {
+        "at": "2026-10-28T07:13:19.208702+00:00",
+        "command": [
+          "adb",
+          "shell",
+          "pidof",
+          "dev.locallinklab.app"
+        ]
+      }
+    ],
+    "finished_at": "2026-10-28T07:13:19.241268+00:00"
+  },
+  "baseline": [
+    {
+      "request_id": "836c13a5-5c03-4d0b-b45e-3a289f19bc34",
+      "pos_db_id": "b89163d6-5f13-48fd-a37a-fa236b14f8e9",
+      "item_code": "DEMO_COFFEE",
+      "quantity": 1,
+      "unit_price_krw": 3000
+    }
+  ],
+  "mutation_execution": "NOT_RUN",
+  "candidate": "SKIPPED"
+}

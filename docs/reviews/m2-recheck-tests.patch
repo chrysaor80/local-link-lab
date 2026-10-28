@@ -1,0 +1,40 @@
+diff --git a/lab/test_m3_recheck.py b/lab/test_m3_recheck.py
+new file mode 100644
+index 0000000..14ed08c
+--- /dev/null
++++ b/lab/test_m3_recheck.py
+@@ -0,0 +1,34 @@
++"""Candidate-gate regressions written by the reviewer against 70a6347 (M2 fix re-check).
++
++Reuses the CandidateGateTest fixture without re-running its tests.
++"""
++import json
++import unittest
++
++from . import test_candidate as base
++
++PROCESS_EVENTS = ("OLD_PROCESS_TERMINATED", "EXPLICIT_RELAUNCH")
++
++
++class ProcessDeathEvidenceGateTest(unittest.TestCase):
++    setUp = base.CandidateGateTest.setUp
++    write = base.CandidateGateTest.write
++    identity = base.CandidateGateTest.identity
++    blocked = base.CandidateGateTest.blocked
++
++    def test_fixture_is_otherwise_promotable(self):
++        """Control, expected PASS: apart from PID evidence the shared fixture is a valid candidate."""
++        base.package(self.root, self.root / "control-candidate", base.SOURCE, base.JOBS, self.root, {})
++
++    def test_s03_without_observed_pid_death_and_relaunch_is_blocked(self):
++        """Expected FAIL at 70a6347: verify_phases re-checks S03 phase observations but never the
++        OLD_PROCESS_TERMINATED / EXPLICIT_RELAUNCH events (old PID gone, new PID different), so an S03
++        record without any observed process death is still promoted to a demo candidate."""
++        for case in ("S03_am_kill", "S03_force_stop", "S03_after_pos_commit"):
++            record = json.loads((self.normal.parent / case / "result.json").read_text(encoding="utf-8"))
++            self.assertFalse([e for e in record.get("events", []) if e.get("event") in PROCESS_EVENTS])
++        self.blocked()
++
++
++if __name__ == "__main__":
++    unittest.main()
