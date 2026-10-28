@@ -36,6 +36,16 @@
 
 ## 실행 및 남은 확인
 
-로컬 Python 회귀 13개, 핵심 JVM 14개, Controller JVM 6개 통과. debug APK·계측 APK 빌드와 lintDebug 통과(기존 백업 설정 안내 경고는 유지). API 29 Android CI 결과는 커밋을 고정한 뒤 후속 기록에 연결한다. 실행하지 않은 계측 검사를 빌드 성공으로 대체하지 않는다.
+로컬 Python 회귀 13개, 핵심 JVM 14개, Controller JVM 6개 통과. debug APK·계측 APK 빌드와 lintDebug 통과(기존 백업 설정 안내 경고는 유지). API 29 Android 계측의 정상 4개·연결 복구 2개도 PASS. 아래 CI 근거에 고정했다. 실행하지 않은 계측 검사를 빌드 성공으로 대체하지 않는다.
 
 M1 수정은 PR #1에 반영하고 M2 브랜치에도 통합한다. M2의 정상 시나리오 6개와 결함 사본 2개를 같은 수정본에서 다시 실행한다. 삼성 실기기/LAN, Windows QuickEdit 실제 재현, API 23, 실제 저메모리/전원 차단은 미검증이다.
+
+## 수정본 CI 결과
+
+- 구현 SHA: `b5501e6e81a0d1e57a01c6b537e322fe34e4efb5`.
+- [CI 40628744795](https://github.com/chrysaor80/local-link-lab/actions/runs/40628744795): 전체 SUCCESS. Windows/Linux 각각 Python 13개, 핵심 JVM 14개, Controller JVM 6개, API 29 계측 정상 4개·복구 2개 PASS, 미실행 0.
+- [APK·JUnit·Room/POS 대조 자료](https://github.com/chrysaor80/local-link-lab/actions/runs/40628744795/artifacts/12790861440), [영구 관측 JSON](../evidence/m1-redteam-observation.json).
+- CI 실제 checkout은 PR merge SHA `9f4e6f847be27a056865da3515546d744ba0c286`다. 위 구현과 Git tree `b457ae5be5e4813cc6251466288df67ca797dc5d`가 같음을 확인했다.
+- 원본 artifact를 내려받아 JUnit 개수/실패/누락과 정상 주문 기준값·POS 전체 행·영수증을 다시 대조했다. 새 두 계측 검사는 연결 거부와 5초 침묵 응답 뒤 수동 재개 없이 주문이 ACK되는지 검사한다.
+
+OPUS 조건의 필수 수정과 회귀 실행은 완료했다. OPUS가 수정본을 재검토했다고 기록하지 않는다. 문서만 추가한 후속 커밋과 실제 검증 구현 SHA를 구분한다.

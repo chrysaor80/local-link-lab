@@ -1,0 +1,132 @@
+{
+  "review_target": "ee67e2c62d844c538fd7cca26543ab3a103628fe",
+  "reviewer_report_sha256": "d496e5187459efce0aa6a7b3817bfb9d6103a1c7b7c92f3b3b0976d69056f82f",
+  "reviewer_patch_sha256": "4cf7ad06a66c698be11a7836e8a08742c3049eed9458030557076c1f87f0eee0",
+  "reproduced_by": "Codex",
+  "environment": {
+    "os": "Linux",
+    "python": "3.12.14",
+    "jdk": "17.0.21",
+    "gradle": "8.11.1",
+    "android_compile_sdk": 35,
+    "robolectric": "4.14.1",
+    "robolectric_sdk": 34,
+    "android_os_execution": false
+  },
+  "before": {
+    "core_jvm": {
+      "totals": {
+        "tests": 13,
+        "failures": 2,
+        "errors": 0,
+        "skipped": 0
+      },
+      "failures": [
+        {
+          "test": "attemptDeadlineIsNotReportedAsCancellation",
+          "message": "java.lang.AssertionError: deadline surfaced as kotlinx.coroutines.TimeoutCancellationException: Timed out waiting for 300 ms"
+        },
+        {
+          "test": "ambiguousIpv4TextIsRejectedBeforeResolution",
+          "message": "java.lang.AssertionError: 127.000.000.001 -> kotlinx.coroutines.TimeoutCancellationException: Timed out waiting for 300 ms"
+        }
+      ]
+    },
+    "controller_robolectric": {
+      "totals": {
+        "tests": 3,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0
+      },
+      "failures": [
+        {
+          "test": "failedProbeKeepsDeliveringToConfiguredPos",
+          "message": "java.lang.AssertionError: afterProbe=[확인 필요: Connection refused] runtime=[확인 필요: Connection refused] deliveredAfterResume=true"
+        }
+      ]
+    },
+    "pos_python": {
+      "tests": 4,
+      "failures": 2,
+      "failed_tests": [
+        "test_hello_reports_the_database_that_handles_orders",
+        "test_verify_m1_rejects_orphan_row_even_with_python_optimize (-O subtest)"
+      ]
+    }
+  },
+  "limitations": [
+    "Robolectric timeout UI PASS does not refute real-time coroutine deadline failure.",
+    "Baseline Android instrumentation and Windows QuickEdit were not executed locally."
+  ],
+  "after_m1": {
+    "head_commit": "b5501e6e81a0d1e57a01c6b537e322fe34e4efb5",
+    "ci_checkout_commit": "9f4e6f847be27a056865da3515546d744ba0c286",
+    "identical_tree": "b457ae5be5e4813cc6251466288df67ca797dc5d",
+    "ci_run": 40628744795,
+    "artifact_id": 12790861440,
+    "result": "PASS",
+    "counts": {
+      "core_jvm": {
+        "tests": 14,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "controller_jvm": {
+        "tests": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "android_normal": {
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "android_recovery": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "python_windows": {
+        "tests": 13,
+        "failures": 0
+      },
+      "python_linux": {
+        "tests": 13,
+        "failures": 0
+      }
+    },
+    "android_api": 29,
+    "network_path": "emulator-nat",
+    "baseline": {
+      "request_id": "d94f246d-fc00-4c07-93c2-04ae5ee31643",
+      "pos_db_id": "5b012658-5ee4-4fe9-9d00-7f25cf3e1530",
+      "item_code": "DEMO_COFFEE",
+      "quantity": 1,
+      "unit_price_krw": 3000
+    },
+    "android_result": {
+      "request_id": "d94f246d-fc00-4c07-93c2-04ae5ee31643",
+      "pos_db_id": "5b012658-5ee4-4fe9-9d00-7f25cf3e1530",
+      "item_code": "DEMO_COFFEE",
+      "quantity": 1,
+      "unit_price_krw": 3000,
+      "receipt_id": "7f9e4959-cd39-4209-a819-60017957390c",
+      "status": "ACKNOWLEDGED"
+    },
+    "pos_rows": [
+      {
+        "request_id": "d94f246d-fc00-4c07-93c2-04ae5ee31643",
+        "receipt_id": "7f9e4959-cd39-4209-a819-60017957390c",
+        "item_code": "DEMO_COFFEE",
+        "quantity": 1,
+        "unit_price_krw": 3000
+      }
+    ],
+    "debug_apk_sha256": "5c2a9675c40ae62edce4463dfa2306ed9c32018475caaada957eb1ab533040e4"
+  }
+}
