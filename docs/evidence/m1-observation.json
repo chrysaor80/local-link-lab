@@ -1,0 +1,35 @@
+{
+  "source_sha": "21e8ad5e3240287683aa1ef9abd0079f481fad76",
+  "ci_run": 40620268630,
+  "network_path": "emulator-nat",
+  "android_api": 29,
+  "baseline": {
+    "request_id": "157386b6-9497-4012-9207-f05ba28a7437",
+    "pos_db_id": "99b1ef93-0ca2-4e9d-ba3c-bbb0fbd7be26",
+    "item_code": "DEMO_COFFEE",
+    "quantity": 1,
+    "unit_price_krw": 3000
+  },
+  "android_result": {
+    "request_id": "157386b6-9497-4012-9207-f05ba28a7437",
+    "pos_db_id": "99b1ef93-0ca2-4e9d-ba3c-bbb0fbd7be26",
+    "item_code": "DEMO_COFFEE",
+    "quantity": 1,
+    "unit_price_krw": 3000,
+    "receipt_id": "c2f92cf9-2d2e-44aa-a8e9-7de3962b92d0",
+    "status": "ACKNOWLEDGED"
+  },
+  "all_pos_rows": [
+    {
+      "request_id": "157386b6-9497-4012-9207-f05ba28a7437",
+      "receipt_id": "c2f92cf9-2d2e-44aa-a8e9-7de3962b92d0",
+      "item_code": "DEMO_COFFEE",
+      "quantity": 1,
+      "unit_price_krw": 3000
+    }
+  ],
+  "android_tests": 4,
+  "android_failures": 0,
+  "android_skipped": 0,
+  "apk_sha256": "7c6081c13bfc037f01e73644004c556d835ba0df897ff2fff46495eed335da0b"
+}

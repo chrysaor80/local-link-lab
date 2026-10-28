@@ -2,7 +2,7 @@
 
 Android 단말과 PC의 POS 시뮬레이터 사이에서 주문 요청을 보존하고, 통신 장애 후 같은 요청을 다시 처리하는 과정을 검증하는 포트폴리오 프로젝트입니다. 실제 결제 승인 기능은 포함하지 않습니다.
 
-현재 단계는 **M1 구현 검증 중**입니다. Android 앱, Kotlin 연결 코어, Python POS를 구현했습니다. 로컬에서 APK 빌드·JVM 테스트·POS 실제 TCP 테스트를 통과했으며, Android 실행 결과는 [진행 기록](docs/CONTROL.md)에 따로 표시합니다. `scripts/check_spec.py`는 명세의 일관성만 검사합니다.
+현재 단계는 **M1 정상 왕복 검증 완료·독립 검토 대기**입니다. Android 앱, Kotlin 연결 코어, Python POS를 구현했습니다. APK 빌드·JVM 테스트·Windows/Linux POS 테스트와 API 29 Android 에뮬레이터의 UI·Room·POS 전체 DB 대조를 통과했습니다. [진행 기록](docs/CONTROL.md)에 커밋·실행 근거와 미검증 범위를 표시합니다. `scripts/check_spec.py`는 명세의 일관성만 검사합니다.
 
 ## 읽는 순서
 
@@ -52,7 +52,7 @@ py -m pos.server --db artifacts/pos.db --host 192.168.0.10 --port 8765
 
 ## 협업
 
-구현 담당은 코드·실행 결과를 제출하고, 검토 담당은 같은 커밋의 명세와 코드를 독립적으로 검토합니다. 문서 확정, 실제 왕복 완료, 장애 검증 완료의 세 시점에 검토를 요청합니다. [M0 검토 처리 결과](docs/reviews/M0_RESPONSE.md)를 반영해 M1을 구현 중입니다.
+구현 담당은 코드·실행 결과를 제출하고, 검토 담당은 같은 커밋의 명세와 코드를 독립적으로 검토합니다. 문서 확정, 실제 왕복 완료, 장애 검증 완료의 세 시점에 검토를 요청합니다. [M0 검토 처리 결과](docs/reviews/M0_RESPONSE.md)를 반영했으며 다음 요청은 [M1 검토](docs/reviews/M1_REQUEST.md)입니다.
 
 ## 공개 참고 자료
 
