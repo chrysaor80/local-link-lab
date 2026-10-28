@@ -80,7 +80,10 @@ class Adb:
         raise Blocked(f"No completed debug command: {command}; last response: {raw[:150]}")
 
     async def launch(self):
-        await self.run("shell", "am", "start", "-W", "-n", f"{PACKAGE}/.MainActivity")
+        response = await self.run("shell", "am", "start", "-W", "-n", f"{PACKAGE}/.MainActivity")
+        self.history[-1]["response"] = response
+        if "Error:" in response or "Exception" in response:
+            raise Blocked(f"Android launch rejected: {response}")
 
     async def pid(self):
         return await self.run("shell", "pidof", PACKAGE, check=False)
@@ -95,6 +98,19 @@ class Adb:
                 raise Blocked("Unexpected automatic process restart")
             await asyncio.sleep(0.1)
         raise Blocked("Old Android PID did not terminate")
+
+    async def wait_new(self, old, *, timeout=5):
+        # ActivityManager completion and pidof visibility need not be simultaneous.
+        # Poll an actual new PID; never infer a successful restart from elapsed time.
+        deadline = time.monotonic() + timeout
+        while time.monotonic() < deadline:
+            current = await self.pid()
+            if current:
+                if current == old:
+                    raise Blocked("Explicit relaunch still reports the old Android PID")
+                return current
+            await asyncio.sleep(0.1)
+        raise Blocked("No new Android PID observed before relaunch deadline")
 
 
 def pos_rows(store):
@@ -228,9 +244,7 @@ async def run_case(adb, scenario, folder, source_sha):
             await adb.wait_dead(old)
             event("OLD_PROCESS_TERMINATED", pid=old, method=method)
             await adb.launch()
-            new = await adb.pid()
-            if not new or new == old:
-                raise Blocked("No new Android PID after explicit relaunch")
+            new = await adb.wait_new(old)
             event("EXPLICIT_RELAUNCH", pid=new)
             record["violations"] += await observe_paused("restored_pending")
         if not record["violations"]:
@@ -276,9 +290,7 @@ async def run_case(adb, scenario, folder, source_sha):
                 await adb.wait_dead(old)
                 event("OLD_PROCESS_TERMINATED", pid=old, method="force-stop")
                 await adb.launch()
-                new = await adb.pid()
-                if not new or new == old:
-                    raise Blocked("No new Android PID after explicit relaunch")
+                new = await adb.wait_new(old)
                 event("EXPLICIT_RELAUNCH", pid=new)
                 record["violations"] += await observe("restored_ack_held", require_window=True)
                 allow_ack.set()
@@ -304,6 +316,11 @@ async def run_case(adb, scenario, folder, source_sha):
     finally:
         allow_ack.set()
         await server.close()
+        if record["verdict"] in ("BLOCKED", "FAIL") and "android_api" in record:
+            try:
+                (folder / "logcat.txt").write_text(await adb.run("logcat", "-d"), encoding="utf-8")
+            except (Blocked, OSError) as exc:
+                record["diagnostics_error"] = str(exc)
         record["final_pos_rows"] = pos_rows(store)
         record["original_receipts"] = receipts
         record["commands"] = adb.history[commands_start:]

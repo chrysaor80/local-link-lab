@@ -1,6 +1,6 @@
 # OPUS M2 검토 처리
 
-검토 대상 `127ea3232bd6a6dc9b8c1b54eca78b3e092127d7`. [원본 보고](OPUS_M2_REVIEW_REPORT.md)와 [원본 패치](m2-redteam-tests.patch)를 보존했다. OPUS 판정은 조건부 승인이다. 아래 수정본에 대한 별도 OPUS 승인을 뜻하지 않는다.
+검토 대상 `127ea3232bd6a6dc9b8c1b54eca78b3e092127d7`. [원본 보고](OPUS_M2_REVIEW_REPORT.md)와 [원본 패치](m2-redteam-tests.patch)를 보존했다. 기존 코드의 OPUS 판정은 조건부 승인이다. 이후 [재확인 보고](OPUS_M2_RECHECK_REPORT.md)에서 수정본 6c7187d를 승인하고 필수 조건 M2-01 해소를 확인했다.
 
 ## 판단과 변경
 

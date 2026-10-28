@@ -18,7 +18,7 @@
 - ACK 유실과 commit 직후 종료: 사건 기반 `lab.android_run`을 **일회용 에뮬레이터**에서 사용한다. 수동으로 서버를 잠깐 끄는 것을 ACK 유실 시연이라고 부르지 않는다.
 - 자동 실행기는 앱 데이터를 초기화하므로 폰에서는 실행하지 않는다. 에뮬레이터 serial을 확인하고 각 촬영에 새 출력 폴더를 쓴다. 기존 결과 폴더는 덮어쓰지 않는다.
 
-저장소에서 이미 빌드·설치한 debug APK와 실행 가능한 adb가 있는 환경의 예시다. 첫 터미널에서 녹화를 시작하고, 두 번째에서 ACK 유실 시나리오를 실행한다.
+깨끗한 checkout에서 `python -m lab.package_candidate stamp`로 빌드·stamp를 완료하고 해당 debug APK를 설치한 에뮬레이터의 예시다. 자동 실행기의 S01은 차단 뒤 항상 수동 재개하며, 자동 재시도 장면은 S02로 촬영한다. 첫 터미널에서 녹화를 시작하고, 두 번째에서 ACK 유실 시나리오를 실행한다.
 
 ```text
 adb -s emulator-5554 shell screenrecord --time-limit 45 /sdcard/local-link-s02.mp4
