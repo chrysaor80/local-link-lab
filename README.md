@@ -2,7 +2,7 @@
 
 Android 단말과 PC의 POS 시뮬레이터 사이에서 주문 요청을 보존하고, 통신 장애 후 같은 요청을 다시 처리하는 과정을 검증하는 포트폴리오 프로젝트입니다. 실제 결제 승인 기능은 포함하지 않습니다.
 
-현재 단계는 **M1 독립 검토 반영·M2 재검증 완료·독립 검토 대기**입니다. Android 앱, Kotlin 연결 코어, Python POS를 구현했습니다. 정상 왕복과 장애·복구 6개 실행을 API 29 Android 에뮬레이터에서 검증했습니다. ID 재발급·ACK 전 완료 결함 사본 2개도 같은 판정기가 실제 데이터 위반으로 검출했습니다. [진행 기록](docs/CONTROL.md)에 커밋·실행 근거와 미검증 범위를 표시합니다. `scripts/check_spec.py`는 명세의 일관성만 검사합니다.
+현재 단계는 **OPUS M2 조건부 승인 반영·검증 보강 완료**입니다. Android 앱, Kotlin 연결 코어, Python POS를 구현했습니다. S03의 종료 전·복원 후 상태 검사를 보강하고 API 29 에뮬레이터에서 장애·복구 6개와 결함 사본 3개의 검출을 확인했습니다. [최신 실행 근거](docs/evidence/M2_REDTEAM_FIX.md)와 [진행 기록](docs/CONTROL.md)에 소스·관측·한계를 표시합니다. 실기기와 촬영은 미완료입니다. `scripts/check_spec.py`는 명세의 일관성만 검사합니다.
 
 ## 읽는 순서
 
@@ -47,9 +47,9 @@ py -u -m pos.server --db artifacts/pos.db --host 192.168.0.10 --port 8765 > arti
 - `core`: 엄격한 메시지 파서, 취소 가능한 TCP, 재시도와 주문 확인 정책. JVM 회귀 테스트 포함.
 - `app`: Compose 화면, Room 주문 보관, 프로세스 전경 수명에 맞춘 단일 전송 작업.
 - `pos`: SQLite 트랜잭션과 중복 방지, 바이너리 TCP 서버. Python 회귀 테스트 포함.
-- `lab`: 외부 Android 장애 실행기, 독립 결과 판정기, 결함 사본 빌드·검출. 판정기·변형 APK 검사 회귀 포함. [M2 최신 결과](docs/evidence/M2_REVIEW.md).
+- `lab`: 외부 Android 장애 실행기, 독립 결과 판정기, 결함 사본 빌드·검출. 판정기·변형 APK 검사 회귀 포함. [M2 최신 결과](docs/evidence/M2_REDTEAM_FIX.md).
 - `spec`: 두 언어가 공유하는 원문 메시지 31개와 장애 시나리오 정의.
-- `.github/workflows/m1.yml`: Linux/Windows POS·판정기 검사, APK/JVM 검사, Android 정상 왕복·장애 6개·결함 사본 2개 검출. 실행 결과는 Actions에서 확인합니다.
+- `.github/workflows/m1.yml`: Linux/Windows POS·판정기 검사, APK/JVM 검사, Android 정상 왕복·장애 6개·결함 사본 3개 검출. 실행 결과는 Actions에서 확인합니다.
 
 
 ## 협업

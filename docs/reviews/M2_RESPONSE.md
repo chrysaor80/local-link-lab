@@ -22,7 +22,7 @@ commit 후 종료 변형은 신규 저장과 중복 재시도 ACK를 모두 befo
 - 로컬 Python 26개 PASS: 실제 TCP의 재시도 ACK 보류, 단계별 판정, dirty checkout·설치 APK 불일치 거부 포함.
 - 코어 JVM 19개, Controller JVM 7개 PASS. debug/release/계측 APK 빌드 PASS. DEX·manifest 검사 일반/`-O` PASS.
 - 명세 검사: 시나리오 12개, 결함 계획 3개 PASS.
-- Android 외부 시나리오와 MUT03은 수정본 CI 실행 후 고정 SHA·원본 artifact를 별도 증거 문서에 기록한다. 이 문서 작성 시점에는 실행 대기다.
+- 구현 `6c7187d`의 [수정본 CI·원본 재대조](../evidence/M2_REDTEAM_FIX.md) 완료: Android 외부 시나리오 6 PASS, MUT01~03 모두 KILLED. 실제 설치 APK 해시도 빌드 파일과 일치했다.
 - 기존 M2·M3의 시나리오 PASS는 당시 하네스의 결과다. 그 결과가 S03의 강화된 전제를 검증했다고 소급해서 해석하지 않는다. 실기기·Windows LAN·촬영은 여전히 NOT_RUN이다.
 
 `lab/m2_redteam_evidence.py`는 검토 당시의 after_commit 훅을 의도적으로 재현하는 역사적 스크립트다. 수정 후에도 E1·E2 결과가 유지되는 것이 정상이다. 새 장벽은 `lab.test_m2_redteam`과 Android 실행기·MUT03으로 확인한다. 공개 원본 패치와 보고서는 수정하지 않았다.
